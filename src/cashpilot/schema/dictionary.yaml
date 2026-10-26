@@ -1,0 +1,703 @@
+# CashPilot data dictionary: the single source of truth for every table.
+#
+# It generates docs/DATA_DICTIONARY.md and sql/schema.sql, and drives the structural
+# validators (types, required fields, allowed values, ID patterns, foreign keys, uniqueness).
+#
+# Column types
+#   string     free text or code
+#   int        integer
+#   bool       true/false
+#   date       YYYY-MM-DD
+#   timestamp  UTC instant, YYYY-MM-DDTHH:MM:SSZ
+#   money      fixed-decimal string in the currency named by `currency_field` (or fixed
+#              `currency`); held internally as integer minor units; decimals per ISO 4217
+#   rate       decimal string with 8 decimal places
+#   decimal    plain decimal string
+#
+# Layers: reference, master, transaction, event, bridge, history, derived, output, ground_truth.
+# Only reference..history are inputs; derived/output tables are produced by CashPilot itself.
+version: 1
+
+tables:
+
+  # ------------------------------------------------------------------ reference
+  currency:
+    layer: reference
+    description: "ISO 4217 currencies in scope. Minor units drive rounding and formatting."
+    grain: "One row per currency."
+    primary_key: [currency_code]
+    columns:
+      - {name: currency_code, type: string, required: true, allowed: [USD, EUR, GBP, INR, JPY], description: "ISO 4217 alphabetic code"}
+      - {name: currency_name, type: string, required: true, description: "Display name"}
+      - {name: minor_units, type: int, required: true, allowed: [0, 2], units: "decimal places", description: "ISO 4217 minor units (JPY has none)"}
+      - {name: is_reporting_currency, type: bool, required: true, rule: "Exactly one row is true (USD)", description: "Group reporting currency flag"}
+
+  app_user:
+    layer: reference
+    description: "Synthetic users acting in the workflow. Names are role labels, not people."
+    grain: "One row per user."
+    primary_key: [user_id]
+    columns:
+      - {name: user_id, type: string, required: true, unique: true, pattern: '^USR-\d{4}$', description: "Immutable user ID"}
+      - {name: display_name, type: string, required: true, description: "Role-based label"}
+      - {name: role, type: string, required: true, allowed: [SYSTEM, SYS_ADMIN, OPS_ANALYST, RISK_REVIEWER, ACCOUNT_HOLDER], description: "Workflow role; drives permissions"}
+      - {name: entity_id, type: string, required: false, fk: legal_entity.entity_id, rule: "Required for ACCOUNT_HOLDER, null otherwise", description: "Entity an account holder belongs to"}
+      - {name: active_from, type: date, required: true, description: "First day the user may act"}
+
+  counterparty:
+    layer: reference
+    description: "Fictional customers and suppliers. Customer risk tier drives payment behaviour."
+    grain: "One row per counterparty."
+    primary_key: [counterparty_id]
+    columns:
+      - {name: counterparty_id, type: string, required: true, unique: true, pattern: '^CPTY-\d{6}$', description: "Immutable counterparty ID"}
+      - {name: counterparty_name, type: string, required: true, description: "Fictional company name"}
+      - {name: counterparty_type, type: string, required: true, allowed: [CUSTOMER, SUPPLIER], description: "Trading relationship"}
+      - {name: country_code, type: string, required: true, allowed: [US, DE, NL, FR, GB, IN, JP], description: "Country"}
+      - {name: default_currency, type: string, required: true, fk: currency.currency_code, description: "Currency the counterparty prefers to trade in"}
+      - {name: risk_tier, type: string, required: true, allowed: [A, B, C, D], description: "Credit/payment risk; A best, D worst"}
+      - {name: payment_terms_days, type: int, required: true, allowed: [15, 30, 45, 60, 90], units: days, description: "Contractual payment terms"}
+
+  currency_rate:
+    layer: reference
+    description: "Daily closing FX rates against USD, one per business day and currency."
+    grain: "One row per (rate_date, base_currency)."
+    primary_key: [rate_id]
+    unique_together: [[rate_date, base_currency, quote_currency]]
+    columns:
+      - {name: rate_id, type: string, required: true, unique: true, pattern: '^FXR-\d{4}-\d{2}-\d{2}-[A-Z]{3}-USD$', rule: "Embeds rate_date and base_currency", description: "Immutable rate ID"}
+      - {name: rate_date, type: date, required: true, rule: "Business day", description: "Fixing date"}
+      - {name: base_currency, type: string, required: true, fk: currency.currency_code, allowed: [EUR, GBP, INR, JPY], description: "Currency being priced"}
+      - {name: quote_currency, type: string, required: true, fk: currency.currency_code, allowed: [USD], description: "Always USD"}
+      - {name: rate, type: rate, required: true, minimum: 0, units: "USD per 1 unit of base_currency", description: "Closing rate"}
+      - {name: rate_type, type: string, required: true, allowed: [CLOSING], description: "Rate type"}
+      - {name: source, type: string, required: true, allowed: [SYNTHETIC_GBM], description: "Provenance of the rate"}
+      - {name: recorded_at, type: timestamp, required: true, rule: "On rate_date, after the close", description: "When the rate was loaded"}
+
+  liquidity_scenario:
+    layer: reference
+    description: "Versioned liquidity scenarios. A scenario is defined only by its linked assumptions."
+    grain: "One row per scenario version."
+    primary_key: [scenario_id]
+    columns:
+      - {name: scenario_id, type: string, required: true, unique: true, pattern: '^SCN-(BASE|DELAY|STRESS)-V\d{2}$', description: "Immutable scenario version ID"}
+      - {name: scenario_code, type: string, required: true, allowed: [BASE, DELAY, STRESS], description: "Scenario family"}
+      - {name: version, type: int, required: true, minimum: 1, description: "Version within the family"}
+      - {name: scenario_name, type: string, required: true, description: "Display name"}
+      - {name: description, type: string, required: true, description: "What the scenario represents"}
+      - {name: effective_from, type: date, required: true, description: "First cutoff date the version applies to"}
+      - {name: effective_to, type: date, required: false, rule: "Null while current", description: "Last cutoff date the version applies to"}
+      - {name: status, type: string, required: true, allowed: [ACTIVE, RETIRED], description: "Status at the end of the period"}
+      - {name: supersedes_scenario_id, type: string, required: false, fk: liquidity_scenario.scenario_id, description: "Previous version of the same family"}
+      - {name: created_by, type: string, required: true, fk: app_user.user_id, description: "System administrator who published it"}
+      - {name: created_at, type: timestamp, required: true, description: "Publication time"}
+
+  scenario_assumption:
+    layer: reference
+    description: "Documented, parameterised assumptions. Scenarios differ only through these rows."
+    grain: "One row per assumption."
+    primary_key: [assumption_id]
+    columns:
+      - {name: assumption_id, type: string, required: true, unique: true, pattern: '^ASM-\d{4}$', description: "Immutable assumption ID"}
+      - {name: parameter, type: string, required: true, allowed: [AR_DELAY_DAYS, AR_COLLECTION_RATE, AP_TIMING_SHIFT_DAYS, RUN_RATE_INFLOW_FACTOR, FX_SHOCK_PCT], description: "What the assumption changes"}
+      - {name: filter_field, type: string, required: false, allowed: [risk_tier, currency_not], description: "Which items it applies to (null = all eligible items)"}
+      - {name: filter_value, type: string, required: false, description: "Filter value, e.g. C for risk_tier"}
+      - {name: value, type: decimal, required: true, description: "Parameter value"}
+      - {name: unit, type: string, required: true, allowed: [days, ratio, pct], description: "Unit of value"}
+      - {name: rationale, type: string, required: true, description: "Why the assumption exists"}
+
+  scenario_assumption_link:
+    layer: bridge
+    bridge: "liquidity_scenario N:M scenario_assumption"
+    description: "Which assumptions make up each scenario version, in application order."
+    grain: "One row per (scenario, assumption)."
+    primary_key: [scenario_id, assumption_id]
+    columns:
+      - {name: scenario_id, type: string, required: true, fk: liquidity_scenario.scenario_id, description: "Scenario version"}
+      - {name: assumption_id, type: string, required: true, fk: scenario_assumption.assumption_id, description: "Assumption"}
+      - {name: apply_order, type: int, required: true, minimum: 1, description: "Order in which assumptions are applied"}
+
+  # --------------------------------------------------------------------- master
+  legal_entity:
+    layer: master
+    description: "Companies in the group. One holding company owns every operating entity."
+    grain: "One row per legal entity."
+    primary_key: [entity_id]
+    columns:
+      - {name: entity_id, type: string, required: true, unique: true, pattern: '^ENT-\d{6}$', description: "Immutable entity ID"}
+      - {name: entity_name, type: string, required: true, description: "Fictional company name"}
+      - {name: country_code, type: string, required: true, allowed: [US, DE, NL, FR, GB, IN, JP], description: "Country of incorporation"}
+      - {name: functional_currency, type: string, required: true, fk: currency.currency_code, description: "Currency of the entity's books"}
+      - {name: entity_type, type: string, required: true, allowed: [HOLDING, OPERATING], description: "Role in the group"}
+      - {name: parent_entity_id, type: string, required: false, fk: legal_entity.entity_id, rule: "Null only for the HOLDING entity", description: "Owning entity"}
+      - {name: size_tier, type: string, required: true, allowed: [S, M, L], description: "Size band; drives volumes and liquidity buffer"}
+      - {name: min_liquidity_buffer, type: money, currency_field: functional_currency, required: true, minimum: 0, units: "functional currency", description: "Minimum available cash the entity must hold"}
+      - {name: effective_from, type: date, required: true, description: "First day the entity is part of the group"}
+      - {name: effective_to, type: date, required: false, rule: "Null while the entity is in the group", description: "Last day in the group"}
+      - {name: status, type: string, required: true, allowed: [ACTIVE, INACTIVE], description: "Status at the end of the actuals period"}
+
+  bank_account:
+    layer: master
+    description: "Bank accounts held by the entities. Pool headers concentrate cash per currency."
+    grain: "One row per account."
+    primary_key: [account_id]
+    columns:
+      - {name: account_id, type: string, required: true, unique: true, pattern: '^BANKACC-ENT-\d{6}-\d{3}$', rule: "Embeds the owning entity_id", description: "Immutable account ID"}
+      - {name: entity_id, type: string, required: true, fk: legal_entity.entity_id, description: "Account holder"}
+      - {name: bank_name, type: string, required: true, description: "Fictional bank"}
+      - {name: account_number_masked, type: string, required: true, pattern: '^\*{4}\d{4}$', description: "Masked synthetic account number"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, description: "Account currency"}
+      - {name: account_type, type: string, required: true, allowed: [CONCENTRATION, OPERATING, COLLECTION, PAYROLL, DEPOSIT, RESTRICTED], description: "Purpose of the account"}
+      - {name: is_restricted, type: bool, required: true, rule: "True only for RESTRICTED accounts; excluded from available liquidity", description: "Restricted cash flag"}
+      - {name: is_pool_header, type: bool, required: true, rule: "At most one header per currency", description: "Cash-pool header for its currency"}
+      - {name: overdraft_limit, type: money, currency_field: currency, required: true, minimum: 0, description: "Committed overdraft"}
+      - {name: opened_on, type: date, required: true, description: "Date the account was opened at the bank"}
+      - {name: opening_balance_date, type: date, required: true, rule: "max(opened_on, entity effective_from, start_date)", description: "Date the opening balance applies to"}
+      - {name: opening_balance, type: money, currency_field: currency, required: true, description: "Balance at the start of opening_balance_date"}
+      - {name: closed_on, type: date, required: false, rule: "Balance must be zero after closure", description: "Closure date"}
+      - {name: status_at_end, type: string, required: true, allowed: [ACTIVE, FROZEN, CLOSED], rule: "Equals the last bank_account_event status", description: "Derived status at the end of the actuals period"}
+
+  # ---------------------------------------------------------------- transaction
+  receivable:
+    layer: transaction
+    description: "Customer invoices (accounts receivable) with expected collection dates."
+    grain: "One row per invoice."
+    primary_key: [receivable_id]
+    columns:
+      - {name: receivable_id, type: string, required: true, unique: true, pattern: '^AR-\d{4}-\d{6}$', description: "Immutable receivable ID"}
+      - {name: entity_id, type: string, required: true, fk: legal_entity.entity_id, description: "Invoicing entity"}
+      - {name: account_id, type: string, required: true, fk: bank_account.account_id, rule: "Account belongs to entity_id", description: "Collection account"}
+      - {name: counterparty_id, type: string, required: true, fk: counterparty.counterparty_id, description: "Customer"}
+      - {name: invoice_number, type: string, required: true, unique: true, pattern: '^INV-\d{6}-\d{6}$', description: "Invoice number"}
+      - {name: invoice_date, type: date, required: true, description: "Invoice date"}
+      - {name: due_date, type: date, required: true, rule: "due_date >= invoice_date", description: "Contractual due date"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, description: "Invoice currency"}
+      - {name: amount, type: money, currency_field: currency, required: true, minimum: 0, description: "Invoice amount"}
+      - {name: recorded_at, type: timestamp, required: true, description: "When the AR system recorded the invoice"}
+      - {name: status_at_end, type: string, required: true, allowed: [OPEN, PARTIALLY_PAID, OVERDUE, PAID, WRITTEN_OFF], rule: "Equals the last receivable_event status", description: "Derived status at the end of the actuals period"}
+
+  payable:
+    layer: transaction
+    description: "Supplier bills and large one-off obligations (accounts payable)."
+    grain: "One row per bill."
+    primary_key: [payable_id]
+    columns:
+      - {name: payable_id, type: string, required: true, unique: true, pattern: '^AP-\d{4}-\d{6}$', description: "Immutable payable ID"}
+      - {name: entity_id, type: string, required: true, fk: legal_entity.entity_id, description: "Paying entity"}
+      - {name: account_id, type: string, required: true, fk: bank_account.account_id, rule: "Account belongs to entity_id", description: "Paying account"}
+      - {name: counterparty_id, type: string, required: true, fk: counterparty.counterparty_id, description: "Supplier"}
+      - {name: bill_number, type: string, required: true, unique: true, pattern: '^BILL-\d{6}-\d{6}$', description: "Bill number"}
+      - {name: bill_date, type: date, required: true, description: "Bill date"}
+      - {name: due_date, type: date, required: true, rule: "due_date >= bill_date", description: "Contractual due date"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, description: "Bill currency"}
+      - {name: amount, type: money, currency_field: currency, required: true, minimum: 0, description: "Bill amount"}
+      - {name: category, type: string, required: true, allowed: [TRADE, CAPEX, ACQUISITION, DEBT_REPAYMENT, TAX_SETTLEMENT, LEGAL_SETTLEMENT], description: "Nature of the obligation"}
+      - {name: is_one_off, type: bool, required: true, rule: "True for the large non-recurring payments", description: "Large one-off payment flag"}
+      - {name: recorded_at, type: timestamp, required: true, description: "When the AP system recorded the bill"}
+      - {name: status_at_end, type: string, required: true, allowed: [SCHEDULED, APPROVED, ON_HOLD, PAID, CANCELLED], rule: "Equals the last payable_event status", description: "Derived status at the end of the actuals period"}
+
+  cash_flow_forecast:
+    layer: transaction
+    description: "Expected cash-flow items: subledger feeds, recurring schedules, run-rate estimates and manual submissions."
+    grain: "One row per forecast item; later changes are cf_revision rows."
+    primary_key: [cf_id]
+    columns:
+      - {name: cf_id, type: string, required: true, unique: true, pattern: '^CF-\d{4}-\d{6}$', description: "Immutable forecast item ID"}
+      - {name: entity_id, type: string, required: true, fk: legal_entity.entity_id, description: "Entity"}
+      - {name: account_id, type: string, required: true, fk: bank_account.account_id, rule: "Account belongs to entity_id", description: "Account the cash is expected on"}
+      - {name: direction, type: string, required: true, allowed: [INFLOW, OUTFLOW], description: "Cash direction"}
+      - {name: flow_category, type: string, required: true, allowed: [AR_COLLECTION, AP_PAYMENT, PAYROLL, RENT, TAX, DEBT_SERVICE, OPERATING_RUN_RATE, OTHER], description: "Business category"}
+      - {name: source_system, type: string, required: true, allowed: [AR_SUBLEDGER, AP_SUBLEDGER, PAYROLL_SYSTEM, LEASE_SYSTEM, TAX_CALENDAR, LOAN_SYSTEM, RUN_RATE_MODEL, MANUAL], description: "Where the item came from"}
+      - {name: receivable_id, type: string, required: false, fk: receivable.receivable_id, rule: "Set for AR_SUBLEDGER items", description: "Source invoice"}
+      - {name: payable_id, type: string, required: false, fk: payable.payable_id, rule: "Set for AP_SUBLEDGER items", description: "Source bill"}
+      - {name: counterparty_id, type: string, required: false, fk: counterparty.counterparty_id, description: "Counterparty, when known"}
+      - {name: source_reference, type: string, required: false, description: "Invoice/bill number or manual reference"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, rule: "Must equal the account currency unless the amount was converted", description: "Currency of amount"}
+      - {name: amount, type: money, currency_field: currency, required: true, minimum: 0, description: "Expected amount (unsigned; sign from direction)"}
+      - {name: original_currency, type: string, required: false, fk: currency.currency_code, rule: "Set when the source document is in another currency", description: "Source document currency"}
+      - {name: original_amount, type: money, currency_field: original_currency, required: false, description: "Amount in the source document currency"}
+      - {name: fx_rate_id, type: string, required: false, fk: currency_rate.rate_id, rule: "Required when original_currency is set", description: "Rate used to convert original_amount"}
+      - {name: expected_date, type: date, required: true, description: "Expected value date when first recorded"}
+      - {name: recorded_at, type: timestamp, required: true, description: "When the item became known"}
+      - {name: created_by, type: string, required: true, fk: app_user.user_id, description: "System feed or account holder"}
+
+  ledger_entry:
+    layer: transaction
+    description: "Booked cash movements (actuals). Positive = inflow, negative = outflow, in account currency."
+    grain: "One row per posting."
+    primary_key: [ledger_entry_id]
+    columns:
+      - {name: ledger_entry_id, type: string, required: true, unique: true, pattern: '^LED-\d{4}-\d{8}$', rule: "Year equals the posting year", description: "Immutable ledger entry ID"}
+      - {name: account_id, type: string, required: true, fk: bank_account.account_id, description: "Account"}
+      - {name: entity_id, type: string, required: true, fk: legal_entity.entity_id, rule: "Equals the account's entity_id", description: "Entity (denormalised for joins)"}
+      - {name: posting_date, type: date, required: true, rule: "Business day within the account's active period", description: "Value/posting date"}
+      - {name: recorded_at, type: timestamp, required: true, description: "When the posting was recorded"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, rule: "Equals the account currency", description: "Currency of amount"}
+      - {name: amount, type: money, currency_field: currency, required: true, rule: "Non-zero", description: "Signed amount"}
+      - {name: entry_type, type: string, required: true, allowed: [AR_RECEIPT, AP_PAYMENT, PAYROLL, RENT, TAX, DEBT_SERVICE, BANK_FEE, INTEREST, OPERATING_RECEIPT, OPERATING_PAYMENT, OTHER_RECEIPT, OTHER_PAYMENT, POOL_SWEEP, POOL_FUNDING, FX_CONVERSION, ACCOUNT_CLOSURE], description: "Economic type"}
+      - {name: cf_id, type: string, required: false, fk: cash_flow_forecast.cf_id, rule: "Set when the posting realises a recurring or manual forecast item", description: "Realised forecast item"}
+      - {name: counterparty_id, type: string, required: false, fk: counterparty.counterparty_id, description: "Counterparty"}
+      - {name: transfer_group_id, type: string, required: false, pattern: '^TRF-\d{4}-\d{6}$', rule: "Both legs of an internal transfer share it and net to zero (FX legs net at the rate)", description: "Internal transfer group"}
+      - {name: fx_rate_id, type: string, required: false, fk: currency_rate.rate_id, description: "Rate used for FX conversions and cross-currency receipts"}
+      - {name: original_currency, type: string, required: false, fk: currency.currency_code, description: "Currency of the other side of a conversion"}
+      - {name: original_amount, type: money, currency_field: original_currency, required: false, description: "Amount in original_currency"}
+      - {name: description, type: string, required: true, description: "Narrative"}
+
+  settlement_allocation:
+    layer: bridge
+    bridge: "ledger_entry N:M receivable / payable"
+    description: "How cash postings settle invoices and bills: one transfer may pay several invoices, one invoice may be paid in parts."
+    grain: "One row per (ledger entry, document)."
+    primary_key: [settlement_id]
+    columns:
+      - {name: settlement_id, type: string, required: true, unique: true, pattern: '^SETL-\d{4}-\d{7}$', description: "Immutable allocation ID"}
+      - {name: ledger_entry_id, type: string, required: true, fk: ledger_entry.ledger_entry_id, description: "Cash posting"}
+      - {name: receivable_id, type: string, required: false, fk: receivable.receivable_id, rule: "Exactly one of receivable_id / payable_id is set", description: "Settled invoice"}
+      - {name: payable_id, type: string, required: false, fk: payable.payable_id, description: "Settled bill"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, rule: "Equals the document currency", description: "Currency of allocated_amount"}
+      - {name: allocated_amount, type: money, currency_field: currency, required: true, minimum: 0, description: "Amount of the document settled"}
+      - {name: allocation_date, type: date, required: true, rule: "Equals the posting date", description: "Settlement date"}
+
+  bank_statement:
+    layer: transaction
+    description: "Daily statements as reported by the banks (the bank's view of each account)."
+    grain: "One row per account and business day while the account is active."
+    primary_key: [statement_id]
+    unique_together: [[account_id, statement_date]]
+    columns:
+      - {name: statement_id, type: string, required: true, unique: true, pattern: '^STM-\d{4}-\d{7}$', description: "Immutable statement ID"}
+      - {name: account_id, type: string, required: true, fk: bank_account.account_id, description: "Account"}
+      - {name: statement_date, type: date, required: true, description: "Business day covered"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, rule: "Equals the account currency", description: "Statement currency"}
+      - {name: opening_balance, type: money, currency_field: currency, required: true, rule: "Equals the previous statement's closing_balance", description: "Bank opening balance"}
+      - {name: total_credits, type: money, currency_field: currency, required: true, minimum: 0, description: "Sum of credits"}
+      - {name: total_debits, type: money, currency_field: currency, required: true, minimum: 0, description: "Sum of debits"}
+      - {name: closing_balance, type: money, currency_field: currency, required: true, rule: "opening + credits - debits; movement should equal the ledger for that day", description: "Bank closing balance"}
+      - {name: transaction_count, type: int, required: true, minimum: 0, description: "Number of transactions"}
+      - {name: recorded_at, type: timestamp, required: true, description: "When the statement was received"}
+
+  # ---------------------------------------------------------------------- event
+  bank_account_event:
+    layer: event
+    event_of: bank_account
+    description: "Account lifecycle history (append-only)."
+    grain: "One row per state change."
+    primary_key: [event_id]
+    columns:
+      - {name: event_id, type: string, required: true, unique: true, pattern: '^BAE-\d{4}-\d{6}$', description: "Immutable event ID"}
+      - {name: account_id, type: string, required: true, fk: bank_account.account_id, description: "Account"}
+      - {name: event_ts, type: timestamp, required: true, description: "When it happened"}
+      - {name: event_type, type: string, required: true, allowed: [OPENED, FROZEN, UNFROZEN, CLOSED], description: "Transition"}
+      - {name: from_status, type: string, required: false, allowed: [ACTIVE, FROZEN], description: "Status before"}
+      - {name: to_status, type: string, required: true, allowed: [ACTIVE, FROZEN, CLOSED], description: "Status after"}
+      - {name: actor_id, type: string, required: true, fk: app_user.user_id, description: "Who did it"}
+      - {name: reason, type: string, required: false, description: "Why"}
+
+  receivable_event:
+    layer: event
+    event_of: receivable
+    description: "Invoice lifecycle history (append-only)."
+    grain: "One row per state change."
+    primary_key: [event_id]
+    columns:
+      - {name: event_id, type: string, required: true, unique: true, pattern: '^ARE-\d{4}-\d{7}$', description: "Immutable event ID"}
+      - {name: receivable_id, type: string, required: true, fk: receivable.receivable_id, description: "Invoice"}
+      - {name: event_ts, type: timestamp, required: true, description: "When it happened"}
+      - {name: event_type, type: string, required: true, allowed: [CREATED, PARTIAL_PAYMENT, OVERDUE, PAID, WRITTEN_OFF], description: "Transition"}
+      - {name: from_status, type: string, required: false, allowed: [OPEN, PARTIALLY_PAID, OVERDUE], description: "Status before"}
+      - {name: to_status, type: string, required: true, allowed: [OPEN, PARTIALLY_PAID, OVERDUE, PAID, WRITTEN_OFF], description: "Status after"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, rule: "Equals the invoice currency", description: "Currency of amount"}
+      - {name: amount, type: money, currency_field: currency, required: false, description: "Amount paid (payment events)"}
+      - {name: ledger_entry_id, type: string, required: false, fk: ledger_entry.ledger_entry_id, rule: "Set for payment events", description: "Cash posting"}
+      - {name: actor_id, type: string, required: true, fk: app_user.user_id, description: "Who did it"}
+
+  payable_event:
+    layer: event
+    event_of: payable
+    description: "Bill lifecycle history (append-only)."
+    grain: "One row per state change."
+    primary_key: [event_id]
+    columns:
+      - {name: event_id, type: string, required: true, unique: true, pattern: '^APE-\d{4}-\d{7}$', description: "Immutable event ID"}
+      - {name: payable_id, type: string, required: true, fk: payable.payable_id, description: "Bill"}
+      - {name: event_ts, type: timestamp, required: true, description: "When it happened"}
+      - {name: event_type, type: string, required: true, allowed: [CREATED, APPROVED, HELD, RELEASED, PAID, CANCELLED], description: "Transition"}
+      - {name: from_status, type: string, required: false, allowed: [SCHEDULED, APPROVED, ON_HOLD], description: "Status before"}
+      - {name: to_status, type: string, required: true, allowed: [SCHEDULED, APPROVED, ON_HOLD, PAID, CANCELLED], description: "Status after"}
+      - {name: ledger_entry_id, type: string, required: false, fk: ledger_entry.ledger_entry_id, rule: "Set for PAID", description: "Cash posting"}
+      - {name: actor_id, type: string, required: true, fk: app_user.user_id, description: "Who did it (approvals of large bills need a risk reviewer)"}
+
+  cf_revision:
+    layer: event
+    event_of: cash_flow_forecast
+    description: "Later changes to forecast items (new date, new amount, settled, cancelled). Items themselves never change."
+    grain: "One row per revision."
+    primary_key: [revision_id]
+    unique_together: [[cf_id, revision_no]]
+    columns:
+      - {name: revision_id, type: string, required: true, unique: true, pattern: '^CFR-\d{4}-\d{7}$', description: "Immutable revision ID"}
+      - {name: cf_id, type: string, required: true, fk: cash_flow_forecast.cf_id, description: "Forecast item"}
+      - {name: revision_no, type: int, required: true, minimum: 1, rule: "Consecutive per item", description: "Sequence per item"}
+      - {name: recorded_at, type: timestamp, required: true, rule: "After the item's recorded_at and the previous revision", description: "When the change became known"}
+      - {name: revision_type, type: string, required: true, allowed: [DATE_CHANGE, AMOUNT_CHANGE, SETTLED, CANCELLED], description: "Kind of change"}
+      - {name: new_expected_date, type: date, required: false, rule: "Set for DATE_CHANGE", description: "New expected date"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, rule: "Equals the item currency", description: "Currency of new_amount"}
+      - {name: new_amount, type: money, currency_field: currency, required: false, rule: "Set for AMOUNT_CHANGE", description: "New remaining amount"}
+      - {name: reason, type: string, required: true, allowed: [CUSTOMER_ADVISED_DELAY, PARTIAL_PAYMENT, PAID_IN_FULL, WRITTEN_OFF, SUPPLIER_HOLD, HOLD_RELEASED, PAYMENT_DEFERRED, PAYMENT_CANCELLED, RUN_RATE_REESTIMATE, REALIZED, NOT_REALIZED], description: "Business reason"}
+      - {name: actor_id, type: string, required: true, fk: app_user.user_id, description: "Who recorded it"}
+
+  # -------------------------------------------------------------------- history
+  forecast_run:
+    layer: history
+    description: "Forecast versions. Each run is an immutable 13-week projection as of a cutoff."
+    grain: "One row per run (cutoff date + version)."
+    primary_key: [run_id]
+    columns:
+      - {name: run_id, type: string, required: true, unique: true, pattern: '^FCAST-\d{4}-\d{2}-\d{2}-\d{3}$', rule: "Embeds cutoff_date and version", description: "Immutable run ID"}
+      - {name: cutoff_date, type: date, required: true, description: "As-of date; first day of the horizon"}
+      - {name: knowledge_cutoff_ts, type: timestamp, required: true, rule: "Inputs must be recorded before this instant", description: "Knowledge cutoff"}
+      - {name: horizon_start, type: date, required: true, rule: "Equals cutoff_date", description: "First projected day"}
+      - {name: horizon_end, type: date, required: true, rule: "horizon_start + horizon_days - 1", description: "Last projected day"}
+      - {name: horizon_days, type: int, required: true, minimum: 1, units: days, description: "Horizon length"}
+      - {name: version, type: int, required: true, minimum: 1, description: "Version for this cutoff"}
+      - {name: supersedes_run_id, type: string, required: false, fk: forecast_run.run_id, description: "Earlier version this run replaces"}
+      - {name: process, type: string, required: true, allowed: [LEGACY, CASHPILOT], rule: "LEGACY runs pre-date CashPilot and have no data-quality gate", description: "Process that produced the run"}
+      - {name: run_purpose, type: string, required: true, allowed: [SCHEDULED, RERUN, REMEDIATION, LIVE], description: "Why the run exists"}
+      - {name: reporting_currency, type: string, required: true, fk: currency.currency_code, description: "Currency of the results"}
+      - {name: created_by, type: string, required: true, fk: app_user.user_id, description: "Preparer"}
+      - {name: created_at, type: timestamp, required: true, description: "Creation time"}
+      - {name: input_hash, type: string, required: true, pattern: '^[0-9a-f]{64}$', description: "SHA-256 of the run's input lineage"}
+      - {name: result_hash, type: string, required: true, pattern: '^[0-9a-f]{64}$', description: "SHA-256 of the run's results"}
+      - {name: status_at_end, type: string, required: true, allowed: [CREATED, COMPLETED, SUBMITTED, APPROVED, REJECTED, SUPERSEDED], rule: "Equals the last forecast_run_event status", description: "Derived current status"}
+
+  forecast_run_event:
+    layer: event
+    event_of: forecast_run
+    description: "Forecast run lifecycle history (append-only)."
+    grain: "One row per state change."
+    primary_key: [event_id]
+    columns:
+      - {name: event_id, type: string, required: true, unique: true, pattern: '^FRE-\d{4}-\d{6}$', description: "Immutable event ID"}
+      - {name: run_id, type: string, required: true, fk: forecast_run.run_id, description: "Run"}
+      - {name: event_ts, type: timestamp, required: true, description: "When it happened"}
+      - {name: event_type, type: string, required: true, allowed: [CREATED, COMPLETED, SUBMITTED, APPROVED, REJECTED, SUPERSEDED], description: "Transition"}
+      - {name: from_status, type: string, required: false, allowed: [CREATED, COMPLETED, SUBMITTED, APPROVED], description: "Status before"}
+      - {name: to_status, type: string, required: true, allowed: [CREATED, COMPLETED, SUBMITTED, APPROVED, REJECTED, SUPERSEDED], description: "Status after"}
+      - {name: actor_id, type: string, required: true, fk: app_user.user_id, rule: "Approver differs from preparer (four-eyes)", description: "Who did it"}
+      - {name: comment, type: string, required: false, description: "Reviewer or analyst comment"}
+
+  forecast_run_scenario:
+    layer: bridge
+    bridge: "forecast_run N:M liquidity_scenario"
+    description: "Scenarios evaluated in each run."
+    grain: "One row per (run, scenario)."
+    primary_key: [run_id, scenario_id]
+    columns:
+      - {name: run_id, type: string, required: true, fk: forecast_run.run_id, description: "Run"}
+      - {name: scenario_id, type: string, required: true, fk: liquidity_scenario.scenario_id, rule: "Scenario version effective on the cutoff date", description: "Scenario version"}
+
+  forecast_run_item:
+    layer: bridge
+    bridge: "forecast_run N:M cash_flow_forecast"
+    description: "Input lineage: every forecast item a run considered, the revision it used and how it was treated."
+    grain: "One row per (run, forecast item)."
+    primary_key: [run_id, cf_id]
+    columns:
+      - {name: run_id, type: string, required: true, fk: forecast_run.run_id, description: "Run"}
+      - {name: cf_id, type: string, required: true, fk: cash_flow_forecast.cf_id, description: "Forecast item"}
+      - {name: revision_id, type: string, required: false, fk: cf_revision.revision_id, description: "Latest revision used (null = original item)"}
+      - {name: input_recorded_at, type: timestamp, required: true, rule: "Must be before the run's knowledge cutoff", description: "Latest recorded_at among the item and revision used"}
+      - {name: treatment, type: string, required: true, allowed: [INCLUDED, OVERDUE_ROLLED, EXCLUDED_STALE, EXCLUDED_DUPLICATE, CONVERTED, QUARANTINED], description: "Decision applied to the item"}
+      - {name: expected_date_used, type: date, required: false, rule: "Null when excluded", description: "Base-scenario date used"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, description: "Account currency of amount_used"}
+      - {name: amount_used, type: money, currency_field: currency, required: true, minimum: 0, description: "Base-scenario amount used (0 when excluded)"}
+
+  forecast_run_balance_input:
+    layer: history
+    description: "Input lineage: the bank statement each run used as an account's opening balance."
+    grain: "One row per (run, account)."
+    primary_key: [run_id, account_id]
+    columns:
+      - {name: run_id, type: string, required: true, fk: forecast_run.run_id, description: "Run"}
+      - {name: account_id, type: string, required: true, fk: bank_account.account_id, description: "Account"}
+      - {name: statement_id, type: string, required: true, fk: bank_statement.statement_id, description: "Statement used"}
+      - {name: statement_date, type: date, required: true, rule: "Must be before the cutoff date", description: "Statement date"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, description: "Account currency"}
+      - {name: balance_used, type: money, currency_field: currency, required: true, description: "Opening balance used"}
+
+  forecast_run_fx_input:
+    layer: history
+    description: "Input lineage: the FX rate each run used per currency."
+    grain: "One row per (run, currency)."
+    primary_key: [run_id, currency_code]
+    columns:
+      - {name: run_id, type: string, required: true, fk: forecast_run.run_id, description: "Run"}
+      - {name: currency_code, type: string, required: true, fk: currency.currency_code, description: "Currency converted"}
+      - {name: rate_id, type: string, required: true, fk: currency_rate.rate_id, description: "Rate used"}
+      - {name: rate_date, type: date, required: true, rule: "Must be before the cutoff date", description: "Rate date"}
+      - {name: rate_used, type: rate, required: true, minimum: 0, units: "USD per unit", description: "Rate value"}
+
+  forecast_position:
+    layer: history
+    description: "Run results: projected daily available cash per entity and scenario, in USD."
+    grain: "One row per (run, scenario, entity, day)."
+    primary_key: [run_id, scenario_id, entity_id, position_date]
+    columns:
+      - {name: run_id, type: string, required: true, fk: forecast_run.run_id, description: "Run"}
+      - {name: scenario_id, type: string, required: true, fk: liquidity_scenario.scenario_id, description: "Scenario version"}
+      - {name: entity_id, type: string, required: true, fk: legal_entity.entity_id, description: "Entity"}
+      - {name: position_date, type: date, required: true, rule: "Within the run horizon", description: "Projected day"}
+      - {name: opening_available_usd, type: money, currency: USD, required: true, description: "Available cash at start of day"}
+      - {name: inflows_usd, type: money, currency: USD, required: true, minimum: 0, description: "Projected inflows"}
+      - {name: outflows_usd, type: money, currency: USD, required: true, minimum: 0, description: "Projected outflows"}
+      - {name: closing_available_usd, type: money, currency: USD, required: true, rule: "opening + inflows - outflows", description: "Available cash at end of day"}
+      - {name: restricted_usd, type: money, currency: USD, required: true, minimum: 0, description: "Restricted cash (excluded from available)"}
+      - {name: min_buffer_usd, type: money, currency: USD, required: true, minimum: 0, description: "Entity liquidity buffer in USD"}
+      - {name: breach_flag, type: bool, required: true, rule: "closing_available_usd < min_buffer_usd", description: "Buffer breach"}
+
+  # -------------------------------------------------------------------- derived
+  daily_cash_position:
+    layer: derived
+    description: "Actual daily position per account from the ledger, with the bank's view and USD value."
+    grain: "One row per account and calendar day while active."
+    primary_key: [account_id, position_date]
+    columns:
+      - {name: account_id, type: string, required: true, fk: bank_account.account_id, description: "Account"}
+      - {name: position_date, type: date, required: true, description: "Day"}
+      - {name: entity_id, type: string, required: true, fk: legal_entity.entity_id, description: "Entity"}
+      - {name: currency, type: string, required: true, fk: currency.currency_code, description: "Account currency"}
+      - {name: opening_balance, type: money, currency_field: currency, required: true, rule: "Previous day's closing_balance", description: "Book opening balance"}
+      - {name: inflows, type: money, currency_field: currency, required: true, minimum: 0, description: "Sum of positive postings"}
+      - {name: outflows, type: money, currency_field: currency, required: true, minimum: 0, description: "Sum of negative postings (absolute)"}
+      - {name: closing_balance, type: money, currency_field: currency, required: true, rule: "opening + inflows - outflows", description: "Book closing balance"}
+      - {name: statement_closing, type: money, currency_field: currency, required: false, description: "Bank closing balance (business days)"}
+      - {name: bank_minus_book, type: money, currency_field: currency, required: false, rule: "Zero unless a reconciliation break is open", description: "Unreconciled difference"}
+      - {name: fx_rate_id, type: string, required: false, fk: currency_rate.rate_id, description: "Rate used for the USD value"}
+      - {name: fx_status, type: string, required: true, allowed: [NOT_REQUIRED, OK, FALLBACK, MISSING], description: "Quality of the rate used"}
+      - {name: closing_balance_usd, type: money, currency: USD, required: false, rule: "Null when fx_status is MISSING", description: "Closing balance in USD"}
+
+  entity_cash_position:
+    layer: derived
+    description: "Consolidated actual daily cash per entity in USD."
+    grain: "One row per entity and calendar day."
+    primary_key: [entity_id, position_date]
+    columns:
+      - {name: entity_id, type: string, required: true, fk: legal_entity.entity_id, description: "Entity"}
+      - {name: position_date, type: date, required: true, description: "Day"}
+      - {name: total_usd, type: money, currency: USD, required: true, rule: "Sum of account closing_balance_usd", description: "Total cash"}
+      - {name: available_usd, type: money, currency: USD, required: true, rule: "total - restricted", description: "Available cash"}
+      - {name: restricted_usd, type: money, currency: USD, required: true, minimum: 0, description: "Restricted cash"}
+      - {name: min_buffer_usd, type: money, currency: USD, required: true, minimum: 0, description: "Liquidity buffer in USD"}
+      - {name: headroom_usd, type: money, currency: USD, required: true, rule: "available - buffer", description: "Headroom over buffer"}
+      - {name: fx_status, type: string, required: true, allowed: [OK, FALLBACK, INCOMPLETE], description: "Worst rate quality used"}
+      - {name: accounts_active, type: int, required: true, minimum: 0, description: "Accounts included"}
+
+  scenario_assumption_effect:
+    layer: derived
+    description: "Contribution of each assumption to a scenario, applied in order (proves scenarios differ only by documented assumptions)."
+    grain: "One row per (run, scenario, assumption)."
+    primary_key: [run_id, scenario_id, assumption_id]
+    columns:
+      - {name: run_id, type: string, required: true, fk: forecast_run.run_id, description: "Run"}
+      - {name: scenario_id, type: string, required: true, fk: liquidity_scenario.scenario_id, description: "Scenario"}
+      - {name: assumption_id, type: string, required: true, fk: scenario_assumption.assumption_id, description: "Assumption"}
+      - {name: apply_order, type: int, required: true, minimum: 1, description: "Order applied"}
+      - {name: items_affected, type: int, required: true, minimum: 0, description: "Items changed by this assumption (all match its filter)"}
+      - {name: delta_net_flow_usd, type: money, currency: USD, required: true, description: "Change in horizon net flow, group level"}
+      - {name: delta_min_available_usd, type: money, currency: USD, required: true, description: "Change in the group's lowest projected available cash"}
+
+  forecast_vs_actual:
+    layer: derived
+    description: "Actual-versus-forecast per run, scenario, entity and week, with the variance split into drivers."
+    grain: "One row per (run, scenario, entity, week) fully inside the actuals period."
+    primary_key: [run_id, scenario_id, entity_id, week_no]
+    columns:
+      - {name: run_id, type: string, required: true, fk: forecast_run.run_id, description: "Run"}
+      - {name: scenario_id, type: string, required: true, fk: liquidity_scenario.scenario_id, description: "Scenario"}
+      - {name: entity_id, type: string, required: true, fk: legal_entity.entity_id, description: "Entity"}
+      - {name: week_no, type: int, required: true, minimum: 1, description: "Week of the horizon (1-13)"}
+      - {name: week_start, type: date, required: true, description: "First day"}
+      - {name: week_end, type: date, required: true, description: "Last day"}
+      - {name: forecast_net_usd, type: money, currency: USD, required: true, description: "Forecast net external flow"}
+      - {name: actual_net_usd, type: money, currency: USD, required: true, description: "Actual net external flow"}
+      - {name: variance_usd, type: money, currency: USD, required: true, rule: "actual - forecast", description: "Variance"}
+      - {name: timing_usd, type: money, currency: USD, required: true, description: "Known items realised in another week"}
+      - {name: amount_usd, type: money, currency: USD, required: true, description: "Known items realised at a different amount"}
+      - {name: fx_usd, type: money, currency: USD, required: true, description: "Rate at realisation vs rate at cutoff"}
+      - {name: new_after_cutoff_usd, type: money, currency: USD, required: true, description: "Items that became known after the cutoff"}
+      - {name: unforecasted_usd, type: money, currency: USD, required: true, description: "Cash never forecast (fees, interest)"}
+      - {name: not_realized_usd, type: money, currency: USD, required: true, description: "Forecast items that never happened in the horizon"}
+      - {name: run_rate_usd, type: money, currency: USD, required: true, description: "Small operating flows vs run-rate estimate"}
+      - {name: data_quality_usd, type: money, currency: USD, required: true, description: "Effect of items flagged by data-quality rules"}
+      - {name: residual_usd, type: money, currency: USD, required: true, rule: "variance - sum(drivers); always 0", description: "Unexplained remainder"}
+
+  variance_attribution:
+    layer: derived
+    description: "Item-level drill-down of the base-scenario variance."
+    grain: "One row per (run, entity, week, driver, record)."
+    primary_key: [attribution_id]
+    columns:
+      - {name: attribution_id, type: string, required: true, unique: true, pattern: '^VA-\d{9}$', description: "Row ID"}
+      - {name: run_id, type: string, required: true, fk: forecast_run.run_id, description: "Run"}
+      - {name: scenario_id, type: string, required: true, fk: liquidity_scenario.scenario_id, description: "Scenario"}
+      - {name: entity_id, type: string, required: true, fk: legal_entity.entity_id, description: "Entity"}
+      - {name: week_no, type: int, required: true, minimum: 1, description: "Week"}
+      - {name: driver, type: string, required: true, allowed: [TIMING, AMOUNT, FX, NEW_AFTER_CUTOFF, UNFORECASTED, NOT_REALIZED, RUN_RATE, DATA_QUALITY], description: "Variance driver"}
+      - {name: cf_id, type: string, required: false, fk: cash_flow_forecast.cf_id, description: "Forecast item involved"}
+      - {name: ledger_entry_id, type: string, required: false, fk: ledger_entry.ledger_entry_id, description: "Actual posting involved"}
+      - {name: amount_usd, type: money, currency: USD, required: true, description: "Contribution to variance"}
+
+  # --------------------------------------------------------------------- output
+  exception:
+    layer: output
+    description: "Exceptions raised by CashPilot rules, each with a rule ID and a decision."
+    grain: "One row per (rule, record)."
+    primary_key: [exception_id]
+    columns:
+      - {name: exception_id, type: string, required: true, unique: true, pattern: '^EXC-\d{4}-\d{6}$', description: "Immutable exception ID"}
+      - {name: rule_id, type: string, required: true, pattern: '^R-[A-Z]+-\d{3}$', description: "Rule that fired (docs/RULES.md)"}
+      - {name: category, type: string, required: true, allowed: [DATA_QUALITY, BUSINESS_ALERT], description: "Data problem or business alert"}
+      - {name: exception_type, type: string, required: true, allowed: [BALANCE_BREAK, FX_RATE_MISSING, DUPLICATE_CASH_FLOW, LOOKAHEAD_LEAKAGE, MIXED_CURRENCY, LIQUIDITY_BREACH], description: "Type"}
+      - {name: severity, type: string, required: true, allowed: [LOW, MEDIUM, HIGH, CRITICAL], description: "Severity by rule"}
+      - {name: record_table, type: string, required: true, description: "Table of the flagged record"}
+      - {name: record_id, type: string, required: true, description: "Flagged record"}
+      - {name: related_record_id, type: string, required: false, description: "Other record involved (e.g. the original of a duplicate)"}
+      - {name: entity_id, type: string, required: false, fk: legal_entity.entity_id, description: "Entity"}
+      - {name: account_id, type: string, required: false, fk: bank_account.account_id, description: "Account"}
+      - {name: run_id, type: string, required: false, fk: forecast_run.run_id, description: "Run"}
+      - {name: impact_usd, type: money, currency: USD, required: false, description: "Estimated impact"}
+      - {name: decision, type: string, required: true, allowed: [RAISE_RECON_BREAK, USE_PREVIOUS_RATE, BLOCK_CONVERSION, EXCLUDE_DUPLICATE, CONVERT_AT_CUTOFF_RATE, QUARANTINE_ITEM, SUPERSEDE_WITH_RERUN, FUNDING_REVIEW], description: "Decision applied by rule"}
+      - {name: details, type: string, required: true, description: "Human-readable explanation"}
+      - {name: detected_at, type: timestamp, required: true, description: "Detection time"}
+      - {name: status_at_end, type: string, required: true, allowed: [OPEN, ASSIGNED, ESCALATED, RESOLVED, WAIVED], rule: "Equals the last exception_event status", description: "Derived current status"}
+
+  exception_event:
+    layer: output
+    event_of: exception
+    description: "Exception workflow history (append-only)."
+    grain: "One row per state change."
+    primary_key: [event_id]
+    columns:
+      - {name: event_id, type: string, required: true, unique: true, pattern: '^EXE-\d{4}-\d{6}$', description: "Immutable event ID"}
+      - {name: exception_id, type: string, required: true, fk: exception.exception_id, description: "Exception"}
+      - {name: event_ts, type: timestamp, required: true, description: "When it happened"}
+      - {name: event_type, type: string, required: true, allowed: [RAISED, ASSIGNED, ESCALATED, RESOLVED, WAIVED], description: "Transition"}
+      - {name: from_status, type: string, required: false, allowed: [OPEN, ASSIGNED, ESCALATED], description: "Status before"}
+      - {name: to_status, type: string, required: true, allowed: [OPEN, ASSIGNED, ESCALATED, RESOLVED, WAIVED], description: "Status after"}
+      - {name: actor_id, type: string, required: true, fk: app_user.user_id, rule: "Waivers need a risk reviewer", description: "Who did it"}
+      - {name: comment, type: string, required: false, description: "Justification or resolution note"}
+
+  audit_event:
+    layer: output
+    description: "Every workflow action attempted through CashPilot, allowed or denied."
+    grain: "One row per attempted action."
+    primary_key: [event_id]
+    columns:
+      - {name: event_id, type: string, required: true, unique: true, pattern: '^AUD-\d{4}-\d{6}$', description: "Immutable audit ID"}
+      - {name: event_ts, type: timestamp, required: true, description: "When"}
+      - {name: actor_id, type: string, required: true, fk: app_user.user_id, description: "Who"}
+      - {name: action, type: string, required: true, allowed: [VIEW_ENTITY, CREATE_RUN, SUBMIT_RUN, APPROVE_RUN, REJECT_RUN, SUPERSEDE_RUN, ASSIGN_EXCEPTION, ESCALATE_EXCEPTION, RESOLVE_EXCEPTION, WAIVE_EXCEPTION], description: "Action"}
+      - {name: target_id, type: string, required: true, description: "Record acted on"}
+      - {name: outcome, type: string, required: true, allowed: [ALLOWED, DENIED], description: "Result of the permission check"}
+      - {name: detail, type: string, required: false, description: "Reason when denied"}
+
+  # --------------------------------------------------------------- ground truth
+  anomaly_label:
+    layer: ground_truth
+    description: "Ground truth for injected anomalies and legitimate look-alikes. Stored separately; never read by detectors."
+    grain: "One row per labelled record."
+    primary_key: [gt_id]
+    columns:
+      - {name: gt_id, type: string, required: true, unique: true, pattern: '^GT-\d{6}$', description: "Label ID"}
+      - {name: label, type: string, required: true, allowed: [ANOMALY, NEGATIVE_CONTROL], description: "Anomaly, or legitimate look-alike that must not be flagged"}
+      - {name: issue_type, type: string, required: true, allowed: [BALANCE_BREAK, FX_RATE_MISSING, DUPLICATE_CASH_FLOW, LOOKAHEAD_LEAKAGE, MIXED_CURRENCY, NO_ISSUE], description: "Edge case"}
+      - {name: sub_type, type: string, required: true, description: "Variant of the edge case"}
+      - {name: record_table, type: string, required: true, description: "Table of the labelled record"}
+      - {name: record_id, type: string, required: true, description: "Labelled record"}
+      - {name: related_record_id, type: string, required: false, description: "Other record involved"}
+      - {name: field, type: string, required: false, description: "Field changed by the injection"}
+      - {name: original_value, type: string, required: false, description: "Value before injection"}
+      - {name: injected_value, type: string, required: false, description: "Value after injection"}
+      - {name: injection_rule, type: string, required: true, description: "Documented rule that produced the label"}
+      - {name: expected_rule_id, type: string, required: false, description: "Rule expected to detect it"}
+      - {name: expected_decision, type: string, required: false, description: "Decision expected from CashPilot"}
+      - {name: notes, type: string, required: false, description: "Context"}
+
+lifecycles:
+  bank_account:
+    event_table: bank_account_event
+    key: account_id
+    status_column: status_at_end
+    terminal: [CLOSED]
+    transitions:
+      - {event: OPENED, from: null, to: ACTIVE}
+      - {event: FROZEN, from: ACTIVE, to: FROZEN}
+      - {event: UNFROZEN, from: FROZEN, to: ACTIVE}
+      - {event: CLOSED, from: ACTIVE, to: CLOSED}
+  receivable:
+    event_table: receivable_event
+    key: receivable_id
+    status_column: status_at_end
+    terminal: [PAID, WRITTEN_OFF]
+    transitions:
+      - {event: CREATED, from: null, to: OPEN}
+      - {event: PARTIAL_PAYMENT, from: OPEN, to: PARTIALLY_PAID}
+      - {event: PARTIAL_PAYMENT, from: PARTIALLY_PAID, to: PARTIALLY_PAID}
+      - {event: PARTIAL_PAYMENT, from: OVERDUE, to: PARTIALLY_PAID}
+      - {event: OVERDUE, from: OPEN, to: OVERDUE}
+      - {event: OVERDUE, from: PARTIALLY_PAID, to: OVERDUE}
+      - {event: PAID, from: OPEN, to: PAID}
+      - {event: PAID, from: PARTIALLY_PAID, to: PAID}
+      - {event: PAID, from: OVERDUE, to: PAID}
+      - {event: WRITTEN_OFF, from: OVERDUE, to: WRITTEN_OFF}
+  payable:
+    event_table: payable_event
+    key: payable_id
+    status_column: status_at_end
+    terminal: [PAID, CANCELLED]
+    transitions:
+      - {event: CREATED, from: null, to: SCHEDULED}
+      - {event: APPROVED, from: SCHEDULED, to: APPROVED}
+      - {event: HELD, from: SCHEDULED, to: ON_HOLD}
+      - {event: HELD, from: APPROVED, to: ON_HOLD}
+      - {event: RELEASED, from: ON_HOLD, to: APPROVED}
+      - {event: PAID, from: APPROVED, to: PAID}
+      - {event: CANCELLED, from: SCHEDULED, to: CANCELLED}
+      - {event: CANCELLED, from: APPROVED, to: CANCELLED}
+      - {event: CANCELLED, from: ON_HOLD, to: CANCELLED}
+  cash_flow_forecast:
+    event_table: cf_revision
+    key: cf_id
+    event_column: revision_type
+    order_column: revision_no
+    initial: ACTIVE
+    terminal: [SETTLED, CANCELLED]
+    transitions:
+      - {event: DATE_CHANGE, from: ACTIVE, to: ACTIVE}
+      - {event: AMOUNT_CHANGE, from: ACTIVE, to: ACTIVE}
+      - {event: SETTLED, from: ACTIVE, to: SETTLED}
+      - {event: CANCELLED, from: ACTIVE, to: CANCELLED}
+  forecast_run:
+    event_table: forecast_run_event
+    key: run_id
+    status_column: status_at_end
+    terminal: [REJECTED, SUPERSEDED]
+    transitions:
+      - {event: CREATED, from: null, to: CREATED}
+      - {event: COMPLETED, from: CREATED, to: COMPLETED}
+      - {event: SUBMITTED, from: COMPLETED, to: SUBMITTED}
+      - {event: APPROVED, from: SUBMITTED, to: APPROVED}
+      - {event: REJECTED, from: SUBMITTED, to: REJECTED}
+      - {event: SUPERSEDED, from: APPROVED, to: SUPERSEDED}
+  exception:
+    event_table: exception_event
+    key: exception_id
+    status_column: status_at_end
+    terminal: [RESOLVED, WAIVED]
+    transitions:
+      - {event: RAISED, from: null, to: OPEN}
+      - {event: ASSIGNED, from: OPEN, to: ASSIGNED}
+      - {event: ESCALATED, from: ASSIGNED, to: ESCALATED}
+      - {event: RESOLVED, from: ASSIGNED, to: RESOLVED}
+      - {event: RESOLVED, from: ESCALATED, to: RESOLVED}
+      - {event: WAIVED, from: ESCALATED, to: WAIVED}
