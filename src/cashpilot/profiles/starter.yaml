@@ -1,0 +1,64 @@
+# Starter profile: same generator and calendar as `full`, smaller volumes.
+# Small enough to commit in every format and to run in CI.
+profile: starter
+seed: 20261022
+
+calendar:
+  cycle_year: 2026
+  start_date: 2026-01-01
+  actuals_end: 2026-09-30
+  schedule_end: 2026-12-31
+  history_lookback_days: 75
+
+reporting_currency: USD
+currencies: [USD, EUR, GBP, INR, JPY]
+
+volumes:
+  legal_entities: 5
+  bank_accounts: 25
+  ledger_entries: 10000
+  forecast_items: 2000
+  customers: 80
+  suppliers: 50
+  ops_analysts: 2
+  risk_reviewers: 2
+  one_off_payments: 6
+  manual_items: 40
+
+entity_mix:
+  USD: 1
+  EUR: 1
+  GBP: 1
+  INR: 1
+  JPY: 1
+
+lifecycle:
+  acquisition_date: 2026-04-01
+  new_accounts: 1
+  closed_accounts: 1
+  frozen_accounts: 1
+
+forecast:
+  first_cutoff: 2026-01-01
+  frequency_days: 7
+  horizon_days: 91
+  live_cutoff: 2026-10-01
+  knowledge_hour_utc: 8
+  benign_reruns: 1
+
+policy:
+  fx_staleness_business_days: 3
+  recon_materiality_usd: 1000
+  overdue_grace_days: 30
+  write_off_after_days: 90
+  duplicate_date_tolerance_days: 3
+  approval_threshold_usd: 250000
+
+anomalies:
+  balance_breaks: 6
+  fx_missing_short_gaps: 3
+  fx_missing_long_gaps: 1
+  duplicate_cash_flows: 10
+  lookahead_runs: 1
+  mixed_currency: 6
+  negative_controls: 12

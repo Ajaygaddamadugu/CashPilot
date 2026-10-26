@@ -1,0 +1,65 @@
+# Full-scale profile: the volumes required by the brief.
+# The starter profile uses the same generator with smaller counts.
+profile: full
+seed: 20261022
+
+calendar:
+  cycle_year: 2026              # year embedded in sequence IDs (LED-2026-..., CF-2026-...)
+  start_date: 2026-01-01        # first day of actuals and of the first forecast cutoff
+  actuals_end: 2026-09-30       # last day with ledger postings and bank statements
+  schedule_end: 2026-12-31      # scheduled receivables/payables/forecast items run until here
+  history_lookback_days: 75     # invoices raised this many days before an entity's start may still be open
+
+reporting_currency: USD
+currencies: [USD, EUR, GBP, INR, JPY]
+
+volumes:
+  legal_entities: 30
+  bank_accounts: 150
+  ledger_entries: 100000
+  forecast_items: 20000
+  customers: 600
+  suppliers: 400
+  ops_analysts: 3
+  risk_reviewers: 2
+  one_off_payments: 24
+  manual_items: 300
+
+# Functional currency of the entities; must sum to volumes.legal_entities.
+entity_mix:
+  USD: 9
+  EUR: 8
+  GBP: 5
+  INR: 5
+  JPY: 3
+
+lifecycle:
+  acquisition_date: 2026-04-01  # the last entity joins the group on this date
+  new_accounts: 2               # accounts opened mid-year with a zero opening balance
+  closed_accounts: 2            # accounts swept to zero and closed mid-year
+  frozen_accounts: 1            # collection account frozen for two weeks by compliance
+
+forecast:
+  first_cutoff: 2026-01-01
+  frequency_days: 7
+  horizon_days: 91              # 13 weeks
+  live_cutoff: 2026-10-01
+  knowledge_hour_utc: 8         # runs see records recorded before 08:00 UTC on the cutoff date
+  benign_reruns: 3              # legacy runs rejected for a missing scenario and re-run as v002
+
+policy:
+  fx_staleness_business_days: 3
+  recon_materiality_usd: 1000
+  overdue_grace_days: 30
+  write_off_after_days: 90
+  duplicate_date_tolerance_days: 3
+  approval_threshold_usd: 250000
+
+anomalies:
+  balance_breaks: 40
+  fx_missing_short_gaps: 8      # gaps of 1-3 business days
+  fx_missing_long_gaps: 1       # one gap of 5 business days
+  duplicate_cash_flows: 60
+  lookahead_runs: 3
+  mixed_currency: 40
+  negative_controls: 40         # legitimate look-alikes labelled NO_ISSUE

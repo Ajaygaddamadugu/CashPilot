@@ -1,0 +1,5 @@
+* text=auto
+
+# Generated datasets must stay byte-identical so their SHA-256 checksums
+# match the manifest on every OS: never convert their line endings.
+data/** -text

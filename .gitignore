@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# Full-scale bulk data is regenerated with one command (see README).
+# Its manifest, validation summary, ground truth and reports are committed.
+data/full/csv/
+data/full/json/
+data/full/sql/
+
+# Scratch output from demos and reproducibility checks
+out/
+*.db
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
