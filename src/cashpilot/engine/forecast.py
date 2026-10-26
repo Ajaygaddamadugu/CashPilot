@@ -211,57 +211,77 @@ def apply_assumption(items: pd.DataFrame, mult: dict, asm: dict, cutoff: pd.Time
 
 # ------------------------------------------------------------------- projection
 
+class Projector:
+    """Daily projection per entity in USD, with the per-run structures computed once."""
+
+    def __init__(self, ctx: ForecastContext, cutoff: pd.Timestamp, balances: pd.DataFrame, rates: dict, entities: list[str]):
+        self.cutoff = cutoff
+        self.days = pd.date_range(cutoff, periods=ctx.horizon, freq="D")
+        self.entities = entities
+        self.e_idx = {e: i for i, e in enumerate(entities)}
+        self.rates = rates
+        self.bal_ccy = balances["currency"].to_numpy(dtype=object)
+        self.bal_amt = balances["balance_used"].to_numpy(dtype=np.int64)
+        self.bal_restricted = balances["account_id"].map(ctx.accounts["is_restricted"]).astype(bool).to_numpy()
+        self.bal_owner = balances["account_id"].map(ctx.accounts["entity_id"]).map(self.e_idx).to_numpy(dtype=np.int64)
+        ent = ctx.entities.loc[entities]
+        self.buf_amt = ent["min_liquidity_buffer"].to_numpy(dtype=np.int64)
+        self.buf_ccy = ent["functional_currency"].to_numpy(dtype=object)
+
+    def _rate_array(self, currencies: np.ndarray, mult: dict) -> np.ndarray:
+        eff = {c: self.rates[c] * mult.get(c, 1.0) for c in self.rates}
+        return np.array([eff[c] for c in currencies], dtype=float)
+
+    def arrays(self, items: pd.DataFrame, mult: dict) -> tuple:
+        n_e, n_d = len(self.entities), len(self.days)
+        live = items["treatment"].isin(LIVE_TREATMENTS).to_numpy() & (items["date"] <= self.days[-1]).to_numpy()
+        inflow = np.zeros((n_e, n_d), dtype=np.int64)
+        outflow = np.zeros((n_e, n_d), dtype=np.int64)
+        if live.any():
+            ccy = items["currency_used"].to_numpy(dtype=object)[live]
+            usd = to_usd(items["amount_used"].to_numpy(dtype=np.int64)[live], ccy, self._rate_array(ccy, mult))
+            ei = items["entity_id"].map(self.e_idx).to_numpy(dtype=np.int64)[live]
+            di = (items["date"].to_numpy(dtype="datetime64[D]")[live] - np.datetime64(self.cutoff.date(), "D")).astype(np.int64)
+            is_in = (items["direction"].to_numpy(dtype=object) == "INFLOW")[live]
+            np.add.at(inflow, (ei[is_in], di[is_in]), usd[is_in])
+            np.add.at(outflow, (ei[~is_in], di[~is_in]), usd[~is_in])
+        if len(self.bal_amt):
+            bal_usd = to_usd(self.bal_amt, self.bal_ccy, self._rate_array(self.bal_ccy, mult))
+            r = self.bal_restricted
+            opening = np.bincount(self.bal_owner[~r], weights=bal_usd[~r], minlength=n_e).astype(np.int64)
+            restr = np.bincount(self.bal_owner[r], weights=bal_usd[r], minlength=n_e).astype(np.int64)
+        else:
+            opening = restr = np.zeros(n_e, dtype=np.int64)
+        buffer = to_usd(self.buf_amt, self.buf_ccy, self._rate_array(self.buf_ccy, mult))
+        closing = opening[:, None] + np.cumsum(inflow - outflow, axis=1)
+        return inflow, outflow, closing, restr, buffer
+
+    @staticmethod
+    def stats(arrays: tuple) -> tuple[int, int]:
+        """Group net flow over the horizon and the group's lowest daily available cash."""
+        inflow, outflow, closing, _, _ = arrays
+        return int(inflow.sum() - outflow.sum()), int(closing.sum(axis=0).min()) if closing.size else 0
+
+    def frame(self, arrays: tuple) -> pd.DataFrame:
+        inflow, outflow, closing, restr, buffer = arrays
+        n_d = len(self.days)
+        return pd.DataFrame({
+            "entity_id": np.repeat(self.entities, n_d),
+            "position_date": np.tile(self.days, len(self.entities)),
+            "opening_available_usd": (closing - (inflow - outflow)).ravel(),
+            "inflows_usd": inflow.ravel(),
+            "outflows_usd": outflow.ravel(),
+            "closing_available_usd": closing.ravel(),
+            "restricted_usd": np.repeat(restr, n_d),
+            "min_buffer_usd": np.repeat(buffer, n_d),
+            "breach_flag": (closing < buffer[:, None]).ravel(),
+        })
+
+
 def project(ctx: ForecastContext, cutoff: pd.Timestamp, items: pd.DataFrame, balances: pd.DataFrame,
             rates: dict, mult: dict, entities: list[str]) -> pd.DataFrame:
-    days = pd.date_range(cutoff, periods=ctx.horizon, freq="D")
-    e_idx = {e: i for i, e in enumerate(entities)}
-    n_e, n_d = len(entities), len(days)
-    eff_rate = {c: rates[c] * mult.get(c, 1.0) for c in rates}
-
-    live = items[items["treatment"].isin(LIVE_TREATMENTS) & (items["date"] <= days[-1])]
-    inflow = np.zeros((n_e, n_d), dtype=np.int64)
-    outflow = np.zeros((n_e, n_d), dtype=np.int64)
-    if len(live):
-        usd = np.zeros(len(live), dtype=np.int64)
-        for c, idx in live.groupby("currency_used").groups.items():
-            pos = live.index.get_indexer(idx)
-            usd[pos] = to_usd(live.loc[idx, "amount_used"].to_numpy(), c, np.full(len(idx), eff_rate[c]))
-        ei = live["entity_id"].map(e_idx).to_numpy()
-        di = ((live["date"] - cutoff).dt.days).to_numpy()
-        is_in = (live["direction"] == "INFLOW").to_numpy()
-        np.add.at(inflow, (ei[is_in], di[is_in]), usd[is_in])
-        np.add.at(outflow, (ei[~is_in], di[~is_in]), usd[~is_in])
-
-    bal_usd = np.zeros(len(balances), dtype=np.int64)
-    for c, idx in balances.groupby("currency").groups.items():
-        pos = balances.index.get_indexer(idx)
-        bal_usd[pos] = to_usd(balances.loc[idx, "balance_used"].to_numpy(), c, np.full(len(idx), eff_rate[c]))
-    restricted = balances["account_id"].map(ctx.accounts["is_restricted"]).astype(bool).to_numpy()
-    owner = balances["account_id"].map(ctx.accounts["entity_id"]).map(e_idx).to_numpy()
-    opening = np.bincount(owner[~restricted], weights=bal_usd[~restricted], minlength=n_e).astype(np.int64) if len(balances) else np.zeros(n_e, np.int64)
-    restr = np.bincount(owner[restricted], weights=bal_usd[restricted], minlength=n_e).astype(np.int64) if restricted.any() else np.zeros(n_e, np.int64)
-
-    closing = opening[:, None] + np.cumsum(inflow - outflow, axis=1)
-    opening_d = closing - (inflow - outflow)
-    ent = ctx.entities.loc[entities]
-    buffer = np.array([int(to_usd([b], f, [eff_rate[f]])[0]) for b, f in zip(ent["min_liquidity_buffer"], ent["functional_currency"])])
-    return pd.DataFrame({
-        "entity_id": np.repeat(entities, n_d),
-        "position_date": np.tile(days, n_e),
-        "opening_available_usd": opening_d.ravel(),
-        "inflows_usd": inflow.ravel(),
-        "outflows_usd": outflow.ravel(),
-        "closing_available_usd": closing.ravel(),
-        "restricted_usd": np.repeat(restr, n_d),
-        "min_buffer_usd": np.repeat(buffer, n_d),
-        "breach_flag": (closing < buffer[:, None]).ravel(),
-    })
-
-
-def _group_stats(pos: pd.DataFrame) -> tuple[int, int]:
-    net = int(pos["inflows_usd"].sum() - pos["outflows_usd"].sum())
-    min_avail = int(pos.groupby("position_date")["closing_available_usd"].sum().min()) if len(pos) else 0
-    return net, min_avail
+    p = Projector(ctx, cutoff, balances, rates, entities)
+    return p.frame(p.arrays(items, mult))
 
 
 # -------------------------------------------------------------------------- run
@@ -299,24 +319,25 @@ def create_run(ctx: ForecastContext, spec: RunSpec) -> RunResult:
     lineage_bal = balances.assign(run_id=run_id)
     lineage_fx = pd.DataFrame(fx_rows, columns=["run_id", "currency_code", "rate_id", "rate_date", "rate_used"])
 
+    projector = Projector(ctx, cutoff, balances, rates, entities)
     positions, effects, detail = [], [], {}
     base_stats = None
     for sid in spec.scenario_ids:
         it = items.copy()
         mult = {c: 1.0 for c in rates}
         stats_prev = base_stats
+        arrays = projector.arrays(it, mult)
         for asm in ctx.assumptions.get(sid, []):
             n = apply_assumption(it, mult, asm, cutoff)
-            pos_k = project(ctx, cutoff, it, balances, rates, mult, entities)
-            stats_k = _group_stats(pos_k)
+            arrays = projector.arrays(it, mult)
+            stats_k = projector.stats(arrays)
             effects.append({"run_id": run_id, "scenario_id": sid, "assumption_id": asm["assumption_id"], "apply_order": asm["apply_order"],
                             "items_affected": n, "delta_net_flow_usd": stats_k[0] - stats_prev[0],
                             "delta_min_available_usd": stats_k[1] - stats_prev[1]})
             stats_prev = stats_k
-        pos = project(ctx, cutoff, it, balances, rates, mult, entities).assign(run_id=run_id, scenario_id=sid)
         if base_stats is None:
-            base_stats = _group_stats(pos)
-        positions.append(pos)
+            base_stats = projector.stats(arrays)
+        positions.append(projector.frame(arrays).assign(run_id=run_id, scenario_id=sid))
         detail[sid] = (it, {c: rates[c] * mult[c] for c in rates})
     positions = pd.concat(positions, ignore_index=True)
     scen = pd.DataFrame({"run_id": run_id, "scenario_id": spec.scenario_ids})

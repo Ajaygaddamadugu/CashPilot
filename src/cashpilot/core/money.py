@@ -67,24 +67,30 @@ def scale(minor, factor) -> np.ndarray:
 
 
 def format_minor(values, currencies) -> list:
-    """Minor units -> fixed-decimal strings (``None`` for missing values)."""
-    vals = pd.Series(values, dtype="object").tolist()
+    """Minor units -> fixed-decimal strings (``None`` for missing values). Vectorised."""
+    v = pd.array(pd.Series(values, dtype="object").tolist(), dtype="Int64")
+    n = len(v)
     if isinstance(currencies, str):
-        exps = [MINOR_UNITS[currencies]] * len(vals)
+        exps = np.full(n, MINOR_UNITS[currencies], dtype=np.int64)
+        known = np.ones(n, dtype=bool)
     else:
-        exps = [MINOR_UNITS.get(c) if isinstance(c, str) else None for c in pd.Series(currencies, dtype="object")]
-    out = []
-    for v, e in zip(vals, exps):
-        if v is None or (isinstance(v, float) and np.isnan(v)) or v is pd.NA or e is None:
-            out.append(None)
-            continue
-        v = int(v)
+        mapped = pd.Series(currencies, dtype="object").map(MINOR_UNITS)
+        known = mapped.notna().to_numpy()
+        exps = mapped.fillna(-1).to_numpy(dtype=np.int64)
+    missing = np.asarray(v.isna()) | ~known
+    raw = v.fillna(0).to_numpy(dtype=np.int64)
+    neg, mag = raw < 0, np.abs(raw)
+    out = np.full(n, None, dtype=object)
+    for e in np.unique(exps[~missing]):
+        sel = (exps == e) & ~missing
         if e == 0:
-            out.append(str(v))
+            text = mag[sel].astype(str)
         else:
-            q, r = divmod(abs(v), 10**e)
-            out.append(f"{'-' if v < 0 else ''}{q}.{r:0{e}d}")
-    return out
+            whole = (mag[sel] // 10**e).astype(str)
+            frac = np.char.zfill((mag[sel] % 10**e).astype(str), int(e))
+            text = np.char.add(np.char.add(whole, "."), frac)
+        out[sel] = np.where(neg[sel], np.char.add("-", text), text)
+    return out.tolist()
 
 
 def parse_major(texts, currencies) -> list:
