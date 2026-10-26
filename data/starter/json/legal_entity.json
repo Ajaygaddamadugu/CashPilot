@@ -1,0 +1,7 @@
+[
+{"entity_id":"ENT-000001","entity_name":"Ravensworth Group Holdings Inc.","country_code":"US","functional_currency":"USD","entity_type":"HOLDING","parent_entity_id":null,"size_tier":"L","min_liquidity_buffer":"10000000.00","effective_from":"2026-01-01","effective_to":null,"status":"ACTIVE"},
+{"entity_id":"ENT-000002","entity_name":"Hollins Analytics GmbH","country_code":"DE","functional_currency":"EUR","entity_type":"OPERATING","parent_entity_id":"ENT-000001","size_tier":"M","min_liquidity_buffer":"922000.00","effective_from":"2026-01-01","effective_to":null,"status":"ACTIVE"},
+{"entity_id":"ENT-000003","entity_name":"Stonebridge Components Ltd","country_code":"GB","functional_currency":"GBP","entity_type":"OPERATING","parent_entity_id":"ENT-000001","size_tier":"S","min_liquidity_buffer":"198000.00","effective_from":"2026-01-01","effective_to":null,"status":"ACTIVE"},
+{"entity_id":"ENT-000004","entity_name":"Yarrow Components Pvt Ltd","country_code":"IN","functional_currency":"INR","entity_type":"OPERATING","parent_entity_id":"ENT-000001","size_tier":"S","min_liquidity_buffer":"21000000.00","effective_from":"2026-01-01","effective_to":null,"status":"ACTIVE"},
+{"entity_id":"ENT-000005","entity_name":"Newbold Retail K.K.","country_code":"JP","functional_currency":"JPY","entity_type":"OPERATING","parent_entity_id":"ENT-000001","size_tier":"M","min_liquidity_buffer":"149000000","effective_from":"2026-04-01","effective_to":null,"status":"ACTIVE"}
+]

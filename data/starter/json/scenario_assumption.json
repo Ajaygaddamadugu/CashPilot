@@ -1,0 +1,12 @@
+[
+{"assumption_id":"ASM-0001","parameter":"AR_DELAY_DAYS","filter_field":"risk_tier","filter_value":"A","value":"0","unit":"days","rationale":"Tier A customers pay on time even in a downturn"},
+{"assumption_id":"ASM-0002","parameter":"AR_DELAY_DAYS","filter_field":"risk_tier","filter_value":"B","value":"7","unit":"days","rationale":"Tier B customers stretch payment by a week"},
+{"assumption_id":"ASM-0003","parameter":"AR_DELAY_DAYS","filter_field":"risk_tier","filter_value":"C","value":"21","unit":"days","rationale":"Tier C customers stretch payment by three weeks"},
+{"assumption_id":"ASM-0004","parameter":"AR_DELAY_DAYS","filter_field":"risk_tier","filter_value":"D","value":"45","unit":"days","rationale":"Tier D customers stretch payment by six weeks"},
+{"assumption_id":"ASM-0005","parameter":"AR_COLLECTION_RATE","filter_field":"risk_tier","filter_value":"C","value":"0.90","unit":"ratio","rationale":"10% of tier C receipts are not collected in the horizon"},
+{"assumption_id":"ASM-0006","parameter":"AR_COLLECTION_RATE","filter_field":"risk_tier","filter_value":"D","value":"0.60","unit":"ratio","rationale":"40% of tier D receipts are not collected in the horizon"},
+{"assumption_id":"ASM-0007","parameter":"AP_TIMING_SHIFT_DAYS","filter_field":null,"filter_value":null,"value":"-5","unit":"days","rationale":"Suppliers demand payment five days earlier"},
+{"assumption_id":"ASM-0008","parameter":"RUN_RATE_INFLOW_FACTOR","filter_field":null,"filter_value":null,"value":"0.85","unit":"ratio","rationale":"Small operating receipts fall 15%"},
+{"assumption_id":"ASM-0009","parameter":"FX_SHOCK_PCT","filter_field":"currency_not","filter_value":"USD","value":"-8","unit":"pct","rationale":"USD appreciates 8% against every other currency"},
+{"assumption_id":"ASM-0010","parameter":"FX_SHOCK_PCT","filter_field":"currency_not","filter_value":"USD","value":"-10","unit":"pct","rationale":"USD appreciates 10% against every other currency"}
+]

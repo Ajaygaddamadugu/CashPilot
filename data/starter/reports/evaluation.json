@@ -1,0 +1,514 @@
+{
+  "profile": "starter",
+  "seed": 20261022,
+  "detection": {
+    "by_issue": [
+      {
+        "issue_type": "BALANCE_BREAK",
+        "labelled": 6,
+        "detected": 6,
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "decision_accuracy": 1.0
+      },
+      {
+        "issue_type": "DUPLICATE_CASH_FLOW",
+        "labelled": 10,
+        "detected": 10,
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "decision_accuracy": 1.0
+      },
+      {
+        "issue_type": "FX_RATE_MISSING",
+        "labelled": 12,
+        "detected": 12,
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "decision_accuracy": 1.0
+      },
+      {
+        "issue_type": "LOOKAHEAD_LEAKAGE",
+        "labelled": 1,
+        "detected": 1,
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "decision_accuracy": 1.0
+      },
+      {
+        "issue_type": "MIXED_CURRENCY",
+        "labelled": 6,
+        "detected": 6,
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "decision_accuracy": 1.0
+      }
+    ],
+    "by_sub_type": [
+      {
+        "issue_type": "BALANCE_BREAK",
+        "sub_type": "BANK_ONLY_CHARGE",
+        "labelled": 4,
+        "detected": 4,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "BALANCE_BREAK",
+        "sub_type": "PAYMENT_REJECTED_BY_BANK",
+        "labelled": 2,
+        "detected": 2,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "DUPLICATE_CASH_FLOW",
+        "sub_type": "EXACT_REFERENCE",
+        "labelled": 7,
+        "detected": 7,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "DUPLICATE_CASH_FLOW",
+        "sub_type": "FUZZY_MATCH",
+        "labelled": 3,
+        "detected": 3,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "FX_RATE_MISSING",
+        "sub_type": "LONG_GAP",
+        "labelled": 5,
+        "detected": 5,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "FX_RATE_MISSING",
+        "sub_type": "SHORT_GAP",
+        "labelled": 7,
+        "detected": 7,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "LOOKAHEAD_LEAKAGE",
+        "sub_type": "LATEST_SNAPSHOT_USED",
+        "labelled": 1,
+        "detected": 1,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "MIXED_CURRENCY",
+        "sub_type": "ITEM_CURRENCY_MISMATCH",
+        "labelled": 3,
+        "detected": 3,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "MIXED_CURRENCY",
+        "sub_type": "UNCONVERTED_AMOUNT",
+        "labelled": 3,
+        "detected": 3,
+        "recall": 1.0
+      }
+    ],
+    "negative_controls": 9,
+    "negative_controls_flagged": 0,
+    "flagged_control_ids": []
+  },
+  "forecast_accuracy": {
+    "approved_versions": {
+      "runs": 20,
+      "by_horizon": {
+        "week 1": {
+          "wape": 0.4921,
+          "bias": 0.0301,
+          "entity_weeks": 93
+        },
+        "weeks 2-4": {
+          "wape": 0.8323,
+          "bias": -0.3815,
+          "entity_weeks": 259
+        },
+        "weeks 5-13": {
+          "wape": 0.8241,
+          "bias": -0.216,
+          "entity_weeks": 647
+        }
+      }
+    },
+    "approved_versions_by_scenario": {
+      "BASE": {
+        "week 1": {
+          "wape": 0.4921,
+          "bias": 0.0301,
+          "entity_weeks": 93
+        },
+        "weeks 2-4": {
+          "wape": 0.8323,
+          "bias": -0.3815,
+          "entity_weeks": 259
+        },
+        "weeks 5-13": {
+          "wape": 0.8241,
+          "bias": -0.216,
+          "entity_weeks": 647
+        }
+      },
+      "DELAY": {
+        "week 1": {
+          "wape": 0.6561,
+          "bias": 0.5896,
+          "entity_weeks": 93
+        },
+        "weeks 2-4": {
+          "wape": 0.6069,
+          "bias": -0.0911,
+          "entity_weeks": 259
+        },
+        "weeks 5-13": {
+          "wape": 0.7883,
+          "bias": -0.3091,
+          "entity_weeks": 647
+        }
+      },
+      "STRESS": {
+        "week 1": {
+          "wape": 0.9205,
+          "bias": 0.8763,
+          "entity_weeks": 93
+        },
+        "weeks 2-4": {
+          "wape": 0.7396,
+          "bias": -0.1014,
+          "entity_weeks": 259
+        },
+        "weeks 5-13": {
+          "wape": 0.781,
+          "bias": -0.2724,
+          "entity_weeks": 647
+        }
+      }
+    },
+    "lookahead_signature": {
+      "leaky_runs_week1_wape": 1.6691,
+      "their_as_of_reruns_week1_wape": 1.0613,
+      "other_runs_week1_wape": 0.4546,
+      "note": "A forecast that has seen the future is suspiciously accurate in its first week."
+    }
+  },
+  "balance_accuracy": {
+    "week 1": {
+      "mape": 0.0178,
+      "bias": -0.0021,
+      "observations": 20
+    },
+    "weeks 2-4": {
+      "mape": 0.0539,
+      "bias": 0.0529,
+      "observations": 56
+    },
+    "weeks 5-13": {
+      "mape": 0.1275,
+      "bias": 0.1262,
+      "observations": 142
+    }
+  },
+  "variance_drivers": {
+    "share_of_absolute_variance": {
+      "timing": 0.3545,
+      "amount": 0.0122,
+      "fx": 0.0061,
+      "new_after_cutoff": 0.439,
+      "unforecasted": 0.0015,
+      "not_realized": 0.083,
+      "run_rate": 0.0751,
+      "data_quality": 0.0287
+    },
+    "net_by_driver_usd": {
+      "timing": -5927504.66,
+      "amount": -944299.77,
+      "fx": 301678.0,
+      "new_after_cutoff": -125135369.47,
+      "unforecasted": 1039750.64,
+      "not_realized": -40053864.27,
+      "run_rate": 474213.56,
+      "data_quality": -79182.62
+    },
+    "residual_usd": 0,
+    "rows": 999
+  },
+  "liquidity_outlook": {
+    "run_id": "FCAST-2026-10-01-001",
+    "cutoff": "2026-10-01",
+    "scenarios": {
+      "SCN-BASE-V01": {
+        "opening_available_usd": 35434118.95,
+        "lowest_available_usd": 33311365.37,
+        "lowest_on": "2026-10-04",
+        "closing_available_usd": 39416690.94,
+        "restricted_usd": 4231647.31,
+        "entities_breaching": 2,
+        "funding_gap_usd": 2989652.58,
+        "breaches": [
+          {
+            "entity_id": "ENT-000001",
+            "entity_name": "Ravensworth Group Holdings Inc.",
+            "first_breach": "2026-10-02",
+            "days_below_buffer": 50,
+            "max_shortfall_usd": 2207722.05
+          },
+          {
+            "entity_id": "ENT-000004",
+            "entity_name": "Yarrow Components Pvt Ltd",
+            "first_breach": "2026-12-14",
+            "days_below_buffer": 17,
+            "max_shortfall_usd": 781930.53
+          }
+        ]
+      },
+      "SCN-DELAY-V01": {
+        "opening_available_usd": 35104271.15,
+        "lowest_available_usd": 29627016.0,
+        "lowest_on": "2026-10-23",
+        "closing_available_usd": 37691247.71,
+        "restricted_usd": 4231647.31,
+        "entities_breaching": 2,
+        "funding_gap_usd": 3875945.53,
+        "breaches": [
+          {
+            "entity_id": "ENT-000001",
+            "entity_name": "Ravensworth Group Holdings Inc.",
+            "first_breach": "2026-10-02",
+            "days_below_buffer": 68,
+            "max_shortfall_usd": 2237566.17
+          },
+          {
+            "entity_id": "ENT-000004",
+            "entity_name": "Yarrow Components Pvt Ltd",
+            "first_breach": "2026-11-02",
+            "days_below_buffer": 51,
+            "max_shortfall_usd": 1638379.36
+          }
+        ]
+      },
+      "SCN-STRESS-V02": {
+        "opening_available_usd": 32101686.29,
+        "lowest_available_usd": 25722164.86,
+        "lowest_on": "2026-10-25",
+        "closing_available_usd": 31750961.28,
+        "restricted_usd": 3903015.63,
+        "entities_breaching": 2,
+        "funding_gap_usd": 4660942.94,
+        "breaches": [
+          {
+            "entity_id": "ENT-000001",
+            "entity_name": "Ravensworth Group Holdings Inc.",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 75,
+            "max_shortfall_usd": 3023932.13
+          },
+          {
+            "entity_id": "ENT-000004",
+            "entity_name": "Yarrow Components Pvt Ltd",
+            "first_breach": "2026-10-28",
+            "days_below_buffer": 64,
+            "max_shortfall_usd": 1637010.81
+          }
+        ]
+      }
+    }
+  },
+  "reconciliation": {
+    "statements": 4367,
+    "statement_days_reconciled": 0.9986,
+    "breaks": 6,
+    "breaks_high": 3,
+    "account_days_with_open_difference": 391,
+    "accounts_affected": 5
+  },
+  "data_profile": {
+    "rows": {
+      "currency": 5,
+      "app_user": 11,
+      "counterparty": 130,
+      "currency_rate": 972,
+      "liquidity_scenario": 4,
+      "scenario_assumption": 10,
+      "scenario_assumption_link": 22,
+      "legal_entity": 5,
+      "bank_account": 25,
+      "receivable": 727,
+      "payable": 594,
+      "cash_flow_forecast": 2000,
+      "ledger_entry": 10000,
+      "settlement_allocation": 1118,
+      "bank_statement": 4367,
+      "bank_account_event": 28,
+      "receivable_event": 1393,
+      "payable_event": 1735,
+      "cf_revision": 2398,
+      "forecast_run": 23,
+      "forecast_run_scenario": 68,
+      "forecast_run_item": 8708,
+      "forecast_run_balance_input": 518,
+      "forecast_run_fx_input": 92,
+      "forecast_position": 29029,
+      "scenario_assumption_effect": 290,
+      "forecast_run_event": 93,
+      "daily_cash_position": 6101,
+      "entity_cash_position": 1275,
+      "exception": 41,
+      "exception_event": 137,
+      "audit_event": 148,
+      "forecast_vs_actual": 3322,
+      "variance_attribution": 15973
+    },
+    "ledger_entry_types": {
+      "OPERATING_RECEIPT": 4325,
+      "OPERATING_PAYMENT": 3536,
+      "AR_RECEIPT": 560,
+      "POOL_SWEEP": 550,
+      "AP_PAYMENT": 523,
+      "BANK_FEE": 200,
+      "POOL_FUNDING": 94,
+      "FX_CONVERSION": 68,
+      "RENT": 42,
+      "PAYROLL": 42,
+      "INTEREST": 19,
+      "TAX": 14,
+      "OTHER_RECEIPT": 13,
+      "OTHER_PAYMENT": 12,
+      "ACCOUNT_CLOSURE": 2
+    },
+    "ledger_amount_quantiles_by_currency": {
+      "EUR": {
+        "p10": 1259.43,
+        "p50": 5220.65,
+        "p90": 66134.57,
+        "p99": 1166129.59
+      },
+      "GBP": {
+        "p10": 833.64,
+        "p50": 5576.03,
+        "p90": 122012.0,
+        "p99": 472109.67
+      },
+      "INR": {
+        "p10": 122601.11,
+        "p50": 471501.11,
+        "p90": 10384503.04,
+        "p99": 59940337.64
+      },
+      "JPY": {
+        "p10": 222145.4,
+        "p50": 857130.0,
+        "p90": 11628409.8,
+        "p99": 158188724.56
+      },
+      "USD": {
+        "p10": 1170.9,
+        "p50": 6305.42,
+        "p90": 177839.53,
+        "p99": 1427801.34
+      }
+    },
+    "postings_by_weekday": {
+      "Monday": 1967,
+      "Tuesday": 1698,
+      "Wednesday": 1754,
+      "Thursday": 1667,
+      "Friday": 2914
+    },
+    "receivable_delay_by_risk_tier": {
+      "A": {
+        "invoices": 144,
+        "paid": 126,
+        "median_days_late": 1.0,
+        "share_paid_over_7_days_late": 0.0476,
+        "written_off": 0
+      },
+      "B": {
+        "invoices": 349,
+        "paid": 273,
+        "median_days_late": 8.0,
+        "share_paid_over_7_days_late": 0.5311,
+        "written_off": 0
+      },
+      "C": {
+        "invoices": 185,
+        "paid": 147,
+        "median_days_late": 18.0,
+        "share_paid_over_7_days_late": 0.8571,
+        "written_off": 1
+      },
+      "D": {
+        "invoices": 49,
+        "paid": 18,
+        "median_days_late": 30.0,
+        "share_paid_over_7_days_late": 0.8333,
+        "written_off": 4
+      }
+    },
+    "fx": {
+      "EUR": {
+        "realised_annual_vol": 0.0739,
+        "configured": 0.07,
+        "change_over_period": -0.0559
+      },
+      "GBP": {
+        "realised_annual_vol": 0.0922,
+        "configured": 0.08,
+        "change_over_period": -0.0313
+      },
+      "INR": {
+        "realised_annual_vol": 0.0406,
+        "configured": 0.04,
+        "change_over_period": -0.0341
+      },
+      "JPY": {
+        "realised_annual_vol": 0.1012,
+        "configured": 0.1,
+        "change_over_period": -0.1413
+      }
+    },
+    "one_off_payments": {
+      "count": 6,
+      "categories": {
+        "TAX_SETTLEMENT": 2,
+        "DEBT_REPAYMENT": 2,
+        "CAPEX": 1,
+        "ACQUISITION": 1
+      }
+    },
+    "entities_by_size": {
+      "L": 1,
+      "M": 2,
+      "S": 2
+    },
+    "accounts_by_currency": {
+      "EUR": 6,
+      "GBP": 3,
+      "INR": 3,
+      "JPY": 5,
+      "USD": 8
+    }
+  }
+}

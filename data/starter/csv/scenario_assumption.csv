@@ -1,0 +1,11 @@
+assumption_id,parameter,filter_field,filter_value,value,unit,rationale
+ASM-0001,AR_DELAY_DAYS,risk_tier,A,0,days,Tier A customers pay on time even in a downturn
+ASM-0002,AR_DELAY_DAYS,risk_tier,B,7,days,Tier B customers stretch payment by a week
+ASM-0003,AR_DELAY_DAYS,risk_tier,C,21,days,Tier C customers stretch payment by three weeks
+ASM-0004,AR_DELAY_DAYS,risk_tier,D,45,days,Tier D customers stretch payment by six weeks
+ASM-0005,AR_COLLECTION_RATE,risk_tier,C,0.90,ratio,10% of tier C receipts are not collected in the horizon
+ASM-0006,AR_COLLECTION_RATE,risk_tier,D,0.60,ratio,40% of tier D receipts are not collected in the horizon
+ASM-0007,AP_TIMING_SHIFT_DAYS,,,-5,days,Suppliers demand payment five days earlier
+ASM-0008,RUN_RATE_INFLOW_FACTOR,,,0.85,ratio,Small operating receipts fall 15%
+ASM-0009,FX_SHOCK_PCT,currency_not,USD,-8,pct,USD appreciates 8% against every other currency
+ASM-0010,FX_SHOCK_PCT,currency_not,USD,-10,pct,USD appreciates 10% against every other currency

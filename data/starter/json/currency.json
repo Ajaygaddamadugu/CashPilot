@@ -1,0 +1,7 @@
+[
+{"currency_code":"USD","currency_name":"US Dollar","minor_units":2,"is_reporting_currency":true},
+{"currency_code":"EUR","currency_name":"Euro","minor_units":2,"is_reporting_currency":false},
+{"currency_code":"GBP","currency_name":"Pound Sterling","minor_units":2,"is_reporting_currency":false},
+{"currency_code":"INR","currency_name":"Indian Rupee","minor_units":2,"is_reporting_currency":false},
+{"currency_code":"JPY","currency_name":"Japanese Yen","minor_units":0,"is_reporting_currency":false}
+]

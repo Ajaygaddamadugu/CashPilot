@@ -1,0 +1,649 @@
+{
+  "dataset": "CashPilot synthetic treasury dataset",
+  "profile": "starter",
+  "seed": 20261022,
+  "command": "cashpilot all --profile starter --seed 20261022",
+  "config_sha256": "8b093251511ea39c6b366d1ff9c9d293b638b7947a33ed21340f353db4543a9c",
+  "generator": {
+    "package": "cashpilot",
+    "version": "1.0.0",
+    "python": "3.13.7",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "pyyaml": "6.0.3"
+  },
+  "provenance": "Fully synthetic. No external dataset, API or personal data was used. Company, bank and person names are fictional; FX starting levels are round illustrative numbers. ISO 4217 is used only as a public reference for currency codes and decimal places.",
+  "external_sources": [],
+  "tables": {
+    "currency": {
+      "rows": 5,
+      "layer": "reference"
+    },
+    "app_user": {
+      "rows": 11,
+      "layer": "reference"
+    },
+    "counterparty": {
+      "rows": 130,
+      "layer": "reference"
+    },
+    "currency_rate": {
+      "rows": 972,
+      "layer": "reference"
+    },
+    "liquidity_scenario": {
+      "rows": 4,
+      "layer": "reference"
+    },
+    "scenario_assumption": {
+      "rows": 10,
+      "layer": "reference"
+    },
+    "scenario_assumption_link": {
+      "rows": 22,
+      "layer": "bridge"
+    },
+    "legal_entity": {
+      "rows": 5,
+      "layer": "master"
+    },
+    "bank_account": {
+      "rows": 25,
+      "layer": "master"
+    },
+    "receivable": {
+      "rows": 727,
+      "layer": "transaction"
+    },
+    "payable": {
+      "rows": 594,
+      "layer": "transaction"
+    },
+    "cash_flow_forecast": {
+      "rows": 2000,
+      "layer": "transaction"
+    },
+    "ledger_entry": {
+      "rows": 10000,
+      "layer": "transaction"
+    },
+    "settlement_allocation": {
+      "rows": 1118,
+      "layer": "bridge"
+    },
+    "bank_statement": {
+      "rows": 4367,
+      "layer": "transaction"
+    },
+    "bank_account_event": {
+      "rows": 28,
+      "layer": "event"
+    },
+    "receivable_event": {
+      "rows": 1393,
+      "layer": "event"
+    },
+    "payable_event": {
+      "rows": 1735,
+      "layer": "event"
+    },
+    "cf_revision": {
+      "rows": 2398,
+      "layer": "event"
+    },
+    "forecast_run": {
+      "rows": 23,
+      "layer": "history"
+    },
+    "forecast_run_scenario": {
+      "rows": 68,
+      "layer": "bridge"
+    },
+    "forecast_run_item": {
+      "rows": 8708,
+      "layer": "bridge"
+    },
+    "forecast_run_balance_input": {
+      "rows": 518,
+      "layer": "history"
+    },
+    "forecast_run_fx_input": {
+      "rows": 92,
+      "layer": "history"
+    },
+    "forecast_position": {
+      "rows": 29029,
+      "layer": "history"
+    },
+    "scenario_assumption_effect": {
+      "rows": 290,
+      "layer": "derived"
+    },
+    "forecast_run_event": {
+      "rows": 93,
+      "layer": "event"
+    },
+    "daily_cash_position": {
+      "rows": 6101,
+      "layer": "derived"
+    },
+    "entity_cash_position": {
+      "rows": 1275,
+      "layer": "derived"
+    },
+    "exception": {
+      "rows": 41,
+      "layer": "output"
+    },
+    "exception_event": {
+      "rows": 137,
+      "layer": "output"
+    },
+    "audit_event": {
+      "rows": 148,
+      "layer": "output"
+    },
+    "forecast_vs_actual": {
+      "rows": 3322,
+      "layer": "derived"
+    },
+    "variance_attribution": {
+      "rows": 15973,
+      "layer": "derived"
+    }
+  },
+  "files": [
+    {
+      "path": "csv/app_user.csv",
+      "rows": 11,
+      "bytes": 725,
+      "sha256": "c373625346df409618995b7b943f868d58b6ecd9a1eef4e99b0915445fc82698"
+    },
+    {
+      "path": "csv/audit_event.csv",
+      "rows": 148,
+      "bytes": 13175,
+      "sha256": "1b45863818c17c8c1b3527866f25bf7d378b19fa1d6dfaf9e20635cfdb6af4fb"
+    },
+    {
+      "path": "csv/bank_account.csv",
+      "rows": 25,
+      "bytes": 3565,
+      "sha256": "5df818659d783c5dd91598870b96cf952062dae59e2aad1f3417ad7b5c175d95"
+    },
+    {
+      "path": "csv/bank_account_event.csv",
+      "rows": 28,
+      "bytes": 3270,
+      "sha256": "c99d8d07375f759fee008b7a6f5d482f9651c99f2f825811523fd5eb13a5413b"
+    },
+    {
+      "path": "csv/bank_statement.csv",
+      "rows": 4367,
+      "bytes": 481295,
+      "sha256": "30f0f3af03538a9cbb909ca563367dd91fa5325164efebc097147e55df3fcf01"
+    },
+    {
+      "path": "csv/cash_flow_forecast.csv",
+      "rows": 2000,
+      "bytes": 367134,
+      "sha256": "df847cd17b333b65ebaa1a1747a259ab7bc41c58a34408a16a02871891acaaa0"
+    },
+    {
+      "path": "csv/cf_revision.csv",
+      "rows": 2398,
+      "bytes": 243623,
+      "sha256": "0db4f997735a8f4959f170b520f8d1d05a97c52c88f5ff96ab06ddf4badd196a"
+    },
+    {
+      "path": "csv/counterparty.csv",
+      "rows": 130,
+      "bytes": 7863,
+      "sha256": "831c9b704117050e9de3b3ac83ba1f5114953933c6238c838d897e63fed8aeca"
+    },
+    {
+      "path": "csv/currency.csv",
+      "rows": 5,
+      "bytes": 177,
+      "sha256": "2e53a91a4a8a5e56853b46d721d048af75b7dc68e879e2e3777f71c6a8773816"
+    },
+    {
+      "path": "csv/currency_rate.csv",
+      "rows": 972,
+      "bytes": 93393,
+      "sha256": "50c343e79c425781b73f75ec2f10ce36b61ed308c7cdb77ad39fc3aed231473e"
+    },
+    {
+      "path": "csv/daily_cash_position.csv",
+      "rows": 6101,
+      "bytes": 755216,
+      "sha256": "59d29f2df094db93aa7c089ebbd3fd65cb2cad843116151b5cdfcb4b98f91f9d"
+    },
+    {
+      "path": "csv/entity_cash_position.csv",
+      "rows": 1275,
+      "bytes": 101402,
+      "sha256": "1f2d5cd12f0e2e253d247933ef50d4e51c660c478a575c6539752c3d163fc32d"
+    },
+    {
+      "path": "csv/exception.csv",
+      "rows": 41,
+      "bytes": 11623,
+      "sha256": "c365a4d1adf1673d9f9d104205a098e70d335f668ba5ce73f1c1c2811283e4b2"
+    },
+    {
+      "path": "csv/exception_event.csv",
+      "rows": 137,
+      "bytes": 19487,
+      "sha256": "bafeb62227cf8b2715b8499daf5b481fd709733ae486c6bf1205eebc03c239ab"
+    },
+    {
+      "path": "csv/forecast_position.csv",
+      "rows": 29029,
+      "bytes": 3393930,
+      "sha256": "2bdd36a9fad2432806cc9a41a1a0cb0f8efda141f4f028fd454457130da1028a"
+    },
+    {
+      "path": "csv/forecast_run.csv",
+      "rows": 23,
+      "bytes": 6476,
+      "sha256": "1029fc636d4d159eff735b773e5f3476668b9bf907e4e937e671c96b7e65cd36"
+    },
+    {
+      "path": "csv/forecast_run_balance_input.csv",
+      "rows": 518,
+      "bytes": 44696,
+      "sha256": "6dbe43d00cb7979a9084d502cc6dd22d9a317b268c30b6b598dcb6f96d0e5ada"
+    },
+    {
+      "path": "csv/forecast_run_event.csv",
+      "rows": 93,
+      "bytes": 9911,
+      "sha256": "6c36887806e8ccaf5d4f344eb1555b888ddc98948dbb0ff3f36335452b712c43"
+    },
+    {
+      "path": "csv/forecast_run_fx_input.csv",
+      "rows": 92,
+      "bytes": 6489,
+      "sha256": "42a52c4f26b66c63f36cea15173eb97cb85c626ca4927238a67feba3376108cc"
+    },
+    {
+      "path": "csv/forecast_run_item.csv",
+      "rows": 8708,
+      "bytes": 836654,
+      "sha256": "0a0464f337fd9e4d4dc9ff7076062ba2cd31380e73d5e5b470ebf682380011d3"
+    },
+    {
+      "path": "csv/forecast_run_scenario.csv",
+      "rows": 68,
+      "bytes": 2398,
+      "sha256": "536ebabd6e345f8357a7a6c1aa9b703777a31714abc1281c25f2144f6d2fcab1"
+    },
+    {
+      "path": "csv/forecast_vs_actual.csv",
+      "rows": 3322,
+      "bytes": 546832,
+      "sha256": "50971c4a2eeecd625b9a8c1d67c29049f9338ffa8494694b33efb5db6f3eed85"
+    },
+    {
+      "path": "csv/ledger_entry.csv",
+      "rows": 10000,
+      "bytes": 1562838,
+      "sha256": "7903a2ed76cca34932889fdb2a63415e0e0c045ed672e2b109740b385f523d6c"
+    },
+    {
+      "path": "csv/legal_entity.csv",
+      "rows": 5,
+      "bytes": 620,
+      "sha256": "8b89afa2ebc89b1488385a9dfd3d4a60f60a7c319066225ae28a48faea23249d"
+    },
+    {
+      "path": "csv/liquidity_scenario.csv",
+      "rows": 4,
+      "bytes": 852,
+      "sha256": "47995b788d849976419e768790fd078a141ab37fd9b007d23483df18a1b7c4dc"
+    },
+    {
+      "path": "csv/payable.csv",
+      "rows": 594,
+      "bytes": 91672,
+      "sha256": "8bf1b846953eed0fba208832d44bae997a921fa914986fa8ec958db8d521c7fb"
+    },
+    {
+      "path": "csv/payable_event.csv",
+      "rows": 1735,
+      "bytes": 156716,
+      "sha256": "ade2503f33974f1cd03342f1ef716fdf377626e59d44a096e74aa507c5ae9bb0"
+    },
+    {
+      "path": "csv/receivable.csv",
+      "rows": 727,
+      "bytes": 102395,
+      "sha256": "712c5c8ed9007c6eb0f66f1ce03ac8b0ecbd667e74c5086289facb5aa245c128"
+    },
+    {
+      "path": "csv/receivable_event.csv",
+      "rows": 1393,
+      "bytes": 131810,
+      "sha256": "7d33cc21f926ab6a6252b77f6d82e62683ca58ed08d9ff093ad5f99c6d0de399"
+    },
+    {
+      "path": "csv/scenario_assumption.csv",
+      "rows": 10,
+      "bytes": 992,
+      "sha256": "2166c49e9a150a201d15f2155b5dd11eea493acd6cc5cba7defc6f1a7b8edde9"
+    },
+    {
+      "path": "csv/scenario_assumption_effect.csv",
+      "rows": 290,
+      "bytes": 19741,
+      "sha256": "a287f46ab1dc441e647c8a7c4b127fc1b2bb0d1c65e912e4df805d8c3a507e0c"
+    },
+    {
+      "path": "csv/scenario_assumption_link.csv",
+      "rows": 22,
+      "bytes": 606,
+      "sha256": "ede63b546aa92674e32e5f5e5408c697bcf78de3da95a8e8a06f932ab701d888"
+    },
+    {
+      "path": "csv/settlement_allocation.csv",
+      "rows": 1118,
+      "bytes": 85690,
+      "sha256": "e64663208f118cf17f655a6aa9cb456aa7d6f460a93f4817d3fd08eb50a23c67"
+    },
+    {
+      "path": "csv/variance_attribution.csv",
+      "rows": 15973,
+      "bytes": 1642291,
+      "sha256": "23606a56a14c253412c72f87f2a394992dbd734da7ad660f8cc8a8000e53afee"
+    },
+    {
+      "path": "data_dictionary.md",
+      "rows": null,
+      "bytes": 62371,
+      "sha256": "86583462b2ebb87db53a4497c578c58ea286b018347aace6518ea785ae5f6d75"
+    },
+    {
+      "path": "generation_config.json",
+      "rows": null,
+      "bytes": 1464,
+      "sha256": "08586963e266ec50f6910756fd8182c8552011db23faf08e2bf86d9cc86acac9"
+    },
+    {
+      "path": "ground_truth/anomalies.csv",
+      "rows": 44,
+      "bytes": 8253,
+      "sha256": "98e14787bac6acec0725c69c7d828c55a87f6fb50508357a08a487ad80b383c6"
+    },
+    {
+      "path": "ground_truth/anomalies.json",
+      "rows": 44,
+      "bytes": 18115,
+      "sha256": "eb8cbebc9ecf7a72b2971a690a751b710c8ed6fcadfa7b1f19f76147a1de07fd"
+    },
+    {
+      "path": "json/app_user.json",
+      "rows": 11,
+      "bytes": 1473,
+      "sha256": "670e485f8c46910fef0e6e07308de27f72f73c054a36647dab8397809eaede54"
+    },
+    {
+      "path": "json/audit_event.json",
+      "rows": 148,
+      "bytes": 26733,
+      "sha256": "f9bea6a57587142b06f77007b65473530e1f8968759a7d256ae7712811562ea3"
+    },
+    {
+      "path": "json/bank_account.json",
+      "rows": 25,
+      "bytes": 9575,
+      "sha256": "49233b84fd3457d4cff9b99d14b0ece4e3abeb69f481a87930abb2bccbb49b70"
+    },
+    {
+      "path": "json/bank_account_event.json",
+      "rows": 28,
+      "bytes": 6409,
+      "sha256": "2330eb2b2ea7eb6623ad5b740080e06845ab960c0977672bbe40aa693b5aff76"
+    },
+    {
+      "path": "json/bank_statement.json",
+      "rows": 4367,
+      "bytes": 1258487,
+      "sha256": "7bff151da2247ef04047159bf8ff8a79487ad56e34c87ef9dca749ced7fae728"
+    },
+    {
+      "path": "json/cash_flow_forecast.json",
+      "rows": 2000,
+      "bytes": 977552,
+      "sha256": "40e7d6c8e0a937627ba143a2b0a31d01bc1ed06672160dbf1df5b619763c69b0"
+    },
+    {
+      "path": "json/cf_revision.json",
+      "rows": 2398,
+      "bytes": 612854,
+      "sha256": "4bbe2c9428ab8d908def941822adca607b85117dc4a75b788e87120eb0db4363"
+    },
+    {
+      "path": "json/counterparty.json",
+      "rows": 130,
+      "bytes": 25955,
+      "sha256": "6cab7c579aebe75072a852cc1643e72c9a40e62e5a81600a0e681dd4eef5b38b"
+    },
+    {
+      "path": "json/currency.json",
+      "rows": 5,
+      "bytes": 503,
+      "sha256": "cbb70df2f5e107024c43c192da5737e4c4a08f9fb5abd1f2d8ab8e97325bd446"
+    },
+    {
+      "path": "json/currency_rate.json",
+      "rows": 972,
+      "bytes": 206067,
+      "sha256": "178f2d10ad8d49abcd2dcc98b1ab8122d303961c00f2549ef739fcc7a942fee7"
+    },
+    {
+      "path": "json/daily_cash_position.json",
+      "rows": 6101,
+      "bytes": 2126594,
+      "sha256": "4b2711e167838c011497621c03b91e7a66964302091bbe4ff8d11929b335425c"
+    },
+    {
+      "path": "json/entity_cash_position.json",
+      "rows": 1275,
+      "bytes": 297638,
+      "sha256": "fac187234d2720bf6822d76167a4b017cca44f36da58380d4dbe3facec3cb936"
+    },
+    {
+      "path": "json/exception.json",
+      "rows": 41,
+      "bytes": 21653,
+      "sha256": "c8234ec81f2f0d264bb5f75e0477767954d79746e1043d8dfb6910099e1d6eb5"
+    },
+    {
+      "path": "json/exception_event.json",
+      "rows": 137,
+      "bytes": 35363,
+      "sha256": "0de12b1d2085b062e6d6f1f9e2e32a831fd26aa0d2d03ea3ffd792ed18fb5fe2"
+    },
+    {
+      "path": "json/forecast_position.json",
+      "rows": 29029,
+      "bytes": 9170550,
+      "sha256": "c468fec59f13dc840c062e6a5059d795abf7b3e31205a87b06866fe6ade6d126"
+    },
+    {
+      "path": "json/forecast_run.json",
+      "rows": 23,
+      "bytes": 12414,
+      "sha256": "41e36a555214eafa9b93b5312b33680453e2c77046f8b82a129808fb6af9a489"
+    },
+    {
+      "path": "json/forecast_run_balance_input.json",
+      "rows": 518,
+      "bytes": 93841,
+      "sha256": "1abbd0a3c3096e28553d12fe1ec73cda0a01cd8c146a05ad7774a0e7b5764875"
+    },
+    {
+      "path": "json/forecast_run_event.json",
+      "rows": 93,
+      "bytes": 20247,
+      "sha256": "a6c82ebec57c4478e58236abbd35341d326436a2760d395b0a5b8b6b8f80d52f"
+    },
+    {
+      "path": "json/forecast_run_fx_input.json",
+      "rows": 92,
+      "bytes": 13067,
+      "sha256": "f6b68a8156652bf66522a1664d740b41b16eddc1c7a5833cfe3f92cc5e234d1c"
+    },
+    {
+      "path": "json/forecast_run_item.json",
+      "rows": 8708,
+      "bytes": 1964394,
+      "sha256": "bb8237e996deca1625f2d443f1b28ef0b6fcdd2a13fac76ba8adb5b03499d5ac"
+    },
+    {
+      "path": "json/forecast_run_scenario.json",
+      "rows": 68,
+      "bytes": 4422,
+      "sha256": "2c843dbfadd83e258fa1170ce439886944792cd851d82561b3998454c2bf8d30"
+    },
+    {
+      "path": "json/forecast_vs_actual.json",
+      "rows": 3322,
+      "bytes": 1549850,
+      "sha256": "556f199bc7d71b1d13c571ab5d16eb5c909cc759fbcfc5fac35a34c317c5f9c0"
+    },
+    {
+      "path": "json/ledger_entry.json",
+      "rows": 10000,
+      "bytes": 4168335,
+      "sha256": "38e1a9f5d7cf2fed37bbfc8335684446b3894c845b629907af4114ba1f73db0b"
+    },
+    {
+      "path": "json/legal_entity.json",
+      "rows": 5,
+      "bytes": 1470,
+      "sha256": "a2bc553d9d13af3192cbf75769fc7c7bb5a97d76efcc04ed114f13c96c14b82a"
+    },
+    {
+      "path": "json/liquidity_scenario.json",
+      "rows": 4,
+      "bytes": 1463,
+      "sha256": "590c502b9c388be78f369c3065f70487b78cc473949da7974b5c22432784b4f5"
+    },
+    {
+      "path": "json/payable.json",
+      "rows": 594,
+      "bytes": 206770,
+      "sha256": "bdec74b250a5ff0745a4f80a66ea9ebe7a2262355d530eee1e8037a1d2f596a5"
+    },
+    {
+      "path": "json/payable_event.json",
+      "rows": 1735,
+      "bytes": 371914,
+      "sha256": "9c6a3f5c7877cd6df1fcb518112755055874bb17e7bc305dc85255d7c6918862"
+    },
+    {
+      "path": "json/receivable.json",
+      "rows": 727,
+      "bytes": 230947,
+      "sha256": "5c5e64d174ffd8f7b00046fe0e9716e88242e6f0bf5a8a4abe7eb1f840cd1342"
+    },
+    {
+      "path": "json/receivable_event.json",
+      "rows": 1393,
+      "bytes": 343910,
+      "sha256": "f9cbb247d4f54c8fad1edc4b08fb46f950b0cacdf71e4094c43f269a6e7e0426"
+    },
+    {
+      "path": "json/scenario_assumption.json",
+      "rows": 10,
+      "bytes": 1952,
+      "sha256": "9fae68b509f3018d93e194587edb90f65589ab5de49d7ff0d5fbcd858afaece8"
+    },
+    {
+      "path": "json/scenario_assumption_effect.json",
+      "rows": 290,
+      "bytes": 57341,
+      "sha256": "a836e85cbe02ba93bd199234645459693ff93c10afca5a4c57261cb07014a312"
+    },
+    {
+      "path": "json/scenario_assumption_link.json",
+      "rows": 22,
+      "bytes": 1693,
+      "sha256": "9b3b01c7e503a07dd81412ed3a5fc5806ebf4b0af2d2d4ebef99b1b330d674e9"
+    },
+    {
+      "path": "json/settlement_allocation.json",
+      "rows": 1118,
+      "bytes": 230936,
+      "sha256": "36f0828c82bb1d03afbf599b2614c2a78dd90c59bf394eeca79d1463ae0599c2"
+    },
+    {
+      "path": "json/variance_attribution.json",
+      "rows": 15973,
+      "bytes": 3719799,
+      "sha256": "408d75c56d0893e309c45204cd863be2ca335ba136cccb029145348da7cfbd33"
+    },
+    {
+      "path": "README.md",
+      "rows": null,
+      "bytes": 5205,
+      "sha256": "392a4d3b1b2abc15b19e867e18a23fea6fb88cfb02b3152887e1a0e059b979cd"
+    },
+    {
+      "path": "reports/data_profile.md",
+      "rows": null,
+      "bytes": 2636,
+      "sha256": "9d87f218701570cedaae7643bf101a4461f23794fe7c993f77328d858dde24a3"
+    },
+    {
+      "path": "reports/evaluation.json",
+      "rows": null,
+      "bytes": 12609,
+      "sha256": "b79009419675cec92a967a9c28ac1af0150b6b80753002800aa752674d394c6f"
+    },
+    {
+      "path": "reports/evaluation.md",
+      "rows": null,
+      "bytes": 3921,
+      "sha256": "463cb4fd9ee29e8bb20363731ae7f7eab9482db33b387d5fef74c467b51f1591"
+    },
+    {
+      "path": "reports/liquidity_outlook.md",
+      "rows": null,
+      "bytes": 3616,
+      "sha256": "94fda8fd6a9f4654f073ea0edffc732f485c53f175bb4bcb12c65380cf3a7a17"
+    },
+    {
+      "path": "sql/append_only_sqlite.sql",
+      "rows": null,
+      "bytes": 5899,
+      "sha256": "33d4c0e8f98753b00f5464b9d75406c61f3083e713dc9d65a4cfdf1d8cc5c78b"
+    },
+    {
+      "path": "sql/schema.sql",
+      "rows": null,
+      "bytes": 26806,
+      "sha256": "5e9b89818f23c2bd72d039b58dd4d294c9bbc32ceafe5c3ef164b67765208cd0"
+    },
+    {
+      "path": "sql/seed.sql",
+      "rows": null,
+      "bytes": 13423862,
+      "sha256": "90b5c158fee9195ca213011adf406fa80e099b184f4247c2bebe24fcc9b4618a"
+    },
+    {
+      "path": "validation_summary.json",
+      "rows": null,
+      "bytes": 92317,
+      "sha256": "990668598e5401830bd5e155c0a4e88b11390c092530a1d97cc008e6a06337ba"
+    },
+    {
+      "path": "validation_summary.md",
+      "rows": null,
+      "bytes": 34468,
+      "sha256": "57765c7be33ba610d20698b498fb6b6273226b0014c604e72c6d7ef2bb8d9e8a"
+    }
+  ]
+}

@@ -40,7 +40,7 @@ lifecycle:
 
 forecast:
   first_cutoff: 2026-01-01
-  frequency_days: 7
+  frequency_days: 14            # fortnightly here (weekly in `full`) to keep the committed bundle small
   horizon_days: 91
   live_cutoff: 2026-10-01
   knowledge_hour_utc: 8

@@ -1,0 +1,6 @@
+currency_code,currency_name,minor_units,is_reporting_currency
+USD,US Dollar,2,true
+EUR,Euro,2,false
+GBP,Pound Sterling,2,false
+INR,Indian Rupee,2,false
+JPY,Japanese Yen,0,false

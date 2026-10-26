@@ -1,0 +1,6 @@
+entity_id,entity_name,country_code,functional_currency,entity_type,parent_entity_id,size_tier,min_liquidity_buffer,effective_from,effective_to,status
+ENT-000001,Ravensworth Group Holdings Inc.,US,USD,HOLDING,,L,10000000.00,2026-01-01,,ACTIVE
+ENT-000002,Hollins Analytics GmbH,DE,EUR,OPERATING,ENT-000001,M,922000.00,2026-01-01,,ACTIVE
+ENT-000003,Stonebridge Components Ltd,GB,GBP,OPERATING,ENT-000001,S,198000.00,2026-01-01,,ACTIVE
+ENT-000004,Yarrow Components Pvt Ltd,IN,INR,OPERATING,ENT-000001,S,21000000.00,2026-01-01,,ACTIVE
+ENT-000005,Newbold Retail K.K.,JP,JPY,OPERATING,ENT-000001,M,149000000,2026-04-01,,ACTIVE
