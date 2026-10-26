@@ -79,6 +79,7 @@ def _coerce(s: pd.Series, kind: str) -> pd.Series:
         out = pd.to_datetime(s)
         if getattr(out.dt, "tz", None) is not None:
             out = out.dt.tz_convert("UTC").dt.tz_localize(None)
+        out = out.astype("datetime64[ns]")
         return out.dt.normalize() if kind == "date" else out
     if kind == "rate":
         return s.astype("float64")
