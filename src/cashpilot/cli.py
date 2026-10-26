@@ -206,7 +206,7 @@ def cmd_exceptions(args) -> int:
         exc = exc[exc["exception_type"] == args.type]
     cols = ["exception_id", "rule_id", "exception_type", "severity", "record_id", "decision", "status_at_end"]
     print(exc[cols].head(args.limit).to_string(index=False))
-    print(f"({len(exc)} exceptions)")
+    print(f"({len(exc)} exception{'s' if len(exc) != 1 else ''})")
     return 0
 
 

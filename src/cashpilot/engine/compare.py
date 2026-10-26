@@ -149,16 +149,19 @@ def compare_run(ctx: ForecastContext, fx: FxBook, parts: pd.DataFrame, run: pd.S
     emit(pw[new], "week", "NEW_AFTER_CUTOFF", "A")
     emit(pw[known_elsewhere], "week", "TIMING", "A")
     m = pw[matched].assign(FX=lambda d: d["A"] - d["T"])
-    emit(m, "week", "TIMING", "T")
+    m["forecast_week"] = m["cf_id"].map(normal.set_index("cf_id")["week"])
+    moved = m[m["week"] != m["forecast_week"]]  # timing only where cash landed in another week
+    emit(moved, "week", "TIMING", "T")
     emit(m, "week", "FX", "FX")
 
     # forecast side
     emit(live[rr_items].assign(negF=lambda d: -d["F"]), "week", "RUN_RATE", "negF", with_led=False)
     emit(live[dq].assign(negF=lambda d: -d["F"]), "week", "DATA_QUALITY", "negF", with_led=False)
     t_sum = m.groupby("cf_id")["T"].sum()
+    t_moved = moved.groupby("cf_id")["T"].sum()
     got = normal["cf_id"].isin(t_sum.index)
-    hit = normal[got].assign(T=lambda d: d["cf_id"].map(t_sum))
-    emit(hit.assign(negT=lambda d: -d["T"]), "week", "TIMING", "negT", with_led=False)
+    hit = normal[got].assign(T=lambda d: d["cf_id"].map(t_sum), T_moved=lambda d: d["cf_id"].map(t_moved).fillna(0))
+    emit(hit.assign(negT=lambda d: -d["T_moved"]), "week", "TIMING", "negT", with_led=False)
     emit(hit.assign(diff=lambda d: d["T"] - d["F"]), "week", "AMOUNT", "diff", with_led=False)
     miss = normal[~got]
     later = set(parts.loc[(parts["posting_date"] > last_day) & (parts["posting_date"] <= pd.Timestamp(actuals_end)), "cf_id"].dropna())
