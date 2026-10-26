@@ -52,6 +52,12 @@ class Dataset:
 
 # ----------------------------------------------------------------- conforming
 
+def conform_dataset(ds: Dataset) -> Dataset:
+    """Every table shaped and typed exactly as the dictionary says (hidden columns dropped)."""
+    schema = load_schema()
+    return Dataset({n: conform(df, schema.table(n)) for n, df in ds.tables.items()}, ds.ground_truth)
+
+
 def empty_frame(table: Table) -> pd.DataFrame:
     return conform(pd.DataFrame(columns=table.column_names), table)
 

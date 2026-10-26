@@ -600,7 +600,7 @@ def _one_offs(ctx: Context, rng: np.random.Generator, n: int) -> list[dict]:
         pay = cal.roll_backward(acq_day - DAY)
         usd_seller = suppliers[suppliers["default_currency"] == cfg.reporting_currency]["counterparty_id"]
         seller = usd_seller.iloc[0] if len(usd_seller) else suppliers["counterparty_id"].iloc[0]
-        amount_usd = 8.0 * float(acquired["x_scale_usd"].iloc[0])
+        amount_usd = 4.0 * float(acquired["x_scale_usd"].iloc[0])
         records.append(_one_off_record(ctx, holding, seller, pay, "ACQUISITION", amount_usd, pay - 75 * DAY, rng))
     w = ents["x_scale_usd"].to_numpy()
     cats = ["CAPEX", "TAX_SETTLEMENT", "DEBT_REPAYMENT", "LEGAL_SETTLEMENT"]
@@ -612,7 +612,7 @@ def _one_offs(ctx: Context, rng: np.random.Generator, n: int) -> list[dict]:
         pay = cal.roll_forward(lo + int(rng.integers(0, span)) * DAY)
         lead = int(rng.integers(30, 91)) if rng.random() < 0.7 else int(rng.integers(2, 11))
         sup = suppliers["counterparty_id"].iloc[int(rng.integers(len(suppliers)))]
-        records.append(_one_off_record(ctx, e.entity_id, sup, pay, cat, e.x_scale_usd * float(rng.uniform(1.5, 4.0)), pay - lead * DAY, rng))
+        records.append(_one_off_record(ctx, e.entity_id, sup, pay, cat, e.x_scale_usd * float(rng.uniform(0.5, 1.5)), pay - lead * DAY, rng))
     return records
 
 

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import pandas as pd
 
 from cashpilot.core.config import Config
-from cashpilot.dataset import Dataset
+from cashpilot.dataset import Dataset, conform_dataset
 from cashpilot.generate.documents import Documents, build_documents
 from cashpilot.generate.ledger import LedgerResult, build_ledger, build_statements
 from cashpilot.generate.master import (
@@ -59,7 +59,8 @@ def generate_baseline(cfg: Config) -> tuple[Dataset, World]:
         "payable_event": led.payable_events,
         "cf_revision": led.revisions,
     }
-    return Dataset({k: v.reset_index(drop=True) for k, v in tables.items()}), World(cfg, docs, led)
+    raw = Dataset({k: v.reset_index(drop=True) for k, v in tables.items()})
+    return conform_dataset(raw), World(cfg, docs, led)
 
 
 def table_counts(ds: Dataset) -> pd.Series:

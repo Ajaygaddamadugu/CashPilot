@@ -102,19 +102,25 @@ def build_ledger(cfg: Config, entities: pd.DataFrame, accounts: pd.DataFrame, fx
     moves["x_pkey"] = moves["pkey"]
     doc_rows = _frame(moves.to_dict("records"))
 
-    # 2a. pre-funding the business day before payroll, tax and one-off payments
+    # 2a. pre-funding on the morning of payroll, tax and one-off payments (same day, so the
+    # evening sweep never sends the money back before it is paid out)
     prefund = []
     for m in moves[moves["x_prefund"].astype(bool)].itertuples():
         a = a_idx[m.account_id]
         h = headers.get(ccy[a])
         if h is None or h == a:
             continue
-        d = cal.add_business_days(np.datetime64(m.posting_date, "D"), -1)
-        t = int(np.searchsorted(days, d))
-        if d < start or not active(a, t) or not active(h, t):
-            d, t = np.datetime64(m.posting_date, "D"), int(np.searchsorted(days, np.datetime64(m.posting_date, "D")))
-        prefund += legs(h, a, int(-m.amount), d, stamp(d, 7 * HOUR if d == np.datetime64(m.posting_date, "D") else 18 * HOUR),
-                        "POOL_FUNDING", f"Pre-funding for {m.entry_type.replace('_', ' ').lower()}", next(transfer))
+        d = np.datetime64(m.posting_date, "D")
+        prefund += legs(h, a, int(-m.amount), d, stamp(d, 7 * HOUR), "POOL_FUNDING",
+                        f"Pre-funding for {m.entry_type.replace('_', ' ').lower()}", next(transfer))
+    # new deposit accounts receive an initial placement from the pool header
+    for a in range(n_acct):
+        if acct_type[a] == "DEPOSIT" and acct.at[a, "opening_balance"] == 0 and ccy[a] in headers:
+            h, t = headers[ccy[a]], int(open_t[a])
+            if t < n_days and active(h, t):
+                amount = int(major_to_minor([round(acct.at[a, "x_scale_usd"] / FX_START[ccy[a]], -3)], ccy[a])[0])
+                prefund += legs(h, a, amount, days[t], stamp(days[t], 9 * HOUR), "POOL_FUNDING",
+                                "Initial deposit placement", next(transfer))
 
     # 2b. monthly bank fees
     fees = []
@@ -149,6 +155,7 @@ def build_ledger(cfg: Config, entities: pd.DataFrame, accounts: pd.DataFrame, fx
     # short fixed-point iteration: simulate, count the pooling postings, adjust the filler, repeat.
     structural = _concat([doc_rows, _frame(prefund), _frame(fees)])
     opening = acct["opening_balance"].to_numpy(dtype=np.int64)
+    overdraft = acct["overdraft_limit"].to_numpy(dtype=np.int64)
     month_last_set = set(month_last)
 
     def run_pool(base: pd.DataFrame) -> list[dict]:
@@ -182,21 +189,35 @@ def build_ledger(cfg: Config, entities: pd.DataFrame, accounts: pd.DataFrame, fx
                     loop += legs(a, h, delta, d, stamp(d, 18 * HOUR + 1800), "POOL_SWEEP", desc, next(tids))
                     balance[a] -= delta
                     balance[h] += delta
+            for a in sweepable:  # overdraft protection: end-of-day top-up back to target
+                if active(a, t) and not frozen(a, t) and balance[a] < -overdraft[a]:
+                    h, need = headers[ccy[a]], int(target[a] - balance[a])
+                    loop += legs(h, a, need, d, stamp(d, 18 * HOUR + 2700), "POOL_FUNDING", "Overdraft protection top-up", next(tids))
+                    balance[h] -= need
+                    balance[a] += need
+            def rebalance(h: int, delta: int, ts, desc: str) -> None:
+                """Move ``delta`` of a non-USD header into USD (negative delta buys currency)."""
+                c = ccy[h]
+                rid, rate = rates.on_or_before(c, d)
+                usd = int(to_usd([abs(delta)], c, [rate])[0]) * (1 if delta > 0 else -1)
+                tid = next(tids)
+                loop.append({"account_id": acct.at[h, "account_id"], "posting_date": d, "recorded_at": ts, "amount": -delta,
+                             "entry_type": "FX_CONVERSION", "x_transfer": tid, "fx_rate_id": rid,
+                             "original_currency": cfg.reporting_currency, "original_amount": -usd, "description": desc})
+                loop.append({"account_id": acct.at[usd_header, "account_id"], "posting_date": d, "recorded_at": ts,
+                             "amount": usd, "entry_type": "FX_CONVERSION", "x_transfer": tid, "fx_rate_id": rid,
+                             "original_currency": c, "original_amount": delta, "description": desc})
+                balance[h] -= delta
+                balance[usd_header] += usd
+
+            for c, h in sorted(headers.items()):  # header overdraft protection, funded from USD
+                if h != usd_header and active(h, t) and active(usd_header, t) and balance[h] < -overdraft[h]:
+                    rebalance(h, int(balance[h] - target[h]), stamp(d, 18 * HOUR + 3000), f"Pool header funding: {c} bought with USD")
             for h in fx_events.get(t, []):
-                c, delta = ccy[h], int(balance[h] - target[h])
+                delta = int(balance[h] - target[h])
                 if delta:
-                    rid, rate = rates.on_or_before(c, d)
-                    usd = int(to_usd([abs(delta)], c, [rate])[0]) * (1 if delta > 0 else -1)
-                    tid, ts = next(tids), stamp(d, 19 * HOUR)
-                    desc = f"Pool rebalancing: {c} {'sold for' if delta > 0 else 'bought with'} USD"
-                    loop.append({"account_id": acct.at[h, "account_id"], "posting_date": d, "recorded_at": ts, "amount": -delta,
-                                 "entry_type": "FX_CONVERSION", "x_transfer": tid, "fx_rate_id": rid,
-                                 "original_currency": cfg.reporting_currency, "original_amount": -usd, "description": desc})
-                    loop.append({"account_id": acct.at[usd_header, "account_id"], "posting_date": d, "recorded_at": ts,
-                                 "amount": usd, "entry_type": "FX_CONVERSION", "x_transfer": tid, "fx_rate_id": rid,
-                                 "original_currency": c, "original_amount": delta, "description": desc})
-                    balance[h] -= delta
-                    balance[usd_header] += usd
+                    rebalance(h, delta, stamp(d, 19 * HOUR),
+                              f"Pool rebalancing: {ccy[h]} {'sold for' if delta > 0 else 'bought with'} USD")
             live = (open_t <= t) & (t < close_t)
             month_sum[live] += balance[live]
             month_cnt[live] += 1

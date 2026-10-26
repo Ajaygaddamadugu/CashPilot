@@ -273,7 +273,7 @@ def _assign_balances(cfg: Config, accounts: pd.DataFrame, entities: pd.DataFrame
         target = np.nan
         if a.is_pool_header and a.currency == cfg.reporting_currency:
             acquired_scale = entities.loc[entities["x_acquired"], "x_scale_usd"].sum()
-            opening = 1.3 * entities["x_scale_usd"].sum() + 8.0 * acquired_scale
+            opening = 1.3 * entities["x_scale_usd"].sum() + 4.0 * acquired_scale
             overdraft = 0.5 * entities["x_scale_usd"].sum()
         elif a.is_pool_header:
             target = 0.6 * group_monthly_by_ccy.get(a.currency, m)
