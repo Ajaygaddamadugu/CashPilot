@@ -343,7 +343,7 @@ def _receivables(ctx: Context, col: _Collector, rng: np.random.Generator, n_ar: 
     weight = np.array([ctx.scale[e] * ctx.months[e] for e in ents["entity_id"]])
     lam = {e: n_ar * ctx.scale[e] / weight.sum() for e in ents["entity_id"]}  # invoices per month
     mean_usd = {e: INFLOW_MULTIPLIER * INFLOW_MIX["ar"] * ctx.scale[e] / lam[e] for e in lam}
-    pools = {e: ctx.pool("CUSTOMER", e, 0.85) for e in lam}
+    pools = {e: ctx.pool("CUSTOMER", e, 0.75) for e in lam}  # a quarter of invoices go to foreign customers
 
     def make(entity: str, inv_day, recorded, prehistory: bool) -> dict | None:
         func = ctx.func[entity]

@@ -63,5 +63,23 @@ def generate_baseline(cfg: Config) -> tuple[Dataset, World]:
     return conform_dataset(raw), World(cfg, docs, led)
 
 
+def generate_dataset(cfg: Config) -> tuple[Dataset, Dataset, World]:
+    """Baseline -> labelled anomalies -> legacy forecast history. Returns (dataset, baseline, world)."""
+    from cashpilot.engine.forecast import ForecastContext
+    from cashpilot.engine.positions import fx_book
+    from cashpilot.generate.anomalies import inject
+    from cashpilot.generate.history import RunLog, build_history, finalise_run_tables
+
+    baseline, world = generate_baseline(cfg)
+    injected, ground_truth, leaky, benign = inject(cfg, baseline)
+    ctx = ForecastContext(injected, cfg, fx_book(injected, cfg.policy))
+    log = RunLog()
+    build_history(cfg, injected, ctx, leaky, benign, log)
+    for name, df in finalise_run_tables(cfg, log.tables()).items():
+        injected[name] = df
+    injected.ground_truth = ground_truth
+    return conform_dataset(injected), baseline, world
+
+
 def table_counts(ds: Dataset) -> pd.Series:
     return pd.Series({k: len(v) for k, v in ds.tables.items()})
