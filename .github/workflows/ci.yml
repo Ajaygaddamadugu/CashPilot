@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: tests and reproducibility (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -e . --no-deps
+
+      - name: Tests
+        run: pytest -q
+
+      - name: Reproducibility (two fresh starter runs, every checksum compared)
+        run: cashpilot repro-check --profile starter --workdir out/repro --out out/ci
+
+      - name: Same bytes as the committed starter dataset (cross-platform, informational)
+        continue-on-error: true
+        run: python scripts/compare_manifests.py data/starter/manifest.json out/repro/run-1/manifest.json
