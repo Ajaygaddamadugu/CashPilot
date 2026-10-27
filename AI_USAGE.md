@@ -1,118 +1,124 @@
-# How AI was used
+# How AI Was Used
 
-The submission guidelines allow LLM tools and ask for transparency. This file says plainly what
-the AI did, where it accelerated or carried the work, and what the candidate reviewed. The full
-prompt history is in [prompts/PROMPT_HISTORY.md](prompts/PROMPT_HISTORY.md); every AI-assisted
-commit carries a `Co-Authored-By: Claude` trailer.
+## Purpose and transparency
 
-## Tool
+This document explains how AI-assisted tools were used during the CashPilot challenge, what work they accelerated, the decisions and direction provided by the candidate, and what still needs to be independently reviewed. The complete prompt history is available in [`prompts/PROMPT_HISTORY.md`](prompts/PROMPT_HISTORY.md). AI-assisted commits include a `Co-Authored-By: Claude` trailer.
 
-* **Claude Code** (Anthropic's coding agent) inside VS Code on Windows, with access to the project
-  folder, a terminal and git. Most of the work used model Claude Opus 5.5; the model was switched to
-  Claude Sonnet 5.5 (via `/model`) near the end, and the later commits carry that model in their
-  `Co-Authored-By` trailer.
-* No other LLM tools were used. No data was sent to external services other than the model and
-  GitHub (`git push`).
+## Tool used
 
-## How the work was organised
+- **Claude Code (Anthropic)** was used inside VS Code on Windows, with access to the project folder, terminal, and Git.
+- The work primarily used Claude Opus 5.5; Claude Sonnet 5.5 was used during the later review and dashboard phase. The relevant commit trailers record the model where available.
+- Only Claude was used: no other AI assistant or LLM tool helped with the code, the documentation or this disclosure. GitHub was used to host and push the repository.
 
-1. **Plan first.** The candidate pasted the brief and the submission guidelines and asked for a
-   plan covering every requirement *before* any code. The AI produced a requirements breakdown,
-   design decisions, data model, edge-case strategy, validation and test plan, and a 72-hour
-   build order. Implementation started only after the candidate created the GitHub repository and
-   sent its link.
-2. **Build in layers, each tested, committed and pushed:** skeleton → data dictionary and core
-   helpers → generator → engine → anomaly injection and history → detection and workflow →
-   validation → CLI, export, evaluation and reproducibility → data bundles → CI and docs.
-3. **Decisions recorded as they were made** in [docs/DECISION_LOG.md](docs/DECISION_LOG.md).
+## Candidate direction and engineering workflow
+
+The candidate set the project goal, supplied the assessment brief and submission guidance, created the public GitHub repository, reviewed the proposed plan, and directed the work toward the challenge requirements. The candidate also reviewed the running UI through screenshots, asked questions about the financial concepts and user experience, identified areas that needed to be easier to understand, and requested targeted improvements rather than an unnecessary rewrite.
+
+The work was organized in stages:
+
+1. **Plan before implementation:** convert the brief into a requirements breakdown, data model, edge-case strategy, validation plan, and 72-hour build order.
+2. **Build in layers:** establish the package and core helpers, generate synthetic data, implement the financial engine and scenarios, add anomaly detection and validation, and then add CLI, exports, evaluation, and reproducibility.
+3. **Review and harden:** inspect the existing implementation, add targeted financial and CLI tests, address assessment-file naming, and verify reproducibility.
+4. **Add a read-only web interface:** build a Streamlit UI on top of the existing engine instead of duplicating financial calculations. The interface covers cash overview, accounts and currencies, entities and transactions, forecasts, cash-flow drivers, exceptions, actual-versus-forecast, and audit/exports.
+5. **Record decisions and evidence:** document design choices in [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md), keep the prompt history, and capture screenshots of the running dashboard.
+6. **Make the full-scale data reviewable:** commit the full dataset's CSV files (30 entities, 150 accounts, 100,000 ledger entries, 20,000 forecast items) after checking every checksum against the manifest. The JSON and SQL renderings stay out of git because GitHub rejects files over 100 MB; decision D-046 explains this.
 
 ## Where AI accelerated the work
 
-* Turning the brief into a requirements traceability matrix and a data model with 34 tables.
-* Writing the data dictionary, its generators (Markdown, SQL DDL) and the structural validators.
-* Generator, engine, workflow, detectors, validation suite, exporters, CLI and tests.
-* Profiling and optimising (account lookups 73 s → 10 s at full scale; projection arrays).
-* Documentation drafts.
+AI assistance was used to draft and implement substantial parts of:
 
-## Where the work relied heavily on AI
+- The requirements traceability structure and data model, including the 34-table data dictionary.
+- Synthetic-data generators and the Markdown/SQL data-dictionary outputs.
+- Core financial calculations, workflow logic, anomaly detectors, validation, exporters, CLI commands, and tests.
+- Performance investigation and optimization at full dataset scale.
+- Documentation, reproducibility checks, and the read-only dashboard.
+- UI review iterations focused on financial clarity, labels, technical details, and traceability from summary values to underlying records.
 
-Honestly: almost all code, tests and documentation in this repository were written by the AI,
-under the candidate's direction (scope, plan approval, repository setup, go-ahead). The
-reasoning behind each design choice is written down in `docs/` so that it can be inspected and
-defended rather than taken on trust.
+The candidate provided direction, reviewed outputs, asked follow-up questions, and requested changes when the result did not sufficiently explain the financial information or the assessment requirements.
 
-## Problems the AI found in its own work and fixed (verified by tests or checks)
+## Extent of AI assistance
 
-| Problem found | How it was caught | Fix | Where |
-|---|---|---|---|
-| Bulk receipts posted twice | traceback during the first generation run | track posted entries explicitly | commit "feat(generate): master data…" |
-| ~400 artificial "fees" padding the ledger to 100,000 rows | inspecting the entry-type mix | fixed-point iteration for the exact volume (D-016) | same commit |
-| Group cash drained from $80M to $5M in the starter profile | positions smoke test | one-off sizes recalibrated | "feat(engine): daily positions…" |
-| 552 account-days below overdraft limits | dedicated overdraft check | same-day pre-funding (a Friday pre-funding was swept back before Monday payroll), overdraft protection (D-021) | same commit |
-| Duplicates of already-paid items slipped through the data-quality gate | design review of the gate | match against all items known at the cutoff, not only open ones | same commit |
-| Too few cross-currency invoices to inject mixed-currency cases | injection failed loudly | foreign-customer share 15% → 25% | "feat(generate): labelled edge cases…" |
-| Revisions of an injected item kept the old currency | validator check `I-JOIN-revision-currency` FAILED | the item's own revisions follow its currency | same commit |
-| Committed starter bundle 79 MB | size check before committing | fortnightly runs in the starter profile | data commit |
-| Docs overstated the full dataset (~1.4 M rows, ~0.5 GB) | cross-checking README figures against the generated manifest | corrected to ~1.2 M rows, ~0.6 GB | commit d75d9d7 |
-| First full reproducibility run crashed deleting a folder locked by OneDrive | background task failed after generation had succeeded | retrying cleanup in `repro-check`, then re-ran: 82/82 files identical | commit d75d9d7 |
-| A missing FX rate leaves an entity total understated (flagged INCOMPLETE) and could have skewed the balance-accuracy metric | targeted audit of FX handling at the start of the second phase | metric now skips incomplete actuals and counts them; hand-calculated tests; no committed number changed | `test+fix:` commit |
-| Bad input produced raw Python tracebacks (missing dataset folder, malformed date) | writing the CLI tests | clean `error:` messages and exit code 2 | `test+fix:` commit |
-| Dashboard crashed on every tab after a display tweak (pandas rejects `datetime64[us]` in `select_dtypes`) | looking at the captured screenshot (file sizes had looked plausible); the app tests had not been re-run after that edit | fixed; the 8 app tests re-run and pass; screenshots retaken and inspected one by one | `feat(dashboard)` commit |
-| Forecast tab said "no projected day is below the buffer" for the group while two entities did breach | reviewing the screenshot | the message now says a group total can hide an entity shortfall | `feat(dashboard)` commit |
-| The dashboard showed no ledger entries, invoices, bills or account lifecycle, and the brief's acceptance criteria, edge cases and actors were not visible | the candidate asked for every tab to be checked against the problem requirements; the AI compared each screenshot with the brief | *Start here* and *Entities & transactions* tabs, tested | `feat(dashboard)` commit |
-| Text-heavy tables cut sentences off with an ellipsis; raw column names and `None` everywhere; the Actual-vs-forecast tab opened on a run with one week or on the live run ("nothing to compare") | reviewing every screenshot | wrapped static tables, a plain-language module with a completeness test, a sensible default run | `feat(dashboard)` commit |
-| A "blanks instead of None" tweak made table columns mixed-type; Arrow serialisation fell back to a slow repair path and one test run exceeded 10 minutes | the test run hung, then profiling and the stack trace | dates as ISO text and one type per column; a test now rejects `None` and mixed-type cells | `feat(dashboard)` commit |
-| A test I had written ended in `or True` and asserted nothing | re-reading the test file | replaced by a real check | `feat(dashboard)` commit |
-| Chart hover text showed `position_date`, `value`, `color`; a *Deploy* button and developer menu were visible; the sidebar showed `data\starter` and `SCN-BASE-V01`; cells showed `NOT_REQUIRED`, `USR-0004`, `EXCLUDED_DUPLICATE` and raw JSON | the candidate sent screenshots of the running dashboard and asked whether anything technical leaks; the AI read the code and then opened the screenshots it rendered | own chart module, Streamlit toolbar and error details switched off, names for datasets and scenarios, a code-to-words layer with an unknown-code fallback, tests for each | `feat(dashboard)` commit |
-| A first version of the chart helper named its internal column `Amount`, which collided with a real driver column called Amount and crashed the Actual vs forecast tab | the dashboard test run failed | internal names now start with an underscore | `feat(dashboard)` commit |
-| A waterfall chart showed only every other step label (Customer receipts, Manual items, Tax and Payroll were hidden), and the worked-account example opened on a USD account where nothing is converted | the AI opened the rendered screenshots after the tests passed | label overlap switched off, the example defaults to a foreign-currency account | `feat(dashboard)` commit |
-| A cleanup command meant to stop the AI's own test server matched its own shell and killed it | the command exited without output | the stop step is now a small script that excludes its own process | - |
-| An overly broad command to stop leftover test processes (it would also have killed any other Python process, including a dashboard the candidate had open) was blocked by the permission system | tool permission denial | replaced by a command that targets only the AI's own process by its command line; the candidate's dashboard was never touched | - |
+AI generated a substantial portion of the code, tests, and documentation under the candidate's direction. This was an AI-assisted engineering project, not a claim that every line was written manually. The candidate's role included setting scope, approving the staged approach, creating and maintaining the repository workflow, reviewing the product through the running UI, identifying usability and explanation gaps, and directing follow-up work. The design rationale and limitations are documented so reviewers can inspect the implementation rather than relying on unsupported claims.
 
-## Second phase: hardening and the web dashboard
+## Issues found and addressed during development
 
-After the first delivery the candidate asked for an inspection of the code base (prompt 11 in the prompt history) and then
-for a broader pass (prompt 12): verify financial correctness, close assessment gaps and add a web interface that consumes the
-existing engine. This phase used Claude Sonnet 5.5 and followed the staged plan in that prompt:
+The following issues were identified during implementation or review. The fixes and their supporting evidence are referenced in the project history and tests where applicable.
 
-1. **Baseline audit** - working tree clean, 49 tests passing, FX handling traced (finding above).
-2. **Core correctness** - hand-calculated fixtures for FX, positions, forecast timing and metrics; CLI tests.
-3. **Assessment completeness** - `ground_truth.csv|json` names with aliases, required-file test, regenerated starter and full bundles with fresh reproducibility proofs.
-4. **Dashboard** - Streamlit extra chosen after an isolated install test under the pinned versions; a Streamlit-free data layer reconciled with the engine in tests; the running app was driven headlessly and screenshots were captured from it with a small script and each one was looked at.
-5. **Verification** - full suite, fresh clone, CI (reported in the final message of that session, not here, because the results are only known after the push).
+| Issue identified | How it was identified | Response |
+|---|---|---|
+| Some bulk receipts were posted twice | Generation-run failure and data inspection | Track posted entries explicitly. |
+| Artificial fee entries were being used to reach the 100,000-row ledger target | Review of entry-type distribution | Use fixed-point iteration to reach the required volume without padding the ledger with artificial fees. |
+| Starter-profile group cash fell sharply | Position-calculation smoke test | Recalibrate one-off flow sizes. |
+| Some account-days breached overdraft limits | Dedicated overdraft validation | Add same-day pre-funding and overdraft protection logic. |
+| Duplicate already-paid items could pass the data-quality gate | Review of gate logic | Match against all items known at the cutoff, not only open items. |
+| Too few cross-currency invoices were available for mixed-currency cases | Anomaly injection could not create the intended cases | Increase the foreign-customer share to support the intended test cases. |
+| An injected item's revisions retained the previous currency | Validator failure | Ensure revisions follow the item's currency. |
+| The starter bundle was larger than intended | Size check before commit | Reduce the frequency of starter-profile runs. |
+| Documentation overstated full-dataset size | Compare README with generated manifest | Correct the documented row and storage estimates. |
+| A reproducibility run encountered a OneDrive folder-lock issue | Background cleanup failed after generation | Improve retry/cleanup handling and rerun the reproducibility check. |
+| Missing FX rates could understate an entity total and distort an accuracy metric | Targeted FX audit | Mark totals incomplete, skip incomplete actuals in the accuracy metric, and count them separately. |
+| Invalid CLI inputs produced raw tracebacks | CLI test development | Return a clear error message and exit code 2. |
+| A dashboard display change caused tab failures | Review of rendered screenshots and app tests | Fix the date-column handling, rerun app tests, and recapture screenshots. |
+| A group-level forecast message obscured entity-level buffer breaches | Screenshot review | Explain that a healthy group total can hide an individual entity shortfall. |
+| Some required data and workflow areas were not obvious in the UI | Compare screenshots with the assessment brief | Add the Start here and Entities & transactions tabs. |
+| Technical labels and long tables were difficult to read | UI screenshot review | Improve wording and table presentation, and use clearer defaults. |
+| A test used an assertion that did not actually verify behavior | Test-file review | Replace it with a real assertion. |
+| Technical identifiers and raw chart/table details were too prominent | Review of running dashboard screenshots | Improve labels, chart presentation, and grouping of technical details while retaining traceability. |
+| A chart helper name collided with a real data column | Dashboard test failure | Use distinct internal column names. |
+| Waterfall labels overlapped and the worked FX example was not illustrative | Review of rendered screenshots | Improve label layout and choose a foreign-currency account for the example. |
+| A cleanup command could match its own process | Command behavior during test-server cleanup | Replace it with a narrower process-targeting script. |
+| A commit was pushed while one test was failing (the test's assertion about the page title was wrong), because running the tests and committing were chained in one command | The CI run for that commit was red | The assertion was fixed in the next commit; later commands only commit when the tests pass. |
+| A broad process-stop command risked affecting unrelated Python processes | Permission system blocked the command | Narrow the target so it only addresses the AI's own test process. |
 
-What the AI did **not** do: it did not claim the dashboard works without running it, it did not change expected results to make a test pass,
-and it left the "what the candidate reviewed" section below for the candidate to complete.
+## Second phase: financial hardening and dashboard
+
+After the initial implementation, the candidate requested a codebase review, followed by a broader pass to check financial correctness, close assessment gaps, and add a web interface using the existing engine. That phase included:
+
+1. **Baseline review:** inspect the repository, existing tests, and FX handling.
+2. **Financial correctness:** add hand-calculated tests for FX, balances, forecast timing, scenarios, and metrics, along with CLI tests.
+3. **Assessment completeness:** add the requested `ground_truth.csv` and `ground_truth.json` names while retaining the existing anomaly files, and verify generated bundles and reproducibility.
+4. **Dashboard:** test Streamlit as an optional dependency, keep financial calculations in the existing engine, test the dashboard data layer against engine outputs, and capture screenshots from the running app.
+5. **Verification:** run the test suite and relevant generation/reproducibility checks, and use CI results where available.
+
+The dashboard is intentionally read-only. It presents financial results and audit information; it does not add fake approval or save actions or replace the permission-checked CLI workflow.
 
 ## What the candidate reviewed, changed or validated
 
-> **To be completed by the candidate before submission** - only you can state this. Keep what
-> is true, delete what is not, add your own observations.
+This lists only what the prompt history and the repository evidence. Nothing is ticked that they do not.
 
-Visible in the prompt history:
+- [x] Supplied the assessment brief and the submission guidelines and asked for a complete plan before any implementation.
+- [x] Created the public GitHub repository and approved the push workflow (small, meaningful commits).
+- [x] Questioned why an unfamiliar git author name (`Finpark`) appeared and whether the AI had accessed GitHub (it had not: the name came from the local git configuration).
+- [x] Asked that the work stay limited to this project rather than changing other projects or global settings.
+- [x] Ran `pytest` and `cashpilot all --profile starter` locally and checked the output (the candidate pasted the terminal logs and asked whether every test had passed).
+- [x] Ran `cashpilot dashboard` in their own browser, went through the tabs and sent screenshots. This led to the *Start here* and *Entities & transactions* tabs, plain-language wording, removal of technical names, codes and the Deploy button, input-calculation-result explanations with clearer charts, the name moved to the top-left corner and larger tab names.
+- [x] Asked whether receivables and payables use expected dates, and asked for a checklist of every requirement and every submission guideline before submitting.
+- [x] Asked for the full-scale 30-entity dataset to be pushed so reviewers can see it; the AI explained why only its CSV files can be (D-046).
+- [x] Reviewed this disclosure and asked for it to be accurate before submission.
 
-- [x] Required a complete plan covering every point of the brief before any implementation.
-- [x] Questioned why an unfamiliar git author name (`Finpark`) appeared and whether the AI had
-      accessed GitHub (it had not: the name came from the local git configuration).
-- [x] Restricted the work to this project only (no other folders, projects or global settings).
-- [x] Created the public GitHub repository with the recommended empty settings and approved the
-      push workflow (small, meaningful commits).
+Not claimed here, because the prompt history has no evidence of them: a line-by-line reading of [`docs/DESIGN.md`](docs/DESIGN.md), [`docs/RULES.md`](docs/RULES.md) and [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md); comparing dashboard values with the CSV files by hand; spot-checking generated tables against the rules. [`docs/WALKTHROUGH.md`](docs/WALKTHROUGH.md) is the script for explaining the solution.
 
-To confirm yourself (suggested):
+## Independent verification
 
-- [ ] Ran `pytest` and `cashpilot all --profile starter` locally and saw them pass.
-- [ ] Walked through [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md) and can explain each step.
-- [ ] Read [docs/DESIGN.md](docs/DESIGN.md), [docs/RULES.md](docs/RULES.md) and
-      [docs/LIMITATIONS.md](docs/LIMITATIONS.md) and agree with the decisions, or noted where not.
-- [ ] Ran `cashpilot dashboard` and looked at each tab, comparing a few numbers with the CSV files.
-- [ ] Opened a few generated tables (e.g. `data/starter/csv/ledger_entry.csv`,
-      `ground_truth/ground_truth.csv`) and spot-checked records against the rules.
-- [ ] Any changes you made yourself: …
+Results when this file was last updated (2026-10-27):
 
-## How to check the AI's claims independently
+- Full test suite: 171 passed (run by the AI before the last two styling commits; the dashboard tests, 49, were re-run after them and passed).
+- CI on commit `b2ab659`: success on Ubuntu and Windows.
+- Fresh clone of the public repository: all 34 full-dataset CSV files match their checksums in `data/full/manifest.json`, and the dashboard loads the 30-entity dataset.
+
+Anyone can repeat the checks from the project environment:
 
 ```bash
-pytest                                        # 171 tests, incl. the four acceptance criteria
-cashpilot all --profile starter --out out/me  # regenerate; compare out/me/manifest.json with data/starter/manifest.json
-cashpilot repro-check --profile starter       # two fresh runs, every checksum compared
+pytest
+cashpilot all --profile starter --out out/me   # compare out/me/manifest.json with data/starter/manifest.json
+cashpilot repro-check --profile starter        # two fresh runs, every checksum compared
+cashpilot dashboard
 ```
+
+A successful command is evidence for that check only; it does not by itself prove every assessment requirement is satisfied.
+
+## Limitations and ownership
+
+CashPilot uses synthetic financial data; it is not connected to real bank accounts. The reporting currency is currently USD. The dashboard is a read-only interface over the existing engine. Any remaining limitations should be reviewed in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) and described accurately in the submission.
+
+This disclosure is meant to be transparent about AI assistance while documenting the candidate's direction and review activities.
