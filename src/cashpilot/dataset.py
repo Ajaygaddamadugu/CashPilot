@@ -15,6 +15,7 @@ output is byte-for-byte deterministic.
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 import numpy as np
@@ -24,6 +25,10 @@ from cashpilot.core.money import format_minor, parse_major
 from cashpilot.schema import Table, load_schema
 
 GROUND_TRUTH_TABLE = "anomaly_label"
+# The brief asks for ground_truth.csv/json. Earlier bundles used anomalies.*, so both names are written
+# (byte-identical) and the loader accepts either.
+GROUND_TRUTH_NAME = "ground_truth"
+GROUND_TRUTH_ALIAS = "anomalies"
 
 
 class Dataset:
@@ -162,8 +167,9 @@ def write_ground_truth_csv(ds: Dataset, directory: Path) -> Path:
     table = load_schema().table(GROUND_TRUTH_TABLE)
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
-    path = directory / "anomalies.csv"
+    path = directory / f"{GROUND_TRUTH_NAME}.csv"
     _write_csv_table(ds.ground_truth, table, path)
+    shutil.copyfile(path, directory / f"{GROUND_TRUTH_ALIAS}.csv")
     return path
 
 
@@ -186,8 +192,12 @@ def read_csv(directory: Path, ground_truth_dir: Path | None = None) -> Dataset:
         if path.exists():
             tables[name] = read_csv_table(path, schema.table(name))
     gt = None
-    if ground_truth_dir is not None and (Path(ground_truth_dir) / "anomalies.csv").exists():
-        gt = read_csv_table(Path(ground_truth_dir) / "anomalies.csv", schema.table(GROUND_TRUTH_TABLE))
+    if ground_truth_dir is not None:
+        for name in (GROUND_TRUTH_NAME, GROUND_TRUTH_ALIAS):
+            candidate = Path(ground_truth_dir) / f"{name}.csv"
+            if candidate.exists():
+                gt = read_csv_table(candidate, schema.table(GROUND_TRUTH_TABLE))
+                break
     return Dataset(tables, gt)
 
 

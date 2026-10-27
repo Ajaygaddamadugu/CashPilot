@@ -98,6 +98,7 @@ def balance_accuracy(ds: Dataset) -> dict:
     fp = fp[fp["run_id"].isin(runs["run_id"]) & fp["scenario_id"].str.startswith("SCN-BASE")]
     ecp = ds["entity_cash_position"]
     end = ecp["position_date"].max()
+    incomplete = {(e, d) for e, d in ecp.loc[ecp["fx_status"] == "INCOMPLETE", ["entity_id", "position_date"]].itertuples(index=False, name=None)}
     rows = []
     for run in runs.itertuples():
         f = fp[fp["run_id"] == run.run_id]
@@ -106,18 +107,22 @@ def balance_accuracy(ds: Dataset) -> dict:
             d = run.cutoff_date + pd.Timedelta(days=7 * w - 1)
             if d > end:
                 break
+            # An actual that could not be fully converted to USD understates cash: never compare against it.
+            skipped = any((e, d) in incomplete for e in entities)
             fc = f.loc[f["position_date"] == d, "closing_available_usd"].sum()
             ac = ecp.loc[(ecp["position_date"] == d) & ecp["entity_id"].isin(entities), "available_usd"].sum()
-            rows.append({"week_no": w, "forecast": fc, "actual": ac})
+            rows.append({"week_no": w, "forecast": fc, "actual": ac, "skipped": skipped})
     if not rows:
         return {}
     df = pd.DataFrame(rows)
-    df["ape"] = (df["forecast"] - df["actual"]).abs() / df["actual"].abs()
     out = {}
     for name, lo, hi in BUCKETS:
-        b = df[(df["week_no"] >= lo) & (df["week_no"] <= hi)]
-        out[name] = {"mape": round(float(b["ape"].mean()), 4),
-                     "bias": round(float(((b["forecast"] - b["actual"]) / b["actual"].abs()).mean()), 4), "observations": int(len(b))}
+        week = df[(df["week_no"] >= lo) & (df["week_no"] <= hi)]
+        b = week[~week["skipped"]]
+        err = (b["forecast"] - b["actual"]) / b["actual"].abs()
+        out[name] = {"mape": round(float(err.abs().mean()), 4) if len(b) else None,
+                     "bias": round(float(err.mean()), 4) if len(b) else None,
+                     "observations": int(len(b)), "excluded_incomplete_fx": int(week["skipped"].sum())}
     return out
 
 
@@ -134,12 +139,18 @@ def variance_drivers(ds: Dataset) -> dict:
             "residual_usd": int(base["residual_usd"].abs().sum()), "rows": int(len(base))}
 
 
-def liquidity_outlook(ds: Dataset) -> dict:
+def liquidity_outlook(ds: Dataset, run_id: str | None = None) -> dict:
+    """Per-scenario liquidity summary of one run (default: the latest LIVE run)."""
     runs = ds["forecast_run"]
-    live = runs[runs["run_purpose"] == "LIVE"]
-    if live.empty:
+    if run_id is None:
+        live = runs[runs["run_purpose"] == "LIVE"]
+        if live.empty:
+            return {}
+        run_id = live["run_id"].iloc[-1]
+    chosen = runs[runs["run_id"] == run_id]
+    if chosen.empty:
         return {}
-    run_id = live["run_id"].iloc[-1]
+    live = chosen
     pos = ds["forecast_position"]
     pos = pos[pos["run_id"] == run_id]
     names = ds["legal_entity"].set_index("entity_id")["entity_name"]

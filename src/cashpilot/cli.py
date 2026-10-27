@@ -242,23 +242,22 @@ def cmd_view_entity(args) -> int:
 
 
 def cmd_explain(args) -> int:
+    from cashpilot.engine.explain import variance_breakdown
     from cashpilot.pipeline import load_dataset
     ds, _ = load_dataset(args.data)
-    fva = ds["forecast_vs_actual"]
-    row = fva[(fva["run_id"] == args.run) & (fva["entity_id"] == args.entity) & (fva["week_no"] == args.week) & fva["scenario_id"].str.startswith("SCN-BASE")]
-    if row.empty:
+    b = variance_breakdown(ds, args.run, args.entity, args.week, top=args.top)
+    if b is None:
         print("no comparison for that run/entity/week (the week may not have elapsed yet)")
         return 1
-    r = row.iloc[0]
-    print(f"{args.run} {args.entity} week {args.week} ({r['week_start']:%Y-%m-%d}..{r['week_end']:%Y-%m-%d})")
-    print(f"  forecast {r['forecast_net_usd'] / 100:>16,.2f}\n  actual   {r['actual_net_usd'] / 100:>16,.2f}\n  variance {r['variance_usd'] / 100:>16,.2f}")
-    va = ds["variance_attribution"]
-    va = va[(va["run_id"] == args.run) & (va["entity_id"] == args.entity) & (va["week_no"] == args.week)]
-    for driver, g in va.groupby("driver"):
-        print(f"  {driver:<17} {g['amount_usd'].sum() / 100:>16,.2f}  ({len(g)} records)")
-        top = g.reindex(g["amount_usd"].abs().sort_values(ascending=False).index).head(args.top)
-        for t in top.itertuples():
-            print(f"      {t.amount_usd / 100:>14,.2f}  item {t.cf_id or '-'}  posting {t.ledger_entry_id or '-'}")
+    print(f"{b['run_id']} {b['entity_id']} week {b['week_no']} ({b['week_start']:%Y-%m-%d}..{b['week_end']:%Y-%m-%d})")
+    print(f"  forecast {b['forecast_usd'] / 100:>16,.2f}")
+    print(f"  actual   {b['actual_usd'] / 100:>16,.2f}")
+    print(f"  variance {b['variance_usd'] / 100:>16,.2f}")
+    for d in b["drivers"]:
+        print(f"  {d['driver']:<17} {d['total_usd'] / 100:>16,.2f}  ({d['records']} records)")
+        for t in d["top"]:
+            print(f"      {t['amount_usd'] / 100:>14,.2f}  item {t['cf_id'] or '-'}  posting {t['ledger_entry_id'] or '-'}")
+    print(f"  unexplained residual {b['residual_usd'] / 100:,.2f}")
     return 0
 
 
@@ -343,7 +342,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    return args.func(args)
+    try:
+        return args.func(args)
+    except (FileNotFoundError, ValueError) as e:  # missing dataset folder, malformed date, unknown profile
+        print(f"error: {e}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

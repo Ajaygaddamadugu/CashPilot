@@ -41,6 +41,9 @@ def run_all(cfg: Config, out: Path, formats=("csv", "json", "sql"), log=print) -
 def load_dataset(path: Path) -> tuple[Dataset, Config]:
     """A bundle written by ``run_all`` (or ``generate``): tables, ground truth and its config."""
     path = Path(path)
+    if not (path / "generation_config.json").is_file() or not (path / "csv").is_dir():
+        raise FileNotFoundError(f"no CashPilot dataset in '{path}' (expected generation_config.json and a csv/ folder); "
+                                f"create one with: cashpilot all --profile starter --out {path}")
     cfg = Config(json.loads((path / "generation_config.json").read_text(encoding="utf-8")))
     raw = cfg.raw
     for key in ("start_date", "actuals_end", "schedule_end"):

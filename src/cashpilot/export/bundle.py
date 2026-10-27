@@ -20,6 +20,7 @@ from __future__ import annotations
 import hashlib
 import json
 import platform
+import shutil
 from pathlib import Path
 
 import numpy as np
@@ -28,7 +29,7 @@ import yaml
 
 from cashpilot import __version__
 from cashpilot.core.config import Config
-from cashpilot.dataset import GROUND_TRUTH_TABLE, Dataset, write_csv, write_ground_truth_csv, write_json, write_json_table
+from cashpilot.dataset import GROUND_TRUTH_ALIAS, GROUND_TRUTH_NAME, GROUND_TRUTH_TABLE, Dataset, write_csv, write_ground_truth_csv, write_json, write_json_table
 from cashpilot.export.docs import render_data_dictionary
 from cashpilot.export.sql import write_sql
 from cashpilot.quality.validate import Report, write_summary
@@ -83,7 +84,7 @@ def dataset_readme(ds: Dataset, cfg: Config, validation_ok: bool | None) -> str:
         "| `csv/` | One CSV per table (UTF-8, `\\n` line endings, header row) |",
         "| `json/` | The same tables as JSON arrays; money and rates are exact decimal strings |",
         "| `sql/` | `schema.sql` (DDL with PK/FK/CHECK), `append_only_sqlite.sql`, `seed.sql` |",
-        "| `ground_truth/` | Labels of the injected anomalies and negative controls. **Not an input**: never use as a feature |",
+        "| `ground_truth/` | `ground_truth.csv|json`: labels of the injected anomalies and negative controls (`anomalies.*` are identical aliases kept for older consumers). **Not an input**: never use as a feature |",
         "| `data_dictionary.md` | Every field: type, required, allowed values, units, uniqueness, validation rule |",
         "| `validation_summary.md` | Step 8 checks and their results |",
         "| `reports/` | Evaluation, 13-week liquidity outlook, data profile |",
@@ -111,7 +112,9 @@ def write_bundle(ds: Dataset, cfg: Config, out: Path, formats=("csv", "json", "s
         write_sql(ds, out / "sql")
     if ds.ground_truth is not None:
         write_ground_truth_csv(ds, out / "ground_truth")
-        write_json_table(ds.ground_truth, load_schema().table(GROUND_TRUTH_TABLE), out / "ground_truth" / "anomalies.json")
+        gt_json = out / "ground_truth" / f"{GROUND_TRUTH_NAME}.json"
+        write_json_table(ds.ground_truth, load_schema().table(GROUND_TRUTH_TABLE), gt_json)
+        shutil.copyfile(gt_json, out / "ground_truth" / f"{GROUND_TRUTH_ALIAS}.json")
     _write_text(out / "data_dictionary.md", render_data_dictionary(load_schema()))
     _write_text(out / "generation_config.json", json.dumps(cfg.raw, indent=2, sort_keys=True, default=str) + "\n")
     if validation is not None:

@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import shutil
 import sqlite3
 
 import pandas as pd
@@ -11,17 +12,22 @@ from cashpilot.core.config import load_config
 from cashpilot.dataset import to_text
 from cashpilot.engine.forecast import ForecastContext, recreate_run
 from cashpilot.engine.positions import fx_book
+from cashpilot.evaluate.metrics import evaluate
 from cashpilot.export.bundle import write_bundle
 from cashpilot.generate.pipeline import generate_baseline
 from cashpilot.pipeline import load_dataset
+from cashpilot.quality.validate import validate
 from cashpilot.schema import load_schema
 
 
 @pytest.fixture(scope="module")
 def bundle(pipeline, starter_cfg, tmp_path_factory):
-    _, _, final = pipeline
+    generated, clean, final = pipeline
     out = tmp_path_factory.mktemp("bundle")
-    manifest = write_bundle(final, starter_cfg, out, ("csv", "json", "sql"))
+    report = validate(final, starter_cfg, fx_book(final, starter_cfg.policy), generated.ground_truth)
+    baseline = validate(clean, starter_cfg, fx_book(clean, starter_cfg.policy))
+    manifest = write_bundle(final, starter_cfg, out, ("csv", "json", "sql"), report, baseline,
+                            evaluate(final, starter_cfg, generated.ground_truth))
     return out, manifest, final
 
 
@@ -93,3 +99,36 @@ def test_same_seed_gives_identical_bytes_and_another_seed_does_not():
     c, _ = generate_baseline(load_config("starter", seed=cfg.seed + 1))
     assert _digests(a) == _digests(b)
     assert _digests(a)["ledger_entry"] != _digests(c)["ledger_entry"]
+
+
+def test_required_export_files_are_present(bundle):
+    out, manifest, final = bundle
+    for name in final.tables:
+        assert (out / "csv" / f"{name}.csv").is_file() and (out / "json" / f"{name}.json").is_file(), name
+    for path in ("sql/schema.sql", "sql/seed.sql", "sql/append_only_sqlite.sql", "data_dictionary.md", "README.md", "manifest.json",
+                 "generation_config.json", "validation_summary.md", "validation_summary.json", "reports/evaluation.md",
+                 "reports/liquidity_outlook.md", "reports/data_profile.md", "ground_truth/ground_truth.csv",
+                 "ground_truth/ground_truth.json"):
+        assert (out / path).is_file(), path
+    assert manifest["seed"] == 20261022 and manifest["command"] == "cashpilot all --profile starter --seed 20261022"
+    assert manifest["external_sources"] == [] and manifest["config_sha256"]
+
+
+def test_ground_truth_files_have_the_required_names_and_the_legacy_aliases_match(bundle, tmp_path):
+    out, manifest, final = bundle
+    gt = out / "ground_truth"
+    assert (gt / "ground_truth.csv").read_bytes() == (gt / "anomalies.csv").read_bytes()
+    assert (gt / "ground_truth.json").read_bytes() == (gt / "anomalies.json").read_bytes()
+    records = json.loads((gt / "ground_truth.json").read_text(encoding="utf-8"))
+    assert len(records) == len(final.ground_truth) > 0
+    assert {"gt_id", "label", "issue_type", "record_id", "injection_rule", "expected_decision"} <= set(records[0])
+    assert {"ground_truth/ground_truth.csv", "ground_truth/ground_truth.json", "ground_truth/anomalies.csv"} <= {
+        f["path"] for f in manifest["files"]}
+    # no label column anywhere in the operational tables
+    assert not any(c in ("issue_type", "anomaly_label", "ground_truth") for df in final.tables.values() for c in df.columns)
+    # a bundle written before the rename (anomalies.* only) still loads
+    legacy = tmp_path / "legacy"
+    shutil.copytree(out, legacy)
+    (legacy / "ground_truth" / "ground_truth.csv").unlink()
+    loaded, _ = load_dataset(legacy)
+    assert len(loaded.ground_truth) == len(final.ground_truth)

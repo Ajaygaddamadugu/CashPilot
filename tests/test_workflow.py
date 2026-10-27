@@ -73,3 +73,28 @@ def test_every_variance_is_fully_explained(pipeline):
     assert len(fva) and (fva["residual_usd"] == 0).all()
     drivers = [c for c in fva.columns if c.endswith("_usd") and c not in ("forecast_net_usd", "actual_net_usd", "variance_usd", "residual_usd")]
     assert (fva[drivers].sum(axis=1) == fva["actual_net_usd"] - fva["forecast_net_usd"]).all()
+
+
+def test_waiver_needs_a_reviewer_and_a_written_justification(pipeline, starter_cfg):
+    _, _, final = pipeline
+    ds = copy(final)
+    wf = Workflow(ds, starter_cfg)
+    users = ds["app_user"]
+    analyst = users.query("role == 'OPS_ANALYST'")["user_id"].iloc[0]
+    reviewer = users.query("role == 'RISK_REVIEWER'")["user_id"].iloc[0]
+    finding = pd.DataFrame([{
+        "rule_id": "R-FX-001", "category": "DATA_QUALITY", "exception_type": "FX_RATE_MISSING", "severity": "HIGH",
+        "record_table": "currency_rate", "record_id": "FXR-2026-03-03-JPY-USD", "decision": "BLOCK_CONVERSION", "details": "test"}])
+    ts = pd.Timestamp("2026-10-03 09:00")
+    exc_id = wf.raise_exceptions(finding, ts)[0]
+    wf.exception_event(exc_id, "ASSIGNED", "USR-0001", ts + pd.Timedelta(minutes=1))
+    wf.exception_event(exc_id, "ESCALATED", analyst, ts + pd.Timedelta(minutes=2), "gap exceeds tolerance")
+    with pytest.raises(WorkflowError, match="may not waive"):
+        wf.exception_event(exc_id, "WAIVED", analyst, ts + pd.Timedelta(minutes=3), "I accept it")      # wrong role
+    with pytest.raises(WorkflowError, match="written justification"):
+        wf.exception_event(exc_id, "WAIVED", reviewer, ts + pd.Timedelta(minutes=4))                      # no justification
+    assert wf.exception_status(exc_id) == "ESCALATED"                                                    # refusals changed nothing
+    wf.exception_event(exc_id, "WAIVED", reviewer, ts + pd.Timedelta(minutes=5), "last fixing accepted for historical valuation")
+    assert wf.exception_status(exc_id) == "WAIVED"
+    events = ds["exception_event"].query("exception_id == @exc_id")
+    assert events["event_type"].tolist() == ["RAISED", "ASSIGNED", "ESCALATED", "WAIVED"]

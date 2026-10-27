@@ -8,7 +8,7 @@ from cashpilot.dataset import Dataset
 
 
 def _pct(x) -> str:
-    return f"{100 * float(x):.1f}%"
+    return "n/a" if x is None else f"{100 * float(x):.1f}%"
 
 
 def _usd(x) -> str:
@@ -54,9 +54,10 @@ def evaluation_report(ev: dict) -> str:
         out += ["", "## Cash balance accuracy (group level)", "",
                 "Projected group available cash at each forecast week-end vs actual group available cash "
                 "(internal pooling nets out at group level; restricted cash excluded on both sides).", "",
-                "| Horizon | MAPE | Bias | Observations |", "|---|---|---|---|"]
+                "Weeks whose actual could not be fully converted to USD (a missing FX rate) are excluded, not compared.", "",
+                "| Horizon | MAPE | Bias | Observations | Excluded (incomplete FX) |", "|---|---|---|---|---|"]
         for k, v in ba.items():
-            out.append(f"| {k} | {_pct(v['mape'])} | {_pct(v['bias'])} | {v['observations']} |")
+            out.append(f"| {k} | {_pct(v['mape'])} | {_pct(v['bias'])} | {v['observations']} | {v['excluded_incomplete_fx']} |")
     vd = ev.get("variance_drivers")
     if vd:
         out += ["", "## What explains the variance", "",

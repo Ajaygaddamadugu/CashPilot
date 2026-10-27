@@ -139,3 +139,25 @@ def test_lineage_only_contains_records_known_before_the_cutoff(engine):
     assert (run.items["input_recorded_at"] < k).all()
     assert (run.balances["statement_date"] < CUTOFF).all()
     assert (run.fx["rate_date"] < CUTOFF).all()
+
+
+def test_the_same_cash_flow_is_never_counted_twice_in_a_cashpilot_run(pipeline, starter_cfg):
+    generated, _, _ = pipeline
+    ctx = ForecastContext(generated, starter_cfg, fx_book(generated, starter_cfg.policy))
+    gt = generated.ground_truth
+    dups = gt[(gt["issue_type"] == "DUPLICATE_CASH_FLOW") & (gt["sub_type"] == "EXACT_REFERENCE")]["record_id"]
+    cf = generated["cash_flow_forecast"].set_index("cf_id")
+    cand = cf.loc[dups].sort_values("recorded_at")
+    pick = cand.index[0]
+    cutoff = cand.loc[pick, "recorded_at"].normalize() + pd.Timedelta(days=1)     # the day after the duplicate was keyed in
+    scenarios = ["SCN-BASE-V01"]
+    legacy = create_run(ctx, RunSpec(cutoff, 1, "LEGACY", "SCHEDULED", "USR-0003", cutoff + pd.Timedelta(hours=9), scenarios))
+    gated = create_run(ctx, RunSpec(cutoff, 1, "CASHPILOT", "SCHEDULED", "USR-0003", cutoff + pd.Timedelta(hours=9), scenarios))
+    old = legacy.items.set_index("cf_id").loc[pick]
+    new = gated.items.set_index("cf_id").loc[pick]
+    assert old["treatment"] in ("INCLUDED", "OVERDUE_ROLLED") and old["amount_used"] > 0       # the legacy run double counts it
+    assert new["treatment"] == "EXCLUDED_DUPLICATE" and new["amount_used"] == 0                # the gate removes it
+    entity = cand.loc[pick, "entity_id"]
+    flow = "inflows_usd" if cand.loc[pick, "direction"] == "INFLOW" else "outflows_usd"
+    total = lambda r: r.positions.loc[r.positions["entity_id"] == entity, flow].sum()
+    assert total(legacy) > total(gated)                                                        # and it shows in the projection
