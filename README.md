@@ -62,7 +62,7 @@ The dataset can also be switched in the sidebar (*Starter* or *Full*).
 
 ```powershell
 # Windows PowerShell
-.\.venv\Scriptsctivate
+.\.venv\Scripts\activate
 cashpilot dashboard
 ```
 
