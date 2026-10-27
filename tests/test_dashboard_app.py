@@ -29,7 +29,7 @@ def test_every_tab_renders_with_the_committed_dataset(app):
     assert not at.exception, [e.value for e in at.exception]
     assert [t.label for t in at.tabs] == ["Start here", "Cash overview", "Accounts & currencies", "Entities & transactions", "Forecast",
                                           "Cash-flow drivers", "Exceptions", "Actual vs forecast", "Audit & exports"]
-    assert at.sidebar.title[0].value == "CashPilot" and not at.title          # the name is at the top-left of the sidebar, above the dataset picker
+    assert at.sidebar.title[0].value == "CashPilot" and len(at.title) == 1          # the one title is at the top-left of the sidebar, above the dataset picker
     labels = {m.label for m in at.metric}
     assert {"Available", "Restricted", "Entities below buffer", "Validation", "Companies", "Bank accounts", "Ledger entries"} <= labels
     assert any(len(d.value) for d in at.dataframe)
