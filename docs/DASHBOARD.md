@@ -66,6 +66,18 @@ scenario; every tab follows those choices. Throughout, four kinds of content are
 | LiquidityScenario | Forecast (base / delayed receipt / stress, their assumptions and effects) |
 | ForecastRun | Forecast, Cash-flow drivers (compare runs) and Audit & exports (versions, lifecycle, reproducibility) |
 
+## Nothing technical on screen
+
+A second review of the running dashboard (screenshots from the candidate's browser) looked for anything a non-programmer should not see:
+
+* **Chart hover text** showed the programming names `position_date`, `value` and `color`. All charts now come from [`charts.py`](../src/cashpilot/dashboard/charts.py): titled axes, dates such as `01 Oct 2026`, thousands separators, a legend, and the minimum buffer as a dashed grey line.
+* **Streamlit's own toolbar** (the *Deploy* button and developer menu) and **Python error traces** are switched off by `cashpilot dashboard` (`--client.toolbarMode viewer --client.showErrorDetails none`).
+* **The sidebar** shows names, not file paths or ids: *Starter (small, quick)* instead of `data\starter`, *Base · v1* / *Delayed receipt · v1* / *Stress · v2* instead of `SCN-BASE-V01`, with the scenario described underneath. Each control's help says which tabs it affects.
+* **Codes in table cells** read as words (*Not needed (USD)*, *Partially paid*, *Receivables ledger*, *Supplier payment*), and user and company ids are shown with their names (*Operations Analyst 01 (USR-0003)*, *Ravensworth Group Holdings Inc.*). An unknown code is shown in sentence case, never hidden. Downloads keep the original codes, so exported data is unchanged.
+* The raw JSON after *Verify reproducibility* is now a small table, and the "reason code" column of the run comparison is gone (the plain-language *What happened* column says the same).
+
+Business identifiers the brief defines (`ENT-000001`, `BANKACC-...`, `FCAST-...`, `CF-...`) are kept on purpose: they are what a user quotes to a colleague. The fingerprints (hashes) and the regeneration command on *Audit & exports* are shown on purpose too: they are the reproducibility evidence.
+
 ## Plain language
 
 All wording lives in [`text.py`](../src/cashpilot/dashboard/text.py): friendly column names and help texts, the meaning of every

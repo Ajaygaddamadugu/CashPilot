@@ -159,7 +159,8 @@ def cmd_dashboard(args) -> int:
     if not (data / "generation_config.json").is_file() or not (data / "csv").is_dir():
         raise FileNotFoundError(f"no CashPilot dataset in '{data}'; create one with: cashpilot all --profile starter --out {data}")
     app = Path(__file__).resolve().parent / "dashboard" / "app.py"
-    cmd = [sys.executable, "-m", "streamlit", "run", str(app), "--server.port", str(args.port), "--browser.gatherUsageStats", "false"]
+    cmd = [sys.executable, "-m", "streamlit", "run", str(app), "--server.port", str(args.port), "--browser.gatherUsageStats", "false",
+           "--client.toolbarMode", "viewer", "--client.showErrorDetails", "none"]      # no Deploy button or developer menu, no Python tracebacks on screen
     if args.headless:
         cmd += ["--server.headless", "true"]
     print(f"CashPilot dashboard on http://localhost:{args.port}  (dataset: {data}; read-only; Ctrl+C to stop)")

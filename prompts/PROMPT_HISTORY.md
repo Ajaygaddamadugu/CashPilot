@@ -548,3 +548,14 @@ The candidate sent a screenshot of the dashboard running in their own browser at
 
 **AI response.** Inspected every tab's screenshot against the problem statement and reported what was missing (ledger entries, receivables and payables, entity and account master data, the acceptance criteria, the edge cases, the actors, the scale against the brief) and what a non-programmer would struggle with (raw column names, `None` cells, error rates as decimals, jargon, truncated text, a poor default view). Then added a *Start here* tab and an *Entities & transactions* tab, a plain-language module, friendlier tables and charts, tests, new screenshots and documentation, and fixed the problems the work uncovered (see AI_USAGE.md).
 
+## 15. Commands to start the project, then a leak review
+
+> give the commands to start the project
+
+**AI response.** Listed the start commands (existing folder and fresh clone).
+
+The candidate then sent screenshots of the running dashboard (Cash overview, Accounts, Entities, Forecast, Cash-flow drivers, Exceptions, Actual vs forecast, Audit) and asked:
+
+> hey see does it have as per requirement tabs , entites , in the sidebar we have dataset , company and scenario , actual as of , forecast run all these have good user understandable? and do we have all the information , and are we leaking anything to the user like code and all ?
+
+**AI response.** Confirmed the nine tabs cover the brief's entities, then read the code and the screenshots for technical leaks and fixed what it found: chart tooltips with column names, the Deploy button and developer menu, error traces, the folder path and scenario ids in the sidebar, codes and user ids in table cells, raw JSON. Added tests and documented it (DASHBOARD.md, D-044).

@@ -218,3 +218,56 @@ FLOW_LABEL = {
     "AR_COLLECTION": "Customer receipts", "AP_PAYMENT": "Supplier payments", "PAYROLL": "Payroll", "RENT": "Rent", "TAX": "Tax",
     "DEBT_SERVICE": "Debt service", "OPERATING_RUN_RATE": "Small daily flows (run-rate)", "OTHER": "Manual items",
 }
+
+
+# ---- how codes read in table cells (downloads and the data itself keep the codes) ------------------------------------------
+
+# columns whose cells hold codes such as NOT_REQUIRED or PARTIALLY_PAID; unlisted values fall back to sentence case
+CODE_COLUMNS = frozenset({
+    "fx_status", "worst_fx_status", "entity_type", "size_tier", "status", "status_at_end", "event_type", "from_status", "to_status", "severity",
+    "buffer_status", "outcome", "decision", "action", "account_type", "direction", "source_system", "flow_category", "entry_type", "category",
+    "record_table", "parameter", "filter_field", "unit", "process", "run_purpose", "treatment"})
+
+VALUE_TEXT = {
+    "fx_status": {"OK": "OK", "NOT_REQUIRED": "Not needed (USD)", "FALLBACK": "Previous rate used", "MISSING": "No rate", "INCOMPLETE": "Incomplete"},
+    "buffer_status": {"OK": "OK", "BELOW BUFFER": "Below buffer", "INCOMPLETE FX": "Incomplete (FX rate missing)"},
+    "entity_type": {"HOLDING": "Holding company", "OPERATING": "Operating company"},
+    "size_tier": {"L": "Large", "M": "Medium", "S": "Small"},
+    "direction": {"INFLOW": "Receipt (money in)", "OUTFLOW": "Payment (money out)"},
+    "source_system": {"AP_SUBLEDGER": "Payables ledger", "AR_SUBLEDGER": "Receivables ledger", "LEASE_SYSTEM": "Lease system", "MANUAL": "Entered by hand",
+                      "PAYROLL_SYSTEM": "Payroll system", "RUN_RATE_MODEL": "Run-rate estimate", "TAX_CALENDAR": "Tax calendar"},
+    "entry_type": {"ACCOUNT_CLOSURE": "Account closure", "AP_PAYMENT": "Supplier payment", "AR_RECEIPT": "Customer receipt", "BANK_FEE": "Bank fee",
+                   "FX_CONVERSION": "Currency conversion", "POOL_FUNDING": "Cash-pool funding", "POOL_SWEEP": "Cash-pool sweep"},
+    "category": {"CAPEX": "Capital spending", "TAX_SETTLEMENT": "Tax settlement", "DEBT_REPAYMENT": "Debt repayment", "BUSINESS_ALERT": "Business alert",
+                 "DATA_QUALITY": "Data quality"},
+    "record_table": {"bank_statement": "Bank statement", "cash_flow_forecast": "Forecast item", "currency_rate": "Exchange rate",
+                     "forecast_position": "Projected position", "forecast_run": "Forecast run", "ledger_entry": "Bank transaction"},
+    "parameter": {"AP_TIMING_SHIFT_DAYS": "Supplier payments made earlier by", "AR_COLLECTION_RATE": "Share of receipts actually collected",
+                  "AR_DELAY_DAYS": "Customers pay later by", "FX_SHOCK_PCT": "Foreign-currency value change",
+                  "RUN_RATE_INFLOW_FACTOR": "Small daily receipts scaled by"},
+    "filter_field": {"currency_not": "Currency other than", "risk_tier": "Customer risk tier"},
+    "unit": {"pct": "%", "days": "days", "ratio": "ratio"},
+    "process": {"LEGACY": "Old spreadsheet process", "CASHPILOT": "CashPilot"},
+}
+VALUE_TEXT["flow_category"] = FLOW_LABEL
+
+
+def plain_value(column: str, value):
+    """How one table cell reads. Values are never hidden: an unknown code falls back to sentence case, anything else is left as is."""
+    if not isinstance(value, str) or column not in CODE_COLUMNS:
+        return value
+    known = VALUE_TEXT.get(column, {})
+    if value in known:
+        return known[value]
+    if value.isupper() and len(value) > 2:
+        return value.replace("_", " ").capitalize()
+    return value
+
+
+# the datasets that ship with the repository; anything else is shown by its folder name
+DATASET_NAMES = {"starter": "Starter (small, quick)", "full": "Full (brief-sized)"}
+
+
+def dataset_name(path: str) -> str:
+    name = str(path).replace("\\", "/").rstrip("/").rsplit("/", 1)[-1]          # a Windows or a POSIX path
+    return DATASET_NAMES.get(name, f"Dataset: {name}")

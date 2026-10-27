@@ -569,11 +569,11 @@ def exception_trace(b: Bundle, exception_id: str) -> dict:
         acct_ccy = ds["bank_account"].set_index("account_id").at[a["account_id"], "currency"]
         doc_id = a["receivable_id"] if pd.notna(a["receivable_id"]) else a["payable_id"]
         doc = (_row(ds, "receivable", "receivable_id", doc_id) if pd.notna(a["receivable_id"]) else _row(ds, "payable", "payable_id", doc_id)) if pd.notna(doc_id) else None
-        evidence.append(("Forecast item", pd.DataFrame({"field": ["currency", "amount (major)", "account currency", "conversion recorded", "linked document"],
+        evidence.append(("Forecast item", pd.DataFrame({"field": ["currency", "amount", "account currency", "conversion recorded", "linked document"],
                                                         "value": [a["currency"], a["amount"] / 10 ** MINOR_UNITS[a["currency"]], acct_ccy,
                                                                   "no" if pd.isna(a["original_currency"]) else "yes", doc_id]}).astype({"value": str})))
         if doc is not None:
-            evidence.append(("Source document", pd.DataFrame({"field": ["currency", "amount (major)", "due date"],
+            evidence.append(("Source document", pd.DataFrame({"field": ["currency", "amount", "due date"],
                                                               "value": [doc["currency"], doc["amount"] / 10 ** MINOR_UNITS[doc["currency"]], f"{doc['due_date']:%Y-%m-%d}"]}).astype({"value": str})))
     elif etype == "LOOKAHEAD_LEAKAGE":
         run = _row(ds, "forecast_run", "run_id", rid)

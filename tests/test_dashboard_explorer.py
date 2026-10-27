@@ -156,3 +156,49 @@ def test_accuracy_view_opens_on_a_run_with_several_weeks(bundle):
     f = ds["forecast_vs_actual"]
     weeks = f[(f["run_id"] == chosen) & f["scenario_id"].str.startswith("SCN-BASE")]["week_no"].nunique()
     assert chosen in D.runs_with_actuals(ds) and weeks >= 4 and chosen != D.runs_with_actuals(ds)[-1]
+
+
+# ---------------------------------------------- nothing technical on screen
+
+def test_codes_read_as_words_and_unknown_codes_are_never_hidden():
+    assert T.plain_value("fx_status", "NOT_REQUIRED") == "Not needed (USD)"
+    assert T.plain_value("status", "PARTIALLY_PAID") == "Partially paid"
+    assert T.plain_value("decision", "BLOCK_CONVERSION") == "Block conversion"
+    assert T.plain_value("buffer_status", "INCOMPLETE FX") == "Incomplete (FX rate missing)"
+    assert T.plain_value("status", "SOMETHING_NEW") == "Something new"            # unknown code: sentence case, still visible
+    assert T.plain_value("currency", "USD") == "USD" and T.plain_value("status", None) is None      # other columns and blanks untouched
+    assert T.plain_value("fx_status", "OK") == "OK"
+
+
+def test_every_code_in_the_data_has_a_wording_that_is_not_the_raw_code(bundle):
+    ds = bundle.ds
+    seen = {"fx_status": ds["daily_cash_position"], "account_type": ds["bank_account"], "entity_type": ds["legal_entity"],
+            "direction": ds["cash_flow_forecast"], "source_system": ds["cash_flow_forecast"], "entry_type": ds["ledger_entry"],
+            "status_at_end": ds["receivable"]}
+    for column, frame in seen.items():
+        for code in frame[column].dropna().unique():
+            shown = T.plain_value(column, code)
+            assert shown and "_" not in shown and not (shown.isupper() and len(shown) > 2), (column, code, shown)
+
+
+def test_dataset_names_hide_the_folder_path():
+    assert T.dataset_name(r"data\starter").startswith("Starter") and T.dataset_name("data/full").startswith("Full")
+    assert T.dataset_name("out/check") == "Dataset: check"
+
+
+def test_charts_show_titles_and_formatted_tooltips_never_column_names():
+    import pandas as pd
+    from cashpilot.dashboard import charts as C
+    days = pd.DataFrame({"position_date": pd.date_range("2026-01-01", periods=4), "Projected available cash": [1.0, 2, 3, 4], "Minimum buffer": [2.0] * 4})
+    weeks = pd.DataFrame({"week_no": [1, 2], "Customer receipts": [5.0, 6], "Payroll": [-3.0, -4]})
+    specs = [C.line_chart(days, "position_date", ["Projected available cash", "Minimum buffer"], "Cash (USD)"),
+             C.bar_chart(weeks, "week_no", ["Customer receipts", "Payroll"], "Net cash (USD)", "Week", x_label="Week"),
+             C.simple_bar(pd.DataFrame({"currency": ["EUR", "USD"], "usd_value": [3.0, 4]}), "currency", "usd_value", "Currency", "Value (USD)")]
+    technical = {"position_date", "week_no", "usd_value", "value", "color", "variable", "Amount", "Series"}
+    for spec in specs:
+        enc = spec.to_dict()["encoding"]
+        titles = [t["title"] for t in enc["tooltip"]]
+        assert all(t not in technical for t in titles), titles
+        assert enc["x"]["title"] and enc["y"]["title"] and enc["x"]["title"] not in technical and enc["y"]["title"] not in technical
+    assert [t.get("format") for t in specs[0].to_dict()["encoding"]["tooltip"]] == ["%a %d %b %Y", None, ",.0f"]       # a readable date and thousands separators
+

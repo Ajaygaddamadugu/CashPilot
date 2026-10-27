@@ -63,6 +63,8 @@ defended rather than taken on trust.
 | Text-heavy tables cut sentences off with an ellipsis; raw column names and `None` everywhere; the Actual-vs-forecast tab opened on a run with one week or on the live run ("nothing to compare") | reviewing every screenshot | wrapped static tables, a plain-language module with a completeness test, a sensible default run | `feat(dashboard)` commit |
 | A "blanks instead of None" tweak made table columns mixed-type; Arrow serialisation fell back to a slow repair path and one test run exceeded 10 minutes | the test run hung, then profiling and the stack trace | dates as ISO text and one type per column; a test now rejects `None` and mixed-type cells | `feat(dashboard)` commit |
 | A test I had written ended in `or True` and asserted nothing | re-reading the test file | replaced by a real check | `feat(dashboard)` commit |
+| Chart hover text showed `position_date`, `value`, `color`; a *Deploy* button and developer menu were visible; the sidebar showed `data\starter` and `SCN-BASE-V01`; cells showed `NOT_REQUIRED`, `USR-0004`, `EXCLUDED_DUPLICATE` and raw JSON | the candidate sent screenshots of the running dashboard and asked whether anything technical leaks; the AI read the code and then opened the screenshots it rendered | own chart module, Streamlit toolbar and error details switched off, names for datasets and scenarios, a code-to-words layer with an unknown-code fallback, tests for each | `feat(dashboard)` commit |
+| A first version of the chart helper named its internal column `Amount`, which collided with a real driver column called Amount and crashed the Actual vs forecast tab | the dashboard test run failed | internal names now start with an underscore | `feat(dashboard)` commit |
 | An overly broad command to stop leftover test processes (it would also have killed any other Python process, including a dashboard the candidate had open) was blocked by the permission system | tool permission denial | replaced by a command that targets only the AI's own process by its command line; the candidate's dashboard was never touched | - |
 
 ## Second phase: hardening and the web dashboard
@@ -108,7 +110,7 @@ To confirm yourself (suggested):
 ## How to check the AI's claims independently
 
 ```bash
-pytest                                        # 147 tests, incl. the four acceptance criteria
+pytest                                        # 153 tests, incl. the four acceptance criteria
 cashpilot all --profile starter --out out/me  # regenerate; compare out/me/manifest.json with data/starter/manifest.json
 cashpilot repro-check --profile starter       # two fresh runs, every checksum compared
 ```

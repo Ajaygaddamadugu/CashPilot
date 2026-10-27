@@ -67,7 +67,7 @@ def test_an_exception_can_be_traced_to_its_evidence(app):
     at = at.run()
     assert not at.exception, [e.value for e in at.exception]
     text = " ".join(m.value for m in at.markdown)
-    assert "Forecast used data from after its cutoff" in text and "R-LEAK-001" in text and "SUPERSEDE_WITH_RERUN" in text
+    assert "Forecast used data from after its cutoff" in text and "R-LEAK-001" in text and "Supersede with rerun" in text and "SUPERSEDE_WITH_RERUN" not in text
 
 
 def test_reproducibility_can_be_verified_from_the_ui(app):
@@ -158,3 +158,23 @@ def test_tables_contain_no_python_none_or_mixed_type_cells(app):
             assert not (values.astype(str) == "None").any(), col
             if values.dtype == object:
                 assert values.map(type).nunique() <= 1, (col, values.map(type).unique())
+
+
+def test_the_sidebar_shows_names_not_paths_or_codes(app):
+    at = app.run()
+    shown = sidebar(at, "Dataset").options
+    assert shown[0].startswith("Starter") and all("/" not in o and "\\" not in o for o in shown), shown     # names, not folder paths
+    for option in sidebar(at, "Scenario").options:
+        assert "SCN-" not in option, option                   # "Base · v1", "Delayed receipt · v1", "Stress · v2"
+    assert any(o.startswith("Stress") for o in sidebar(at, "Scenario").options)
+    assert any(c.value for c in at.sidebar.caption), "the chosen scenario is described in words"
+
+
+def test_table_cells_use_words_and_names_not_codes(app):
+    """Cells read 'Not needed (USD)' and 'Operations analyst 04 (USR-0004)', not NOT_REQUIRED and USR-0004 alone."""
+    at = app.run()
+    cells = " ".join(str(v) for df in at.dataframe for col in df.value.columns for v in df.value[col].astype(str).unique()[:200])
+    for raw in ("NEW_AFTER_PREVIOUS_CUTOFF", "EXCLUDED_DUPLICATE", "NOT_REQUIRED", "PARTIALLY_PAID", "OPERATING_RECEIPT", "AR_SUBLEDGER", "BELOW BUFFER", "INCOMPLETE FX"):
+        assert raw not in cells, raw
+    assert "Not needed (USD)" in cells
+

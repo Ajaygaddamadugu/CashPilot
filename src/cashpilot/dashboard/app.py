@@ -15,6 +15,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
+from cashpilot.dashboard import charts as C
 from cashpilot.dashboard import data as D
 from cashpilot.dashboard import explorer as X
 from cashpilot.dashboard import guide as G
@@ -30,6 +31,9 @@ TAB_NAMES = ["Start here", "Cash overview", "Accounts & currencies", "Entities &
 MONEY_NAMES = {"local_balance", "amount_local", "usd", "signed_usd", "usd_value", "local_total", "amount", "money_in", "money_out", "min_liquidity_buffer",
                "overdraft_limit", "opening_balance", "usd_impact_of_move", "bank_minus_book_local", "balance_usd", "opening", "inflows", "outflows"}
 STATUS_ICON = {"PASS": "✅", "FAIL": "❌"}
+PEOPLE_COLUMNS = ("actor_id", "created_by", "assigned_to")
+# names for the ids shown in tables (filled in by main(); the data keeps the ids)
+SHOW = {"users": {}, "entities": {}, "scenarios": {}}
 
 
 # ------------------------------------------------------------------ caching
@@ -84,6 +88,15 @@ def _tidy(df: pd.DataFrame) -> pd.DataFrame:
         whole_days = len(s) == 0 or bool((s == s.dt.normalize()).all())
         # ISO text keeps the column one type (Arrow cannot mix dates with blanks) and still sorts correctly
         df[c] = df[c].dt.strftime("%Y-%m-%d" if whole_days else "%Y-%m-%d %H:%M").fillna("")
+    for c in df.columns:
+        if c in T.CODE_COLUMNS:
+            df[c] = df[c].map(lambda v, c=c: T.plain_value(c, v))
+        elif c in PEOPLE_COLUMNS:
+            df[c] = df[c].map(lambda v: SHOW["users"].get(v, v))
+        elif c == "parent_entity_id":
+            df[c] = df[c].map(lambda v: SHOW["entities"].get(v, v))
+        elif c == "scenario_id":
+            df[c] = df[c].map(lambda v: SHOW["scenarios"].get(v, v))
     for c in df.select_dtypes(include=["object"]).columns:
         df[c] = df[c].map(lambda v: "" if v is None or (isinstance(v, float) and pd.isna(v)) or v is pd.NaT else v)
         if df[c].map(type).nunique() > 1:          # mixed numbers and text would also fail to serialise
@@ -91,9 +104,9 @@ def _tidy(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def table(df: pd.DataFrame, labels: dict | None = None, pct: tuple = (), **kwargs) -> None:
+def table(df: pd.DataFrame, labels: dict | None = None, pct: tuple = (), empty: str = "Nothing to show.", **kwargs) -> None:
     if df is None or df.empty:
-        st.caption("Nothing to show.")
+        st.caption(empty)
         return
     df = _tidy(df)
     st.dataframe(df, hide_index=True, column_config=column_config(df, labels, pct), **kwargs)
@@ -114,6 +127,14 @@ def download(label: str, df: pd.DataFrame, name: str) -> None:
     c1, c2 = st.columns(2)
     c1.download_button(f"{label} (CSV)", D.to_csv_bytes(df), f"{name}.csv", "text/csv", key=f"{name}-csv")
     c2.download_button(f"{label} (JSON)", D.to_json_bytes(df), f"{name}.json", "application/json", key=f"{name}-json")
+
+
+def chart(c) -> None:
+    st.altair_chart(c, width="stretch")
+
+
+def sname(scenario_id: str) -> str:
+    return SHOW["scenarios"].get(scenario_id, scenario_id)
 
 
 def usd(x: float) -> str:
@@ -203,8 +224,8 @@ def tab_overview(b: D.Bundle, on, entity) -> None:
     table(view.drop(columns=["size_tier"]))
     hist = D.cash_history(b, entity)
     st.subheader("Actual cash over time" + (f" - {b.entity_names[entity]}" if entity else " - whole group"))
-    st.line_chart(hist.set_index("position_date").rename(columns={"total_usd": "Total cash", "available_usd": "Available cash", "min_buffer_usd": "Minimum buffer"})
-                  [["Total cash", "Available cash", "Minimum buffer"]])
+    chart(C.line_chart(hist.rename(columns={"total_usd": "Total cash", "available_usd": "Available cash", "min_buffer_usd": "Minimum buffer"}),
+                       "position_date", ["Total cash", "Available cash", "Minimum buffer"], f"Cash ({b.reporting})"))
     if hist["incomplete"].any():
         st.caption(f"{int(hist['incomplete'].sum())} day(s) are INCOMPLETE (a balance could not be converted); the dips on those days are missing data, not cash leaving.")
     how_to_read("Each row is one company. **Available** = total cash minus restricted accounts; **Headroom** = available cash minus the company's minimum buffer.",
@@ -228,7 +249,8 @@ def tab_accounts(b: D.Bundle, on, entity) -> None:
     shock = st.slider("What if every non-USD currency moved by (%)?", -30, 30, -10, help="Simple arithmetic: value x move. Not a forecast.")
     expo = D.currency_exposure(b, on, shock)
     left, right = st.columns([3, 2])
-    left.bar_chart(expo.set_index("currency")["usd_value"].rename("Value (USD)"))
+    with left:
+        chart(C.simple_bar(expo, "currency", "usd_value", "Currency", f"Value ({b.reporting})"))
     right.caption("The bars show how much of the group's cash sits in each currency, in USD. The table also shows what the move above would do to the USD value.")
     table(expo.assign(share_of_total=expo["share_of_total"] * 100).rename(columns={"usd_impact_of_shock": "usd_impact_of_move"}), pct=("share_of_total",))
     st.caption("Cash by entity and currency (USD value)")
@@ -236,9 +258,10 @@ def tab_accounts(b: D.Bundle, on, entity) -> None:
     st.subheader("Exchange rates")
     hist = D.fx_history(b)
     pick = st.selectbox("Currency", [c for c in hist.columns if c != "rate_date"])
-    chart = alt.Chart(hist[["rate_date", pick]].dropna()).mark_line().encode(
-        x=alt.X("rate_date:T", title="Date"), y=alt.Y(f"{pick}:Q", scale=alt.Scale(zero=False), title=f"USD per 1 {pick}"))
-    st.altair_chart(chart)
+    chart(alt.Chart(hist[["rate_date", pick]].dropna(), width="container").mark_line().encode(
+        x=alt.X("rate_date:T", title="Date", axis=alt.Axis(format="%d %b %Y", labelAngle=0, tickCount=6)),
+        y=alt.Y(f"{pick}:Q", scale=alt.Scale(zero=False), title=f"USD per 1 {pick}"),
+        tooltip=[alt.Tooltip("rate_date:T", title="Date", format="%a %d %b %Y"), alt.Tooltip(f"{pick}:Q", title=f"USD per 1 {pick}", format=".4f")]))
     gaps = D.fx_gaps(b)
     mine = gaps[gaps["currency"] == pick]
     st.caption(f"{len(gaps)} business-day rates are missing in this dataset in total; {len(mine)} for {pick}. Each shows the decision the rules apply "
@@ -271,7 +294,7 @@ def tab_entities(b: D.Bundle, on, entity) -> None:
         last = pd.Timestamp(on)
         picked = st.date_input("Date range", value=(last - pd.Timedelta(days=30), last), min_value=b.ds["ledger_entry"]["posting_date"].min(), max_value=last)
         start, end = (picked[0], picked[-1]) if isinstance(picked, (tuple, list)) and picked else (last - pd.Timedelta(days=30), last)
-        types = st.multiselect("Type of entry", sorted(b.ds["ledger_entry"]["entry_type"].unique()))
+        types = st.multiselect("Type of entry", sorted(b.ds["ledger_entry"]["entry_type"].unique()), format_func=lambda v: T.plain_value("entry_type", v))
         view = X.ledger_view(b, [account], start, end, types)
         ccy = info.at[account, "currency"]
         cols = st.columns(3)
@@ -306,11 +329,12 @@ def tab_entities(b: D.Bundle, on, entity) -> None:
         st.caption("Payment behaviour follows the customer's risk tier (A best, D worst). This is the documented rule behind the delayed-receipt scenario.")
         late = X.lateness_by_tier(b)
         left, right = st.columns([2, 3])
-        left.bar_chart(late.set_index("risk_tier")["median_days_late"].rename("Typical days late"))
+        with left:
+            chart(C.simple_bar(late, "risk_tier", "median_days_late", "Customer risk tier (A best, D worst)", "Typical days late", fmt=",.1f"))
         with right:
             table(late.assign(share_paid_over_7_days_late=late["share_paid_over_7_days_late"] * 100), pct=("share_paid_over_7_days_late",))
         st.subheader("Customer invoices (receivables)")
-        status = st.multiselect("Invoice status", sorted(r["status"].unique()))
+        status = st.multiselect("Invoice status", sorted(r["status"].unique()), format_func=lambda v: T.plain_value("status", v))
         table((r if not status else r[r["status"].isin(status)]).head(1000))
         st.subheader("Supplier bills (payables)")
         table(p.head(1000))
@@ -325,9 +349,9 @@ def tab_forecast(b: D.Bundle, run_id: str, scenario: str, entity) -> None:
     series = D.forecast_series(ds, run_id, scenario, entity)
     cur = D.scenario_curves(ds, run_id, entity)
     label = b.entity_names[entity] if entity else "whole group (buffers added up)"
-    st.subheader(f"Projected available cash, day by day - {scenario} - {label}")
-    st.line_chart(series.set_index("position_date").rename(columns={"closing_available_usd": "Projected available cash", "min_buffer_usd": "Minimum buffer"})
-                  [["Projected available cash", "Minimum buffer"]])
+    st.subheader(f"Projected available cash, day by day - {sname(scenario)} - {label}")
+    chart(C.line_chart(series.rename(columns={"closing_available_usd": "Projected available cash", "min_buffer_usd": "Minimum buffer"}),
+                       "position_date", ["Projected available cash", "Minimum buffer"], f"Cash ({b.reporting})"))
     below = int((series["headroom_usd"] < 0).sum())
     worst = int(series["entities_below_buffer"].max())
     if below:
@@ -340,7 +364,8 @@ def tab_forecast(b: D.Bundle, run_id: str, scenario: str, entity) -> None:
     st.subheader("The 13 weeks week by week")
     table(D.weekly_view(series))
     st.subheader(f"Base, delayed-receipt and stress compared {SCENARIO}")
-    st.line_chart(cur.set_index("position_date").rename(columns={"minimum buffer": "Minimum buffer"}))
+    curves = cur.rename(columns={**SHOW["scenarios"], "minimum buffer": "Minimum buffer"})
+    chart(C.line_chart(curves, "position_date", [c for c in curves.columns if c != "position_date"], f"Available cash ({b.reporting})"))
     table(D.scenario_comparison(ds, run_id))
     st.caption("The three scenarios differ only by the documented assumptions below, applied one after another to the same data. Each assumption's effect is "
                "measured, and the effects add up exactly to the difference from the base case.")
@@ -348,8 +373,8 @@ def tab_forecast(b: D.Bundle, run_id: str, scenario: str, entity) -> None:
     if scenario in set(assumptions["scenario_id"]):
         table(assumptions[assumptions["scenario_id"] == scenario])
     else:
-        st.caption(f"{scenario} has no assumptions: it uses the latest known dates and amounts with exchange rates held at the cutoff rate.")
-    st.subheader(f"Companies that fall below their buffer - {scenario}")
+        st.caption(f"{sname(scenario)} has no assumptions: it uses the latest known dates and amounts with exchange rates held at the cutoff rate.")
+    st.subheader(f"Companies that fall below their buffer - {sname(scenario)}")
     breaches = D.entity_breaches(ds, run_id, scenario)
     table(breaches)
     if entity and not breaches[breaches["entity_id"] == entity].empty:
@@ -371,10 +396,11 @@ def tab_drivers(b: D.Bundle, run_id: str, scenario: str, entity) -> None:
     ds = b.ds
     run_header(ds, run_id)
     items = get_items(str(b.path), D.dataset_signature(b.path), run_id, scenario)
-    st.subheader(f"What drives cash over the 13 weeks - {scenario}")
+    st.subheader(f"What drives cash over the 13 weeks - {sname(scenario)}")
     drivers = D.driver_summary(items, entity)
     if len(drivers):
-        st.bar_chart(drivers.set_index("week_no").rename(columns=T.FLOW_LABEL))
+        chart(C.bar_chart(drivers.rename(columns=T.FLOW_LABEL), "week_no", [T.FLOW_LABEL.get(c, c) for c in drivers.columns if c != "week_no"],
+                          f"Net cash ({b.reporting})", "Week", x_label="Week"))
     st.caption("Net cash per week by type of flow (receipts above the line, payments below). Amounts are in USD at the scenario's exchange rates.")
     c1, c2, c3 = st.columns(3)
     direction = c1.selectbox("Direction", ["All", "INFLOW", "OUTFLOW"], format_func=lambda x: {"All": "All", "INFLOW": "Receipts (money in)", "OUTFLOW": "Payments (money out)"}[x])
@@ -418,7 +444,7 @@ def tab_drivers(b: D.Bundle, run_id: str, scenario: str, entity) -> None:
     items_diff = diff["items"] if kind == "All" else diff["items"][diff["items"]["change"] == kind]
     if entity:
         items_diff = items_diff[items_diff["entity_id"] == entity]
-    table(items_diff.drop(columns=["change_type"]).head(200), labels={"reason": "Reason code"})
+    table(items_diff.drop(columns=["change_type", "reason"]).head(200))
     st.caption("Exchange rates used by the two runs")
     table(diff["fx"], labels={"currency": "Currency"})
     how_to_read("The chart adds up each week's receipts and payments by type; the table lists the individual items, with the **date shifted by the scenario** if any.",
@@ -432,8 +458,8 @@ def tab_exceptions(b: D.Bundle) -> None:
     names = {k: T.EXCEPTION_NAME.get(k, k) for k in exc["exception_type"].unique()}
     c1, c2, c3 = st.columns(3)
     types = c1.multiselect("Problem", sorted(names), format_func=lambda x: names[x])
-    sev = c2.multiselect("Severity", ["CRITICAL", "HIGH", "MEDIUM", "LOW"])
-    status = c3.multiselect("Status", sorted(exc["status_at_end"].unique()))
+    sev = c2.multiselect("Severity", ["CRITICAL", "HIGH", "MEDIUM", "LOW"], format_func=str.capitalize)
+    status = c3.multiselect("Status", sorted(exc["status_at_end"].unique()), format_func=str.capitalize)
     view = exc
     if types:
         view = view[view["exception_type"].isin(types)]
@@ -455,9 +481,9 @@ def tab_exceptions(b: D.Bundle) -> None:
     st.markdown(f"### {names[e['exception_type']]} · {e['severity'].lower()} severity · {e['status_at_end'].lower()}")
     st.write(f"**Why it was flagged:** {e['details']}")
     st.write(f"**Rule {e['rule_id']}:** {t['rule_text']}")
-    st.write(f"**Decision `{e['decision']}`:** {t['decision_text']}")
+    st.write(f"**Decision - {T.plain_value('decision', e['decision'])}:** {t['decision_text']}")
     ids = {k: e[k] for k in ("record_table", "record_id", "related_record_id", "entity_id", "account_id", "run_id") if pd.notna(e[k])}
-    st.write("**Identifiers:** " + " · ".join(f"{k} = `{v}`" for k, v in ids.items()))
+    st.write("**Records involved:** " + " · ".join(f"{T.LABELS.get(k, k)}: {T.plain_value(k, v) if k == 'record_table' else v}" for k, v in ids.items()))
     st.write("**What happened next** (history is append-only)")
     table(t["events"])
     for title, frame in t["evidence"]:
@@ -490,10 +516,11 @@ def tab_accuracy(b: D.Bundle, scenario: str, entity) -> None:
     sc = scenario if scenario in D.run_scenarios(ds, run_id) else D.run_scenarios(ds, run_id)[0]
     run_header(ds, run_id)
     fva = D.forecast_vs_actual(ds, run_id, sc, entity)
-    st.subheader(f"Week by week: forecast vs actual net cash - {sc}")
+    st.subheader(f"Week by week: forecast vs actual net cash - {sname(sc)}")
     table(fva)
     drivers = [c for c in fva.columns if c.endswith("_usd") and c not in ("forecast_net_usd", "actual_net_usd", "variance_usd", "residual_usd")]
-    st.bar_chart(fva.set_index("week_no")[drivers].rename(columns=T.LABELS))
+    chart(C.bar_chart(fva[["week_no", *drivers]].rename(columns={d: T.LABELS[d].replace(" (USD)", "") for d in drivers}), "week_no",
+                      [T.LABELS[d].replace(" (USD)", "") for d in drivers], f"Actual minus forecast ({b.reporting})", "Week", x_label="Week"))
     st.caption(f"The drivers add up exactly to actual minus forecast; unexplained remainder: {fva['residual_usd'].abs().sum():,.2f}.")
     c1, c2 = st.columns(2)
     week = c1.selectbox("Drill into week", fva["week_no"].tolist())
@@ -531,7 +558,7 @@ def tab_accuracy(b: D.Bundle, scenario: str, entity) -> None:
     net = ev["variance_drivers"]["net_by_driver_usd"]
     expl = pd.DataFrame({"driver": [T.DRIVER_LABEL[k.upper()] for k in shares], "share": [v * 100 for v in shares.values()],
                          "net_usd": [net[k] for k in shares], "meaning": [T.DRIVER_TEXT[k.upper()] for k in shares]}).sort_values("share", ascending=False)
-    st.bar_chart(expl.set_index("driver")["share"].rename("Share of the total difference (%)"))
+    chart(C.simple_bar(expl, "driver", "share", "What explains it", "Share of the total difference (%)", fmt=",.1f", sort="-y"))
     table(expl, labels={"driver": "Driver", "share": "Share of the difference", "net_usd": "Net effect (USD)", "meaning": "What it means"}, pct=("share",))
     with st.expander(f"Reviewer view {TRUTH} - how well were the planted problems detected?"):
         st.caption("The ground truth is the answer key of deliberately injected problems. It is kept apart from the data and read only here, after detection, to score it.")
@@ -557,14 +584,14 @@ def tab_audit(b: D.Bundle, run_id: str) -> None:
     run_header(ds, run_id)
     trail = D.audit_trail(ds, run_id)
     r = trail["run"]
-    st.write(f"Version {r['version']} of the forecast as of {r['cutoff_date']:%Y-%m-%d}, created by {r['created_by']}. Replaces: "
+    st.write(f"Version {r['version']} of the forecast as of {r['cutoff_date']:%Y-%m-%d}, created by {SHOW['users'].get(r['created_by'], r['created_by'])}. Replaces: "
              f"{r['supersedes_run_id'] if pd.notna(r['supersedes_run_id']) else 'nothing (first version)'}.")
     st.caption("The two fingerprints below identify exactly which inputs were used and what was produced; recomputing them is how reproducibility is proven.")
     st.code(f"inputs   {r['input_hash']}\nresults  {r['result_hash']}", language="text")
     st.write("**Life of this forecast** (append-only: nothing is overwritten)")
     table(trail["events"])
     st.write("**Who tried to do what to it** (allowed and refused attempts)")
-    table(trail["audit"])
+    table(trail["audit"], empty="No allowed or refused actions are recorded against this forecast version.")
     st.write("**Which forecast items were used, and how each was handled**")
     lineage = trail["lineage"].assign(meaning=lambda d: d["treatment"].map(lambda t: T.TREATMENT_TEXT.get(t, t)))
     table(lineage, labels={"treatment": "Handling", "meaning": "What it means"})
@@ -575,7 +602,9 @@ def tab_audit(b: D.Bundle, run_id: str) -> None:
             st.success("Reproduced: re-running from the data known at the cutoff gives identical input and result fingerprints.")
         else:
             st.error("Not reproducible as-of its cutoff: this run used inputs recorded after its claimed knowledge cutoff (rule R-LEAK-001).")
-        st.json(v)
+        st.caption("Fingerprints of the original run and of the re-run")
+        table(pd.DataFrame({"Fingerprint": ["Inputs", "Results"], "Stored": [v["stored_input_hash"], v["stored_result_hash"]],
+                            "Re-run": [v["recomputed_input_hash"], v["recomputed_result_hash"]], "Identical": ["Yes" if v["input_hash_matches"] else "No", "Yes" if v["result_hash_matches"] else "No"]}))
     st.subheader("Dataset and validation")
     val = D.validation_overview(path)
     if val:
@@ -605,7 +634,7 @@ def tab_audit(b: D.Bundle, run_id: str) -> None:
 # --------------------------------------------------------------------- main
 
 def main() -> None:
-    st.set_page_config(page_title="CashPilot", layout="wide")
+    st.set_page_config(page_title="CashPilot", layout="wide", menu_items={"About": "CashPilot - multi-entity cash consolidation and 13-week liquidity forecasting on synthetic data. Read-only."})
     st.title("CashPilot")
     st.caption("Multi-entity cash consolidation and 13-week liquidity forecasting · synthetic data · read-only")
 
@@ -616,7 +645,8 @@ def main() -> None:
     if not options:
         st.error("No dataset found. Create one with `cashpilot all --profile starter` and restart.")
         st.stop()
-    path = st.sidebar.selectbox("Dataset", options, index=options.index(default) if default in options else 0)
+    path = st.sidebar.selectbox("Dataset", options, index=options.index(default) if default in options else 0, format_func=T.dataset_name,
+                                help="Which generated dataset to look at. The starter one is small and quick; the full one is the size the brief asks for.")
     b = get_bundle(path, D.dataset_signature(path))
     missing = [t for t in REQUIRED_TABLES if t not in b.ds.tables]
     if missing:
@@ -624,18 +654,25 @@ def main() -> None:
         st.stop()
 
     ds = b.ds
-    st.sidebar.markdown(f"Profile **{b.cfg.profile}** · seed **{b.cfg.seed}** · reporting currency **{b.reporting}**")
+    users = ds["app_user"].set_index("user_id")["display_name"]
+    SHOW["users"] = {u: f"{n} ({u})" for u, n in users.items()}
+    SHOW["entities"] = dict(b.entity_names)
+    sc = ds["liquidity_scenario"].set_index("scenario_id")
+    SHOW["scenarios"] = {s: f"{r['scenario_name']} · v{r['version']}" for s, r in sc.iterrows()}
+    st.sidebar.markdown(f"Reporting currency **{b.reporting}** · built from seed **{b.cfg.seed}** ({b.cfg.profile} profile)")
     names = {e: f"{e} · {n}" for e, n in b.entity_names.items()}
     entity = st.sidebar.selectbox("Company", [None, *names], format_func=lambda e: GROUP if e is None else names[e],
-                                  help="Focus every tab on one company, or look at the whole group")
+                                  help="Focus the tabs on one company, or look at the whole group. Tabs that list every company (for example Exceptions) always show all of them.")
     on = st.sidebar.date_input("Actuals as of", value=D.default_date(ds), min_value=ds["entity_cash_position"]["position_date"].min(),
-                               max_value=ds["entity_cash_position"]["position_date"].max(), help="The day whose balances the actual-cash tabs show")
+                               max_value=ds["entity_cash_position"]["position_date"].max(), help="The day whose bank balances are shown. Used by: Cash overview, Accounts & currencies, and the ledger check.")
     runs = D.run_catalog(ds)
     labels = runs.set_index("run_id")["label"].to_dict()
     run_ids = runs["run_id"].tolist()[::-1]
     run_id = st.sidebar.selectbox("Forecast run", run_ids, index=run_ids.index(D.default_run(ds)), format_func=lambda r: labels[r],
-                                  help="One 13-week projection as of a date. Newer versions replace older ones; the live run is the current forecast.")
-    scenario = st.sidebar.selectbox("Scenario", D.run_scenarios(ds, run_id), help="Base = no assumptions; Delay = customers pay later; Stress = delays, losses, earlier supplier payments, stronger USD.")
+                                  help="One 13-week projection made as of a date. Newer versions replace older ones; the live run is the current forecast. Used by: Forecast, Cash-flow drivers, Audit & exports.")
+    scenario = st.sidebar.selectbox("Scenario", D.run_scenarios(ds, run_id), format_func=sname,
+                                    help="Base = no assumptions; Delayed receipt = customers pay later; Stress = delays, losses, earlier supplier payments, stronger USD. Used by: Forecast, Cash-flow drivers, Actual vs forecast.")
+    st.sidebar.caption(sc.at[scenario, "description"])
     val = D.validation_overview(path)
     if val:
         st.sidebar.markdown(f"Validation **{val['overall']}** · {val['checks']} checks")
