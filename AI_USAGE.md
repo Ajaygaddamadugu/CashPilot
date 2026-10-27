@@ -55,6 +55,25 @@ defended rather than taken on trust.
 | Committed starter bundle 79 MB | size check before committing | fortnightly runs in the starter profile | data commit |
 | Docs overstated the full dataset (~1.4 M rows, ~0.5 GB) | cross-checking README figures against the generated manifest | corrected to ~1.2 M rows, ~0.6 GB | commit d75d9d7 |
 | First full reproducibility run crashed deleting a folder locked by OneDrive | background task failed after generation had succeeded | retrying cleanup in `repro-check`, then re-ran: 82/82 files identical | commit d75d9d7 |
+| A missing FX rate leaves an entity total understated (flagged INCOMPLETE) and could have skewed the balance-accuracy metric | targeted audit of FX handling at the start of the second phase | metric now skips incomplete actuals and counts them; hand-calculated tests; no committed number changed | `test+fix:` commit |
+| Bad input produced raw Python tracebacks (missing dataset folder, malformed date) | writing the CLI tests | clean `error:` messages and exit code 2 | `test+fix:` commit |
+| Dashboard crashed on every tab after a display tweak (pandas rejects `datetime64[us]` in `select_dtypes`) | looking at the captured screenshot (file sizes had looked plausible); the app tests had not been re-run after that edit | fixed; the 8 app tests re-run and pass; screenshots retaken and inspected one by one | `feat(dashboard)` commit |
+| Forecast tab said "no projected day is below the buffer" for the group while two entities did breach | reviewing the screenshot | the message now says a group total can hide an entity shortfall | `feat(dashboard)` commit |
+
+## Second phase: hardening and the web dashboard
+
+After the first delivery the candidate asked for an inspection of the code base (prompt 11 in the prompt history) and then
+for a broader pass (prompt 12): verify financial correctness, close assessment gaps and add a web interface that consumes the
+existing engine. This phase used Claude Sonnet 5.5 and followed the staged plan in that prompt:
+
+1. **Baseline audit** - working tree clean, 49 tests passing, FX handling traced (finding above).
+2. **Core correctness** - hand-calculated fixtures for FX, positions, forecast timing and metrics; CLI tests.
+3. **Assessment completeness** - `ground_truth.csv|json` names with aliases, required-file test, regenerated starter and full bundles with fresh reproducibility proofs.
+4. **Dashboard** - Streamlit extra chosen after an isolated install test under the pinned versions; a Streamlit-free data layer reconciled with the engine in tests; the running app was driven headlessly and screenshots were captured from it with a small script and each one was looked at.
+5. **Verification** - full suite, fresh clone, CI (reported in the final message of that session, not here, because the results are only known after the push).
+
+What the AI did **not** do: it did not claim the dashboard works without running it, it did not change expected results to make a test pass,
+and it left the "what the candidate reviewed" section below for the candidate to complete.
 
 ## What the candidate reviewed, changed or validated
 
@@ -76,14 +95,15 @@ To confirm yourself (suggested):
 - [ ] Walked through [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md) and can explain each step.
 - [ ] Read [docs/DESIGN.md](docs/DESIGN.md), [docs/RULES.md](docs/RULES.md) and
       [docs/LIMITATIONS.md](docs/LIMITATIONS.md) and agree with the decisions, or noted where not.
+- [ ] Ran `cashpilot dashboard` and looked at each tab, comparing a few numbers with the CSV files.
 - [ ] Opened a few generated tables (e.g. `data/starter/csv/ledger_entry.csv`,
-      `ground_truth/anomalies.csv`) and spot-checked records against the rules.
+      `ground_truth/ground_truth.csv`) and spot-checked records against the rules.
 - [ ] Any changes you made yourself: …
 
 ## How to check the AI's claims independently
 
 ```bash
-pytest                                        # 49 tests, incl. the four acceptance criteria
+pytest                                        # 130 tests, incl. the four acceptance criteria
 cashpilot all --profile starter --out out/me  # regenerate; compare out/me/manifest.json with data/starter/manifest.json
 cashpilot repro-check --profile starter       # two fresh runs, every checksum compared
 ```
