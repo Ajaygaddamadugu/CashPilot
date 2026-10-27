@@ -15,7 +15,7 @@ cashpilot all --profile starter --seed 20261022
 | `csv/` | One CSV per table (UTF-8, `\n` line endings, header row) |
 | `json/` | The same tables as JSON arrays; money and rates are exact decimal strings |
 | `sql/` | `schema.sql` (DDL with PK/FK/CHECK), `append_only_sqlite.sql`, `seed.sql` |
-| `ground_truth/` | Labels of the injected anomalies and negative controls. **Not an input**: never use as a feature |
+| `ground_truth/` | `ground_truth.csv|json`: labels of the injected anomalies and negative controls (`anomalies.*` are identical aliases kept for older consumers). **Not an input**: never use as a feature |
 | `data_dictionary.md` | Every field: type, required, allowed values, units, uniqueness, validation rule |
 | `validation_summary.md` | Step 8 checks and their results |
 | `reports/` | Evaluation, 13-week liquidity outlook, data profile |

@@ -218,17 +218,20 @@
     "week 1": {
       "mape": 0.0178,
       "bias": -0.0021,
-      "observations": 20
+      "observations": 20,
+      "excluded_incomplete_fx": 0
     },
     "weeks 2-4": {
       "mape": 0.0539,
       "bias": 0.0529,
-      "observations": 56
+      "observations": 56,
+      "excluded_incomplete_fx": 0
     },
     "weeks 5-13": {
       "mape": 0.1275,
       "bias": 0.1262,
-      "observations": 142
+      "observations": 142,
+      "excluded_incomplete_fx": 0
     }
   },
   "variance_drivers": {

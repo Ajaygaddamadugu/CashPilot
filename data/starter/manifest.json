@@ -382,6 +382,18 @@
       "sha256": "eb8cbebc9ecf7a72b2971a690a751b710c8ed6fcadfa7b1f19f76147a1de07fd"
     },
     {
+      "path": "ground_truth/ground_truth.csv",
+      "rows": 44,
+      "bytes": 8253,
+      "sha256": "98e14787bac6acec0725c69c7d828c55a87f6fb50508357a08a487ad80b383c6"
+    },
+    {
+      "path": "ground_truth/ground_truth.json",
+      "rows": 44,
+      "bytes": 18115,
+      "sha256": "eb8cbebc9ecf7a72b2971a690a751b710c8ed6fcadfa7b1f19f76147a1de07fd"
+    },
+    {
       "path": "json/app_user.json",
       "rows": 11,
       "bytes": 1473,
@@ -588,8 +600,8 @@
     {
       "path": "README.md",
       "rows": null,
-      "bytes": 5205,
-      "sha256": "392a4d3b1b2abc15b19e867e18a23fea6fb88cfb02b3152887e1a0e059b979cd"
+      "bytes": 5293,
+      "sha256": "8f68f7ff64602da4585d87d246ee52c957bdb61716fe8c392d05f58983a24572"
     },
     {
       "path": "reports/data_profile.md",
@@ -600,14 +612,14 @@
     {
       "path": "reports/evaluation.json",
       "rows": null,
-      "bytes": 12609,
-      "sha256": "b79009419675cec92a967a9c28ac1af0150b6b80753002800aa752674d394c6f"
+      "bytes": 12714,
+      "sha256": "1586f6aba1cf7a28a97e607eb7ccd18189eaa1e2aebf0f209e6304177032189e"
     },
     {
       "path": "reports/evaluation.md",
       "rows": null,
-      "bytes": 3921,
-      "sha256": "463cb4fd9ee29e8bb20363731ae7f7eab9482db33b387d5fef74c467b51f1591"
+      "bytes": 4068,
+      "sha256": "7f80c8b6d70cb31a3f63a4a0b21f9f08bac0a532382892f6e3930df5bf0712d2"
     },
     {
       "path": "reports/liquidity_outlook.md",

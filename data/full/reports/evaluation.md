@@ -55,11 +55,13 @@ By scenario (same versions):
 
 Projected group available cash at each forecast week-end vs actual group available cash (internal pooling nets out at group level; restricted cash excluded on both sides).
 
-| Horizon | MAPE | Bias | Observations |
-|---|---|---|---|
-| week 1 | 1.6% | -0.0% | 39 |
-| weeks 2-4 | 3.1% | 2.5% | 111 |
-| weeks 5-13 | 6.6% | 1.2% | 279 |
+Weeks whose actual could not be fully converted to USD (a missing FX rate) are excluded, not compared.
+
+| Horizon | MAPE | Bias | Observations | Excluded (incomplete FX) |
+|---|---|---|---|---|
+| week 1 | 1.6% | -0.0% | 39 | 0 |
+| weeks 2-4 | 3.1% | 2.5% | 111 | 0 |
+| weeks 5-13 | 6.6% | 1.2% | 279 | 0 |
 
 ## What explains the variance
 

@@ -1,10 +1,10 @@
 # Reproducibility — `full` dataset, seed 20261022
 
-The full pipeline was run twice from scratch with the same seed. **Result: IDENTICAL** — 82 files compared, 82 byte-identical (SHA-256), 2,329,006 rows in total.
+The full pipeline was run twice from scratch with the same seed. **Result: IDENTICAL** — 84 files compared, 84 byte-identical (SHA-256), 2,329,408 rows in total.
 
 | File | Rows | SHA-256 (run 1) | Match |
 |---|---|---|---|
-| `README.md` |  | `fbe2facfd1f09dff…` | yes |
+| `README.md` |  | `27cf7b701e44689d…` | yes |
 | `csv/app_user.csv` | 37 | `866cc35290d758d9…` | yes |
 | `csv/audit_event.csv` | 680 | `1c0a61348f5283b4…` | yes |
 | `csv/bank_account.csv` | 150 | `c563f419124fe501…` | yes |
@@ -43,6 +43,8 @@ The full pipeline was run twice from scratch with the same seed. **Result: IDENT
 | `generation_config.json` |  | `0b6f35d7f2448362…` | yes |
 | `ground_truth/anomalies.csv` | 201 | `28651747ebb45ed6…` | yes |
 | `ground_truth/anomalies.json` | 201 | `b78ca008ba4802c1…` | yes |
+| `ground_truth/ground_truth.csv` | 201 | `28651747ebb45ed6…` | yes |
+| `ground_truth/ground_truth.json` | 201 | `b78ca008ba4802c1…` | yes |
 | `json/app_user.json` | 37 | `c66e7f0013ae074f…` | yes |
 | `json/audit_event.json` | 680 | `cc120d97c1a89475…` | yes |
 | `json/bank_account.json` | 150 | `80e5e22fc98b1369…` | yes |
@@ -78,8 +80,8 @@ The full pipeline was run twice from scratch with the same seed. **Result: IDENT
 | `json/settlement_allocation.json` | 13591 | `1a98145601a6f8ca…` | yes |
 | `json/variance_attribution.json` | 303378 | `46d550f14e0affd8…` | yes |
 | `reports/data_profile.md` |  | `0a8a39599423d8f0…` | yes |
-| `reports/evaluation.json` |  | `6e3ee381e877c6a1…` | yes |
-| `reports/evaluation.md` |  | `f88a7fb83fb1e2ab…` | yes |
+| `reports/evaluation.json` |  | `251b5f3b45f63a56…` | yes |
+| `reports/evaluation.md` |  | `adadcd36b899c9ca…` | yes |
 | `reports/liquidity_outlook.md` |  | `329cc3ca596e921d…` | yes |
 | `sql/append_only_sqlite.sql` |  | `33d4c0e8f98753b0…` | yes |
 | `sql/schema.sql` |  | `5e9b89818f23c2bd…` | yes |

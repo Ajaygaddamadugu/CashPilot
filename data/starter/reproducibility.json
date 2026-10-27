@@ -1,16 +1,16 @@
 {
   "profile": "starter",
   "seed": 20261022,
-  "files_compared": 82,
-  "files_identical": 82,
-  "rows_compared": 182812,
+  "files_compared": 84,
+  "files_identical": 84,
+  "rows_compared": 182900,
   "identical": true,
   "files": [
     {
       "path": "README.md",
       "rows": null,
-      "sha256_run1": "392a4d3b1b2abc15b19e867e18a23fea6fb88cfb02b3152887e1a0e059b979cd",
-      "sha256_run2": "392a4d3b1b2abc15b19e867e18a23fea6fb88cfb02b3152887e1a0e059b979cd",
+      "sha256_run1": "8f68f7ff64602da4585d87d246ee52c957bdb61716fe8c392d05f58983a24572",
+      "sha256_run2": "8f68f7ff64602da4585d87d246ee52c957bdb61716fe8c392d05f58983a24572",
       "match": true
     },
     {
@@ -280,6 +280,20 @@
       "match": true
     },
     {
+      "path": "ground_truth/ground_truth.csv",
+      "rows": 44,
+      "sha256_run1": "98e14787bac6acec0725c69c7d828c55a87f6fb50508357a08a487ad80b383c6",
+      "sha256_run2": "98e14787bac6acec0725c69c7d828c55a87f6fb50508357a08a487ad80b383c6",
+      "match": true
+    },
+    {
+      "path": "ground_truth/ground_truth.json",
+      "rows": 44,
+      "sha256_run1": "eb8cbebc9ecf7a72b2971a690a751b710c8ed6fcadfa7b1f19f76147a1de07fd",
+      "sha256_run2": "eb8cbebc9ecf7a72b2971a690a751b710c8ed6fcadfa7b1f19f76147a1de07fd",
+      "match": true
+    },
+    {
       "path": "json/app_user.json",
       "rows": 11,
       "sha256_run1": "670e485f8c46910fef0e6e07308de27f72f73c054a36647dab8397809eaede54",
@@ -527,15 +541,15 @@
     {
       "path": "reports/evaluation.json",
       "rows": null,
-      "sha256_run1": "b79009419675cec92a967a9c28ac1af0150b6b80753002800aa752674d394c6f",
-      "sha256_run2": "b79009419675cec92a967a9c28ac1af0150b6b80753002800aa752674d394c6f",
+      "sha256_run1": "1586f6aba1cf7a28a97e607eb7ccd18189eaa1e2aebf0f209e6304177032189e",
+      "sha256_run2": "1586f6aba1cf7a28a97e607eb7ccd18189eaa1e2aebf0f209e6304177032189e",
       "match": true
     },
     {
       "path": "reports/evaluation.md",
       "rows": null,
-      "sha256_run1": "463cb4fd9ee29e8bb20363731ae7f7eab9482db33b387d5fef74c467b51f1591",
-      "sha256_run2": "463cb4fd9ee29e8bb20363731ae7f7eab9482db33b387d5fef74c467b51f1591",
+      "sha256_run1": "7f80c8b6d70cb31a3f63a4a0b21f9f08bac0a532382892f6e3930df5bf0712d2",
+      "sha256_run2": "7f80c8b6d70cb31a3f63a4a0b21f9f08bac0a532382892f6e3930df5bf0712d2",
       "match": true
     },
     {
