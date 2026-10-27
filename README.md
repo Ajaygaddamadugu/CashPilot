@@ -21,7 +21,7 @@ append-only history.
 | Edge-case detection | Balance breaks, FX gaps, mixed currency, look-ahead runs: **100%** precision and recall. Duplicates: 100% within the matching tolerance, 87% overall (hard cases by design). **0 of 35** negative controls flagged - [evaluation](data/full/reports/evaluation.md) |
 | Forecast | Group cash-balance error (MAPE) **1.6%** in week 1, 3.1% in weeks 2-4, 6.6% in weeks 5-13; variance explained with **zero residual** on 43,147 entity-weeks |
 | Liquidity outlook | As of 2026-10-01: group available cash ≈ USD 690 M; in the stress case it bottoms at ≈ USD 621 M and 13 entities need intra-group funding - [outlook](data/full/reports/liquidity_outlook.md) |
-| Interface | Optional read-only web dashboard (Streamlit) over the same engine: cash, accounts and FX exposure, forecasts and scenarios, cash-flow drivers, exceptions with traceable evidence, forecast vs actual, audit and exports - [docs/DASHBOARD.md](docs/DASHBOARD.md) |
+| Interface | Optional read-only web dashboard (Streamlit), written for non-programmers: a *Start here* guide that shows the brief's acceptance criteria and edge cases, cash and FX exposure, companies / accounts / bank transactions / invoices, forecasts and scenarios, cash-flow drivers, exceptions with traceable evidence, forecast vs actual, audit and exports - [docs/DASHBOARD.md](docs/DASHBOARD.md) |
 | Reproducibility | Two independent regenerations, every file byte-identical - [report](data/full/reproducibility.md). CI regenerates the starter data on Ubuntu (Python 3.12) and Windows (Python 3.13) and gets the same bytes as the committed bundle |
 
 ## Quick start
@@ -37,7 +37,7 @@ python -m venv .venv
 pip install -r requirements-dev.txt     # exact pins: checksums depend on them
 pip install -e . --no-deps
 
-pytest                                   # 130 tests, about 5 minutes (the dashboard tests skip without Streamlit)
+pytest                                   # 147 tests, about 5 minutes (the dashboard tests skip without Streamlit)
 cashpilot all --profile starter --out out/starter
 ```
 
@@ -55,9 +55,9 @@ pip install -e . --no-deps
 cashpilot dashboard                           # http://localhost:8501, on the committed data/starter
 ```
 
-It is read-only and reuses the engine; see [docs/DASHBOARD.md](docs/DASHBOARD.md) for the screens, what is tested and the limits.
+Start on the **Start here** tab. The dashboard is read-only and reuses the engine; see [docs/DASHBOARD.md](docs/DASHBOARD.md) for the nine tabs, what is tested and the limits.
 
-![Forecast tab](docs/screenshots/03-forecast.png)
+![Forecast tab](docs/screenshots/04-forecast.png)
 
 ## Verify the key behaviour
 
@@ -105,7 +105,7 @@ data/starter/  the starter dataset in every format (+ ground truth, reports, man
 data/full/     full-scale manifest, ground truth, validation summary and reports (bulk files regenerate)
 docs/          design, decisions, rules, data dictionary, ERD, scenarios, workflow, variance method,
                testing, limitations, provenance, walkthrough, requirements traceability
-tests/         130 tests               prompts/  prompt history          AI_USAGE.md          scripts/  helpers
+tests/         147 tests               prompts/  prompt history          AI_USAGE.md          scripts/  helpers
 ```
 
 ## Documentation

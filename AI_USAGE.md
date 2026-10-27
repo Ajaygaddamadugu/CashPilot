@@ -59,6 +59,11 @@ defended rather than taken on trust.
 | Bad input produced raw Python tracebacks (missing dataset folder, malformed date) | writing the CLI tests | clean `error:` messages and exit code 2 | `test+fix:` commit |
 | Dashboard crashed on every tab after a display tweak (pandas rejects `datetime64[us]` in `select_dtypes`) | looking at the captured screenshot (file sizes had looked plausible); the app tests had not been re-run after that edit | fixed; the 8 app tests re-run and pass; screenshots retaken and inspected one by one | `feat(dashboard)` commit |
 | Forecast tab said "no projected day is below the buffer" for the group while two entities did breach | reviewing the screenshot | the message now says a group total can hide an entity shortfall | `feat(dashboard)` commit |
+| The dashboard showed no ledger entries, invoices, bills or account lifecycle, and the brief's acceptance criteria, edge cases and actors were not visible | the candidate asked for every tab to be checked against the problem requirements; the AI compared each screenshot with the brief | *Start here* and *Entities & transactions* tabs, tested | `feat(dashboard)` commit |
+| Text-heavy tables cut sentences off with an ellipsis; raw column names and `None` everywhere; the Actual-vs-forecast tab opened on a run with one week or on the live run ("nothing to compare") | reviewing every screenshot | wrapped static tables, a plain-language module with a completeness test, a sensible default run | `feat(dashboard)` commit |
+| A "blanks instead of None" tweak made table columns mixed-type; Arrow serialisation fell back to a slow repair path and one test run exceeded 10 minutes | the test run hung, then profiling and the stack trace | dates as ISO text and one type per column; a test now rejects `None` and mixed-type cells | `feat(dashboard)` commit |
+| A test I had written ended in `or True` and asserted nothing | re-reading the test file | replaced by a real check | `feat(dashboard)` commit |
+| An overly broad command to stop leftover test processes (it would also have killed any other Python process, including a dashboard the candidate had open) was blocked by the permission system | tool permission denial | replaced by a command that targets only the AI's own process by its command line; the candidate's dashboard was never touched | - |
 
 ## Second phase: hardening and the web dashboard
 
@@ -103,7 +108,7 @@ To confirm yourself (suggested):
 ## How to check the AI's claims independently
 
 ```bash
-pytest                                        # 130 tests, incl. the four acceptance criteria
+pytest                                        # 147 tests, incl. the four acceptance criteria
 cashpilot all --profile starter --out out/me  # regenerate; compare out/me/manifest.json with data/starter/manifest.json
 cashpilot repro-check --profile starter       # two fresh runs, every checksum compared
 ```

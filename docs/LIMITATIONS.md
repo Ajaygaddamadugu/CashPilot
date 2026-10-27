@@ -67,5 +67,6 @@ Stated plainly so that reviewers can judge what the numbers mean.
 * Read-only by design (see [DASHBOARD.md](DASHBOARD.md)); actions live in the CLI where permissions, four-eyes and audit exist.
 * No authentication: a local review tool for synthetic data, not for exposure to a network.
 * Item-level variance drill-down exists for the base scenario only.
+* Long lists (ledger entries, invoices, bills) show the first 1,000-2,000 rows; the download has all of them.
 * The screenshots were captured from the running app on one machine; widget layout may differ slightly between
   Streamlit versions (1.66.1 is pinned).

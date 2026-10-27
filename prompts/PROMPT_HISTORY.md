@@ -534,3 +534,17 @@ the `ground_truth.*` compatibility files, regenerated and re-verified datasets, 
 dashboard with a tested data layer, headless app tests, screenshots captured from the running app, documentation updates and this file.
 See `git log` and [AI_USAGE.md](../AI_USAGE.md).
 
+## 13. Commands to run the project (again)
+
+> give me the commands to run the project
+
+**AI response.** Listed the commands for the existing folder and for a fresh clone (tests, `cashpilot all`, dashboard) and useful extras.
+
+## 14. Review the dashboard against the brief
+
+The candidate sent a screenshot of the dashboard running in their own browser at `localhost:8501` (the first tab, *Cash overview*) and wrote:
+
+> hey see this and inspect all the tabs are all we require and check the strcutre that are given in the problem rquirements . everything should user understandable
+
+**AI response.** Inspected every tab's screenshot against the problem statement and reported what was missing (ledger entries, receivables and payables, entity and account master data, the acceptance criteria, the edge cases, the actors, the scale against the brief) and what a non-programmer would struggle with (raw column names, `None` cells, error rates as decimals, jargon, truncated text, a poor default view). Then added a *Start here* tab and an *Entities & transactions* tab, a plain-language module, friendlier tables and charts, tests, new screenshots and documentation, and fixed the problems the work uncovered (see AI_USAGE.md).
+
