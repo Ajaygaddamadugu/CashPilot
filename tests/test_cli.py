@@ -165,3 +165,8 @@ def test_unknown_command_prints_usage_and_exits_2(capsys):
     with pytest.raises(SystemExit) as stop:
         main(["no-such-command"])
     assert stop.value.code == 2 and "usage:" in capsys.readouterr().err
+
+
+def test_dashboard_command_refuses_a_missing_dataset_cleanly(tmp_path, capsys):
+    code, out, err = run(["dashboard", "--data", str(tmp_path / "nope"), "--headless"], capsys)
+    assert code == 2 and out == "" and err.startswith("error:")      # either "needs Streamlit" or "no CashPilot dataset"

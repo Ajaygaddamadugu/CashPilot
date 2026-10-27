@@ -1,0 +1,4 @@
+# Optional web dashboard. The core pins come first and must not change: the dataset checksums depend on them.
+# pip fails loudly if Streamlit cannot be installed alongside them, instead of upgrading numpy or pandas.
+-r requirements-dev.txt
+streamlit==1.66.1

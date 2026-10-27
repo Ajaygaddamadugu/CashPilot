@@ -9,6 +9,7 @@ Pipeline
   export         (re)write JSON/SQL, docs and manifest from the CSV tables
   repro-check    regenerate twice with the same seed and compare checksums
   docs           regenerate docs/DATA_DICTIONARY.md
+  dashboard      read-only web dashboard over a dataset folder (optional: pip install -e ".[dashboard]")
 
 Workflow (acts as a user; every action is permission-checked and audited)
   forecast       create a CashPilot forecast run as of a cutoff date
@@ -143,6 +144,26 @@ def cmd_docs(args) -> int:
     path.write_text(render_data_dictionary(load_schema()), encoding="utf-8", newline="\n")
     print(f"wrote {path}")
     return 0
+
+
+def cmd_dashboard(args) -> int:
+    import os
+    import subprocess
+    try:
+        import streamlit  # noqa: F401
+    except ImportError:
+        print('error: the dashboard needs Streamlit. Install it with: pip install -r requirements-dashboard.txt && pip install -e . --no-deps\n'
+              '       (or: pip install -e ".[dashboard]")', file=sys.stderr)
+        return 2
+    data = Path(args.data)
+    if not (data / "generation_config.json").is_file() or not (data / "csv").is_dir():
+        raise FileNotFoundError(f"no CashPilot dataset in '{data}'; create one with: cashpilot all --profile starter --out {data}")
+    app = Path(__file__).resolve().parent / "dashboard" / "app.py"
+    cmd = [sys.executable, "-m", "streamlit", "run", str(app), "--server.port", str(args.port), "--browser.gatherUsageStats", "false"]
+    if args.headless:
+        cmd += ["--server.headless", "true"]
+    print(f"CashPilot dashboard on http://localhost:{args.port}  (dataset: {data}; read-only; Ctrl+C to stop)")
+    return subprocess.call(cmd, env={**os.environ, "CASHPILOT_DATA": str(data)})
 
 
 # ------------------------------------------------------------------- workflow
@@ -297,6 +318,11 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("docs", help="regenerate docs/DATA_DICTIONARY.md from the data dictionary")
     p.add_argument("--out", default="docs")
     p.set_defaults(func=cmd_docs)
+    p = sub.add_parser("dashboard", help="open the read-only web dashboard (needs the optional Streamlit extra)")
+    p.add_argument("--data", default="data/starter", help="dataset folder (default: data/starter)")
+    p.add_argument("--port", type=int, default=8501)
+    p.add_argument("--headless", action="store_true", help="do not open a browser window")
+    p.set_defaults(func=cmd_dashboard)
 
     def act(p):
         p.add_argument("--data", required=True, help="dataset folder")
