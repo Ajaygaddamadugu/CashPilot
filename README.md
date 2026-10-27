@@ -58,6 +58,20 @@ cashpilot dashboard --data data/full          # the full-scale dataset (30 entit
 
 The dataset can also be switched in the sidebar (*Starter* or *Full*).
 
+**Already installed? Start it again later** (from the project folder; stop it with Ctrl+C):
+
+```powershell
+# Windows PowerShell
+.\.venv\Scriptsctivate
+cashpilot dashboard
+```
+
+```bash
+# macOS / Linux
+source .venv/bin/activate
+cashpilot dashboard
+```
+
 Start on the **Start here** tab. The dashboard is read-only and reuses the engine; see [docs/DASHBOARD.md](docs/DASHBOARD.md) for the nine tabs, what is tested and the limits.
 
 ![Forecast tab](docs/screenshots/04-forecast.png)
