@@ -48,5 +48,5 @@ Stated plainly so that reviewers can judge what the numbers mean.
   (`requirements.txt`). Floating-point maths is limited to FX conversions (IEEE-754
   multiplication, deterministic on every platform) and seeded random draws; CI compares the
   starter checksums on Ubuntu and Windows.
-* **Size.** The full bundle (CSV + JSON + SQL) is ~0.5 GB, so only its manifest, ground truth,
+* **Size.** The full bundle (CSV + JSON + SQL) is ~0.6 GB, so only its manifest, ground truth,
   validation summary and reports are committed; the bulk files are regenerated with one command.

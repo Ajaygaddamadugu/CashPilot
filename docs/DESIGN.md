@@ -89,7 +89,7 @@ flowchart LR
 
 ## Scale and performance (full profile, one laptop)
 
-~1.4 M rows across 34 tables. Generation ~30 s, CashPilot processing ~40 s, validation, evaluation
+~1.2 M rows across 34 tables. Generation ~30 s, CashPilot processing ~40 s, validation, evaluation
 and export of CSV/JSON/SQL a few minutes more. Two hotspots were optimised during the build
 (account lookups 73 s → 10 s; projection arrays and vectorised money formatting halved the engine
 time) - see the commit history.

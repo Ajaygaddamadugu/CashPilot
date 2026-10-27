@@ -1,0 +1,69 @@
+{
+  "anomalies": {
+    "balance_breaks": 40,
+    "duplicate_cash_flows": 60,
+    "fx_missing_long_gaps": 1,
+    "fx_missing_short_gaps": 8,
+    "lookahead_runs": 3,
+    "mixed_currency": 40,
+    "negative_controls": 40
+  },
+  "calendar": {
+    "actuals_end": "2026-09-30",
+    "cycle_year": 2026,
+    "history_lookback_days": 75,
+    "schedule_end": "2026-12-31",
+    "start_date": "2026-01-01"
+  },
+  "currencies": [
+    "USD",
+    "EUR",
+    "GBP",
+    "INR",
+    "JPY"
+  ],
+  "entity_mix": {
+    "EUR": 8,
+    "GBP": 5,
+    "INR": 5,
+    "JPY": 3,
+    "USD": 9
+  },
+  "forecast": {
+    "benign_reruns": 3,
+    "first_cutoff": "2026-01-01",
+    "frequency_days": 7,
+    "horizon_days": 91,
+    "knowledge_hour_utc": 8,
+    "live_cutoff": "2026-10-01"
+  },
+  "lifecycle": {
+    "acquisition_date": "2026-04-01",
+    "closed_accounts": 2,
+    "frozen_accounts": 1,
+    "new_accounts": 2
+  },
+  "policy": {
+    "approval_threshold_usd": 250000,
+    "duplicate_date_tolerance_days": 3,
+    "fx_staleness_business_days": 3,
+    "overdue_grace_days": 30,
+    "recon_materiality_usd": 1000,
+    "write_off_after_days": 90
+  },
+  "profile": "full",
+  "reporting_currency": "USD",
+  "seed": 20261022,
+  "volumes": {
+    "bank_accounts": 150,
+    "customers": 600,
+    "forecast_items": 20000,
+    "ledger_entries": 100000,
+    "legal_entities": 30,
+    "manual_items": 300,
+    "one_off_payments": 24,
+    "ops_analysts": 3,
+    "risk_reviewers": 2,
+    "suppliers": 400
+  }
+}

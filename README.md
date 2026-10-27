@@ -16,7 +16,7 @@ append-only history.
 
 | | |
 |---|---|
-| Volumes | 30 entities, 150 bank accounts, **100,000** ledger entries, **20,000** forecast items, 5 currencies, ~1.4 M rows in 34 tables |
+| Volumes | 30 entities, 150 bank accounts, **100,000** ledger entries, **20,000** forecast items, 5 currencies, ~1.2 M rows in 34 tables |
 | Data quality | Clean baseline: **0** violations. Final dataset: every validator finding is a labelled anomaly - see [validation summary](data/full/validation_summary.md) |
 | Edge-case detection | Balance breaks, FX gaps, mixed currency, look-ahead runs: **100%** precision and recall. Duplicates: 100% within the matching tolerance, 87% overall (hard cases by design). **0 of 35** negative controls flagged - [evaluation](data/full/reports/evaluation.md) |
 | Forecast | Group cash-balance error (MAPE) **1.6%** in week 1, 3.1% in weeks 2-4, 6.6% in weeks 5-13; variance explained with **zero residual** on 43,147 entity-weeks |
@@ -44,7 +44,7 @@ cashpilot all --profile starter --out out/starter
 runs CashPilot (positions → audit → exceptions → remediation → live forecast → actual vs
 forecast), validates, evaluates against the ground truth and exports everything. The starter
 profile takes well under a minute; `--profile full` builds the full-scale dataset in a few minutes
-(~0.5 GB in CSV + JSON + SQL).
+(~0.6 GB in CSV + JSON + SQL).
 
 ## Verify the key behaviour
 

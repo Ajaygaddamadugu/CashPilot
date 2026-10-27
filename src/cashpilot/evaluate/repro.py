@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
+import stat
+import time
 from pathlib import Path
 
 from cashpilot.core.config import load_config
@@ -23,13 +26,29 @@ def compare_manifests(m1: dict, m2: dict) -> dict:
             "rows_compared": sum(f["rows"] or 0 for f in files), "identical": all(f["match"] for f in files), "files": files}
 
 
+def _remove_tree(path: Path, attempts: int = 6) -> None:
+    """rmtree that survives transient locks (OneDrive sync, antivirus scans) on Windows."""
+    def make_writable(func, p, _exc):
+        os.chmod(p, stat.S_IWRITE)
+        func(p)
+
+    for attempt in range(attempts):
+        try:
+            shutil.rmtree(path, onerror=make_writable)
+            return
+        except OSError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(2 * (attempt + 1))
+
+
 def repro_check(profile: str, seed: int | None, workdir: Path, formats=("csv", "json", "sql"), log=print) -> dict:
     cfg = load_config(profile, seed)
     manifests = []
     for i in (1, 2):
         out = Path(workdir) / f"run-{i}"
         if out.exists():
-            shutil.rmtree(out)
+            _remove_tree(out)
         log(f"== run {i} -> {out}")
         manifests.append(run_all(cfg, out, formats, log=log)["manifest"])
     result = {"profile": cfg.profile, "seed": cfg.seed, **compare_manifests(*manifests)}

@@ -1,0 +1,740 @@
+{
+  "profile": "full",
+  "seed": 20261022,
+  "detection": {
+    "by_issue": [
+      {
+        "issue_type": "BALANCE_BREAK",
+        "labelled": 40,
+        "detected": 40,
+        "tp": 40,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "decision_accuracy": 1.0
+      },
+      {
+        "issue_type": "DUPLICATE_CASH_FLOW",
+        "labelled": 60,
+        "detected": 52,
+        "tp": 52,
+        "fp": 0,
+        "fn": 8,
+        "precision": 1.0,
+        "recall": 0.8667,
+        "f1": 0.9286,
+        "decision_accuracy": 1.0
+      },
+      {
+        "issue_type": "FX_RATE_MISSING",
+        "labelled": 23,
+        "detected": 23,
+        "tp": 23,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "decision_accuracy": 1.0
+      },
+      {
+        "issue_type": "LOOKAHEAD_LEAKAGE",
+        "labelled": 3,
+        "detected": 3,
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "decision_accuracy": 1.0
+      },
+      {
+        "issue_type": "MIXED_CURRENCY",
+        "labelled": 40,
+        "detected": 40,
+        "tp": 40,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "decision_accuracy": 1.0
+      }
+    ],
+    "by_sub_type": [
+      {
+        "issue_type": "BALANCE_BREAK",
+        "sub_type": "BANK_ONLY_CHARGE",
+        "labelled": 29,
+        "detected": 29,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "BALANCE_BREAK",
+        "sub_type": "PAYMENT_REJECTED_BY_BANK",
+        "labelled": 11,
+        "detected": 11,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "DUPLICATE_CASH_FLOW",
+        "sub_type": "EXACT_REFERENCE",
+        "labelled": 30,
+        "detected": 30,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "DUPLICATE_CASH_FLOW",
+        "sub_type": "FUZZY_BEYOND_TOLERANCE",
+        "labelled": 8,
+        "detected": 0,
+        "recall": 0.0
+      },
+      {
+        "issue_type": "DUPLICATE_CASH_FLOW",
+        "sub_type": "FUZZY_MATCH",
+        "labelled": 22,
+        "detected": 22,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "FX_RATE_MISSING",
+        "sub_type": "LONG_GAP",
+        "labelled": 5,
+        "detected": 5,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "FX_RATE_MISSING",
+        "sub_type": "SHORT_GAP",
+        "labelled": 18,
+        "detected": 18,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "LOOKAHEAD_LEAKAGE",
+        "sub_type": "LATEST_SNAPSHOT_USED",
+        "labelled": 3,
+        "detected": 3,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "MIXED_CURRENCY",
+        "sub_type": "ITEM_CURRENCY_MISMATCH",
+        "labelled": 20,
+        "detected": 20,
+        "recall": 1.0
+      },
+      {
+        "issue_type": "MIXED_CURRENCY",
+        "sub_type": "UNCONVERTED_AMOUNT",
+        "labelled": 20,
+        "detected": 20,
+        "recall": 1.0
+      }
+    ],
+    "negative_controls": 35,
+    "negative_controls_flagged": 0,
+    "flagged_control_ids": []
+  },
+  "forecast_accuracy": {
+    "approved_versions": {
+      "runs": 39,
+      "by_horizon": {
+        "week 1": {
+          "wape": 0.6361,
+          "bias": 0.0196,
+          "entity_weeks": 1157
+        },
+        "weeks 2-4": {
+          "wape": 0.8725,
+          "bias": -0.2047,
+          "entity_weeks": 3291
+        },
+        "weeks 5-13": {
+          "wape": 0.9352,
+          "bias": 0.1364,
+          "entity_weeks": 8253
+        }
+      }
+    },
+    "approved_versions_by_scenario": {
+      "BASE": {
+        "week 1": {
+          "wape": 0.6361,
+          "bias": 0.0196,
+          "entity_weeks": 1157
+        },
+        "weeks 2-4": {
+          "wape": 0.8725,
+          "bias": -0.2047,
+          "entity_weeks": 3291
+        },
+        "weeks 5-13": {
+          "wape": 0.9352,
+          "bias": 0.1364,
+          "entity_weeks": 8253
+        }
+      },
+      "DELAY": {
+        "week 1": {
+          "wape": 0.7223,
+          "bias": 0.4608,
+          "entity_weeks": 1157
+        },
+        "weeks 2-4": {
+          "wape": 0.8014,
+          "bias": -0.0395,
+          "entity_weeks": 3291
+        },
+        "weeks 5-13": {
+          "wape": 0.9215,
+          "bias": 0.0681,
+          "entity_weeks": 8253
+        }
+      },
+      "STRESS": {
+        "week 1": {
+          "wape": 0.997,
+          "bias": 0.8451,
+          "entity_weeks": 1157
+        },
+        "weeks 2-4": {
+          "wape": 0.9393,
+          "bias": -0.0472,
+          "entity_weeks": 3291
+        },
+        "weeks 5-13": {
+          "wape": 0.9509,
+          "bias": 0.0914,
+          "entity_weeks": 8253
+        }
+      }
+    },
+    "lookahead_signature": {
+      "leaky_runs_week1_wape": 1.2416,
+      "their_as_of_reruns_week1_wape": 0.6894,
+      "other_runs_week1_wape": 0.6295,
+      "note": "A forecast that has seen the future is suspiciously accurate in its first week."
+    }
+  },
+  "balance_accuracy": {
+    "week 1": {
+      "mape": 0.0157,
+      "bias": -0.0002,
+      "observations": 39
+    },
+    "weeks 2-4": {
+      "mape": 0.0307,
+      "bias": 0.0251,
+      "observations": 111
+    },
+    "weeks 5-13": {
+      "mape": 0.0655,
+      "bias": 0.0117,
+      "observations": 279
+    }
+  },
+  "variance_drivers": {
+    "share_of_absolute_variance": {
+      "timing": 0.3286,
+      "amount": 0.0136,
+      "fx": 0.0094,
+      "new_after_cutoff": 0.4993,
+      "unforecasted": 0.0062,
+      "not_realized": 0.0855,
+      "run_rate": 0.0463,
+      "data_quality": 0.011
+    },
+    "net_by_driver_usd": {
+      "timing": -146447555.31,
+      "amount": 49728135.44,
+      "fx": 39364779.09,
+      "new_after_cutoff": 824611663.69,
+      "unforecasted": 116289173.39,
+      "not_realized": -210848494.86,
+      "run_rate": -14144533.95,
+      "data_quality": -10268743.62
+    },
+    "residual_usd": 0,
+    "rows": 12701
+  },
+  "liquidity_outlook": {
+    "run_id": "FCAST-2026-10-01-001",
+    "cutoff": "2026-10-01",
+    "scenarios": {
+      "SCN-BASE-V01": {
+        "opening_available_usd": 693919697.3,
+        "lowest_available_usd": 688946890.09,
+        "lowest_on": "2026-10-02",
+        "closing_available_usd": 731044299.4,
+        "restricted_usd": 47237509.22,
+        "entities_breaching": 11,
+        "funding_gap_usd": 3892425.44,
+        "breaches": [
+          {
+            "entity_id": "ENT-000019",
+            "entity_name": "Northgate Engineering Ltd",
+            "first_breach": "2026-10-02",
+            "days_below_buffer": 87,
+            "max_shortfall_usd": 1499421.36
+          },
+          {
+            "entity_id": "ENT-000011",
+            "entity_name": "Mayfield Pharma K.K.",
+            "first_breach": "2026-11-18",
+            "days_below_buffer": 43,
+            "max_shortfall_usd": 623525.64
+          },
+          {
+            "entity_id": "ENT-000012",
+            "entity_name": "Oakridge Energy Inc.",
+            "first_breach": "2026-10-02",
+            "days_below_buffer": 43,
+            "max_shortfall_usd": 467736.73
+          },
+          {
+            "entity_id": "ENT-000018",
+            "entity_name": "Selwyn Analytics GmbH",
+            "first_breach": "2026-10-15",
+            "days_below_buffer": 43,
+            "max_shortfall_usd": 410288.99
+          },
+          {
+            "entity_id": "ENT-000025",
+            "entity_name": "Marston Textiles Inc.",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 78,
+            "max_shortfall_usd": 304339.84
+          },
+          {
+            "entity_id": "ENT-000003",
+            "entity_name": "Stonebridge Components GmbH",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 72,
+            "max_shortfall_usd": 198905.93
+          },
+          {
+            "entity_id": "ENT-000005",
+            "entity_name": "Newbold Retail Pvt Ltd",
+            "first_breach": "2026-11-25",
+            "days_below_buffer": 14,
+            "max_shortfall_usd": 182613.72
+          },
+          {
+            "entity_id": "ENT-000021",
+            "entity_name": "Linwood Retail Inc.",
+            "first_breach": "2026-10-23",
+            "days_below_buffer": 13,
+            "max_shortfall_usd": 129857.49
+          },
+          {
+            "entity_id": "ENT-000027",
+            "entity_name": "Glenrock Energy Inc.",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 11,
+            "max_shortfall_usd": 38776.37
+          },
+          {
+            "entity_id": "ENT-000004",
+            "entity_name": "Yarrow Components Ltd",
+            "first_breach": "2026-10-15",
+            "days_below_buffer": 4,
+            "max_shortfall_usd": 26278.5
+          },
+          {
+            "entity_id": "ENT-000008",
+            "entity_name": "Dunmore Foods B.V.",
+            "first_breach": "2026-10-02",
+            "days_below_buffer": 3,
+            "max_shortfall_usd": 10680.87
+          }
+        ]
+      },
+      "SCN-DELAY-V01": {
+        "opening_available_usd": 690625589.21,
+        "lowest_available_usd": 668022019.31,
+        "lowest_on": "2026-10-23",
+        "closing_available_usd": 723570907.11,
+        "restricted_usd": 47237509.22,
+        "entities_breaching": 13,
+        "funding_gap_usd": 6779562.94,
+        "breaches": [
+          {
+            "entity_id": "ENT-000019",
+            "entity_name": "Northgate Engineering Ltd",
+            "first_breach": "2026-10-02",
+            "days_below_buffer": 90,
+            "max_shortfall_usd": 1680242.85
+          },
+          {
+            "entity_id": "ENT-000005",
+            "entity_name": "Newbold Retail Pvt Ltd",
+            "first_breach": "2026-11-23",
+            "days_below_buffer": 29,
+            "max_shortfall_usd": 1061970.06
+          },
+          {
+            "entity_id": "ENT-000004",
+            "entity_name": "Yarrow Components Ltd",
+            "first_breach": "2026-10-15",
+            "days_below_buffer": 44,
+            "max_shortfall_usd": 970971.6
+          },
+          {
+            "entity_id": "ENT-000012",
+            "entity_name": "Oakridge Energy Inc.",
+            "first_breach": "2026-10-02",
+            "days_below_buffer": 55,
+            "max_shortfall_usd": 652707.56
+          },
+          {
+            "entity_id": "ENT-000011",
+            "entity_name": "Mayfield Pharma K.K.",
+            "first_breach": "2026-11-18",
+            "days_below_buffer": 43,
+            "max_shortfall_usd": 623525.64
+          },
+          {
+            "entity_id": "ENT-000027",
+            "entity_name": "Glenrock Energy Inc.",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 65,
+            "max_shortfall_usd": 427041.93
+          },
+          {
+            "entity_id": "ENT-000018",
+            "entity_name": "Selwyn Analytics GmbH",
+            "first_breach": "2026-10-15",
+            "days_below_buffer": 64,
+            "max_shortfall_usd": 415308.4
+          },
+          {
+            "entity_id": "ENT-000025",
+            "entity_name": "Marston Textiles Inc.",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 82,
+            "max_shortfall_usd": 388161.25
+          },
+          {
+            "entity_id": "ENT-000021",
+            "entity_name": "Linwood Retail Inc.",
+            "first_breach": "2026-10-23",
+            "days_below_buffer": 13,
+            "max_shortfall_usd": 246380.51
+          },
+          {
+            "entity_id": "ENT-000003",
+            "entity_name": "Stonebridge Components GmbH",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 79,
+            "max_shortfall_usd": 224144.67
+          },
+          {
+            "entity_id": "ENT-000017",
+            "entity_name": "Bexley Logistics Inc.",
+            "first_breach": "2026-10-23",
+            "days_below_buffer": 5,
+            "max_shortfall_usd": 45795.5
+          },
+          {
+            "entity_id": "ENT-000008",
+            "entity_name": "Dunmore Foods B.V.",
+            "first_breach": "2026-10-02",
+            "days_below_buffer": 9,
+            "max_shortfall_usd": 39971.78
+          },
+          {
+            "entity_id": "ENT-000015",
+            "entity_name": "Redwater Analytics Pvt Ltd",
+            "first_breach": "2026-12-01",
+            "days_below_buffer": 1,
+            "max_shortfall_usd": 3341.19
+          }
+        ]
+      },
+      "SCN-STRESS-V02": {
+        "opening_available_usd": 646750440.47,
+        "lowest_available_usd": 620815730.53,
+        "lowest_on": "2026-10-25",
+        "closing_available_usd": 659467240.1,
+        "restricted_usd": 43205596.06,
+        "entities_breaching": 13,
+        "funding_gap_usd": 8082598.63,
+        "breaches": [
+          {
+            "entity_id": "ENT-000019",
+            "entity_name": "Northgate Engineering Ltd",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 91,
+            "max_shortfall_usd": 1761724.22
+          },
+          {
+            "entity_id": "ENT-000005",
+            "entity_name": "Newbold Retail Pvt Ltd",
+            "first_breach": "2026-11-18",
+            "days_below_buffer": 43,
+            "max_shortfall_usd": 1321301.01
+          },
+          {
+            "entity_id": "ENT-000004",
+            "entity_name": "Yarrow Components Ltd",
+            "first_breach": "2026-10-15",
+            "days_below_buffer": 76,
+            "max_shortfall_usd": 1042884.42
+          },
+          {
+            "entity_id": "ENT-000012",
+            "entity_name": "Oakridge Energy Inc.",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 64,
+            "max_shortfall_usd": 790979.42
+          },
+          {
+            "entity_id": "ENT-000011",
+            "entity_name": "Mayfield Pharma K.K.",
+            "first_breach": "2026-11-18",
+            "days_below_buffer": 43,
+            "max_shortfall_usd": 670572.42
+          },
+          {
+            "entity_id": "ENT-000027",
+            "entity_name": "Glenrock Energy Inc.",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 83,
+            "max_shortfall_usd": 523821.93
+          },
+          {
+            "entity_id": "ENT-000017",
+            "entity_name": "Bexley Logistics Inc.",
+            "first_breach": "2026-10-15",
+            "days_below_buffer": 10,
+            "max_shortfall_usd": 486639.58
+          },
+          {
+            "entity_id": "ENT-000018",
+            "entity_name": "Selwyn Analytics GmbH",
+            "first_breach": "2026-10-04",
+            "days_below_buffer": 81,
+            "max_shortfall_usd": 417200.63
+          },
+          {
+            "entity_id": "ENT-000025",
+            "entity_name": "Marston Textiles Inc.",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 91,
+            "max_shortfall_usd": 406701.25
+          },
+          {
+            "entity_id": "ENT-000021",
+            "entity_name": "Linwood Retail Inc.",
+            "first_breach": "2026-10-18",
+            "days_below_buffer": 19,
+            "max_shortfall_usd": 279455.51
+          },
+          {
+            "entity_id": "ENT-000003",
+            "entity_name": "Stonebridge Components GmbH",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 84,
+            "max_shortfall_usd": 254664.67
+          },
+          {
+            "entity_id": "ENT-000015",
+            "entity_name": "Redwater Analytics Pvt Ltd",
+            "first_breach": "2026-11-08",
+            "days_below_buffer": 19,
+            "max_shortfall_usd": 71180.1
+          },
+          {
+            "entity_id": "ENT-000008",
+            "entity_name": "Dunmore Foods B.V.",
+            "first_breach": "2026-10-01",
+            "days_below_buffer": 32,
+            "max_shortfall_usd": 55473.47
+          }
+        ]
+      }
+    }
+  },
+  "reconciliation": {
+    "statements": 28603,
+    "statement_days_reconciled": 0.9986,
+    "breaks": 40,
+    "breaks_high": 18,
+    "account_days_with_open_difference": 3060,
+    "accounts_affected": 35
+  },
+  "data_profile": {
+    "rows": {
+      "currency": 5,
+      "app_user": 37,
+      "counterparty": 1000,
+      "currency_rate": 961,
+      "liquidity_scenario": 4,
+      "scenario_assumption": 10,
+      "scenario_assumption_link": 22,
+      "legal_entity": 30,
+      "bank_account": 150,
+      "receivable": 8628,
+      "payable": 7059,
+      "cash_flow_forecast": 20000,
+      "ledger_entry": 100000,
+      "settlement_allocation": 13591,
+      "bank_statement": 28603,
+      "bank_account_event": 154,
+      "receivable_event": 16768,
+      "payable_event": 20431,
+      "cf_revision": 22443,
+      "forecast_run": 46,
+      "forecast_run_scenario": 135,
+      "forecast_run_item": 155521,
+      "forecast_run_balance_input": 6753,
+      "forecast_run_fx_input": 184,
+      "forecast_position": 364819,
+      "scenario_assumption_effect": 571,
+      "forecast_run_event": 187,
+      "daily_cash_position": 40031,
+      "entity_cash_position": 8100,
+      "exception": 195,
+      "exception_event": 659,
+      "audit_event": 680,
+      "forecast_vs_actual": 43147,
+      "variance_attribution": 303378
+    },
+    "ledger_entry_types": {
+      "OPERATING_RECEIPT": 42680,
+      "OPERATING_PAYMENT": 34920,
+      "AR_RECEIPT": 7043,
+      "AP_PAYMENT": 6222,
+      "POOL_SWEEP": 5956,
+      "BANK_FEE": 1318,
+      "POOL_FUNDING": 786,
+      "RENT": 267,
+      "PAYROLL": 267,
+      "INTEREST": 165,
+      "OTHER_RECEIPT": 125,
+      "TAX": 89,
+      "FX_CONVERSION": 72,
+      "OTHER_PAYMENT": 68,
+      "DEBT_SERVICE": 18,
+      "ACCOUNT_CLOSURE": 4
+    },
+    "ledger_amount_quantiles_by_currency": {
+      "EUR": {
+        "p10": 1433.87,
+        "p50": 6585.02,
+        "p90": 140358.73,
+        "p99": 1198233.92
+      },
+      "GBP": {
+        "p10": 1347.93,
+        "p50": 5057.23,
+        "p90": 50044.09,
+        "p99": 1104395.46
+      },
+      "INR": {
+        "p10": 138654.38,
+        "p50": 589186.61,
+        "p90": 11839846.38,
+        "p99": 116606814.66
+      },
+      "JPY": {
+        "p10": 255862.6,
+        "p50": 984615.0,
+        "p90": 11337772.0,
+        "p99": 358231308.04
+      },
+      "USD": {
+        "p10": 1599.86,
+        "p50": 8922.28,
+        "p90": 226924.56,
+        "p99": 1345509.65
+      }
+    },
+    "postings_by_weekday": {
+      "Monday": 20222,
+      "Tuesday": 16549,
+      "Wednesday": 17148,
+      "Thursday": 16757,
+      "Friday": 29324
+    },
+    "receivable_delay_by_risk_tier": {
+      "A": {
+        "invoices": 3447,
+        "paid": 3026,
+        "median_days_late": 1.0,
+        "share_paid_over_7_days_late": 0.0215,
+        "written_off": 0
+      },
+      "B": {
+        "invoices": 3318,
+        "paid": 2783,
+        "median_days_late": 8.0,
+        "share_paid_over_7_days_late": 0.5113,
+        "written_off": 0
+      },
+      "C": {
+        "invoices": 1251,
+        "paid": 942,
+        "median_days_late": 19.0,
+        "share_paid_over_7_days_late": 0.8493,
+        "written_off": 24
+      },
+      "D": {
+        "invoices": 612,
+        "paid": 336,
+        "median_days_late": 35.0,
+        "share_paid_over_7_days_late": 0.9583,
+        "written_off": 39
+      }
+    },
+    "fx": {
+      "EUR": {
+        "realised_annual_vol": 0.0735,
+        "configured": 0.07,
+        "change_over_period": -0.0559
+      },
+      "GBP": {
+        "realised_annual_vol": 0.0919,
+        "configured": 0.08,
+        "change_over_period": -0.0313
+      },
+      "INR": {
+        "realised_annual_vol": 0.0404,
+        "configured": 0.04,
+        "change_over_period": -0.0341
+      },
+      "JPY": {
+        "realised_annual_vol": 0.1012,
+        "configured": 0.1,
+        "change_over_period": -0.1413
+      }
+    },
+    "one_off_payments": {
+      "count": 24,
+      "categories": {
+        "CAPEX": 9,
+        "TAX_SETTLEMENT": 7,
+        "DEBT_REPAYMENT": 6,
+        "ACQUISITION": 1,
+        "LEGAL_SETTLEMENT": 1
+      }
+    },
+    "entities_by_size": {
+      "L": 3,
+      "M": 15,
+      "S": 12
+    },
+    "accounts_by_currency": {
+      "EUR": 41,
+      "GBP": 21,
+      "INR": 23,
+      "JPY": 13,
+      "USD": 52
+    }
+  }
+}
