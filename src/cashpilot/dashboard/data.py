@@ -23,6 +23,7 @@ import pandas as pd
 from cashpilot.core import calendar as cal
 from cashpilot.core.config import Config
 from cashpilot.core.money import MINOR_UNITS, to_usd
+from cashpilot.dashboard.text import PURPOSE_TEXT, plain_change, plain_reason
 from cashpilot.dataset import Dataset
 from cashpilot.engine.compare import scenario_items
 from cashpilot.engine.forecast import LIVE_TREATMENTS, ForecastContext, recreate_run
@@ -252,7 +253,7 @@ def fx_gaps(b: Bundle) -> pd.DataFrame:
 
 def run_catalog(ds: Dataset) -> pd.DataFrame:
     r = ds["forecast_run"].copy()
-    r["label"] = r["run_id"] + "  ·  " + r["process"] + " / " + r["run_purpose"] + "  ·  " + r["status_at_end"]
+    r["label"] = r["run_id"] + "  ·  " + r["run_purpose"].map(lambda x: PURPOSE_TEXT.get(x, x.lower())) + "  ·  " + r["status_at_end"].str.lower()
     return r.sort_values(["cutoff_date", "version"]).reset_index(drop=True)
 
 
@@ -260,6 +261,21 @@ def default_run(ds: Dataset) -> str:
     r = run_catalog(ds)
     live = r[r["run_purpose"] == "LIVE"]
     return str((live if len(live) else r)["run_id"].iloc[-1])
+
+
+def runs_with_actuals(ds: Dataset) -> list[str]:
+    """Run IDs that have at least one fully elapsed week to compare with actuals, oldest first."""
+    have = set(ds["forecast_vs_actual"]["run_id"])
+    r = run_catalog(ds)
+    return r.loc[r["run_id"].isin(have), "run_id"].tolist()
+
+
+def default_accuracy_run(ds: Dataset, min_weeks: int = 4) -> str:
+    """The latest past run with several elapsed weeks (a one-week comparison makes a poor first view)."""
+    f = ds["forecast_vs_actual"]
+    weeks = f[f["scenario_id"].str.startswith("SCN-BASE")].groupby("run_id")["week_no"].nunique()
+    ids = runs_with_actuals(ds)
+    return ([r for r in ids if weeks.get(r, 0) >= min_weeks] or ids)[-1]
 
 
 def run_scenarios(ds: Dataset, run_id: str) -> list[str]:
@@ -273,10 +289,12 @@ def forecast_series(ds: Dataset, run_id: str, scenario_id: str, entity: str | No
     p = p[(p["run_id"] == run_id) & (p["scenario_id"] == scenario_id)]
     if entity:
         p = p[p["entity_id"] == entity]
+    p = p.assign(breach=p["breach_flag"].astype(int))
     g = p.groupby("position_date").agg(
         opening_usd=("opening_available_usd", "sum"), inflows_usd=("inflows_usd", "sum"), outflows_usd=("outflows_usd", "sum"),
         closing_available_usd=("closing_available_usd", "sum"), restricted_usd=("restricted_usd", "sum"),
-        min_buffer_usd=("min_buffer_usd", "sum"), entities_below_buffer=("breach_flag", lambda s: int(s.astype(bool).sum()))).reset_index()
+        min_buffer_usd=("min_buffer_usd", "sum"), entities_below_buffer=("breach", "sum")).reset_index()
+    g["entities_below_buffer"] = g["entities_below_buffer"].astype(int)
     for c in ("opening_usd", "inflows_usd", "outflows_usd", "closing_available_usd", "restricted_usd", "min_buffer_usd"):
         g[c] = g[c].astype("float64") / 100.0
     g["headroom_usd"] = g["closing_available_usd"] - g["min_buffer_usd"]
@@ -446,6 +464,8 @@ def run_diff(b: Bundle, run_a: str, run_b: str) -> dict:
     items = pd.DataFrame(rows, columns=["change_type", "reason", "cf_id", "entity_id", "flow_category", "direction", "counterparty_id",
                                         "reference", "date_a", "date_b", "net_usd_a", "net_usd_b", "change_usd"])
     items = items.reindex(items["change_usd"].abs().sort_values(ascending=False, kind="mergesort").index).reset_index(drop=True)
+    items.insert(1, "what_happened", items["reason"].map(plain_reason))
+    items["change"] = items["change_type"].map(plain_change)
     fx_rows = pd.DataFrame([{"currency": c, "rate_a": rate_a.get(c), "rate_b": rate_b.get(c),
                              "change_pct": (rate_b[c] / rate_a[c] - 1) * 100 if c in rate_a and c in rate_b else np.nan}
                             for c in sorted((set(rate_a) | set(rate_b)) - {b.reporting})])

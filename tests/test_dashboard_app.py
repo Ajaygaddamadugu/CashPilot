@@ -27,11 +27,11 @@ def sidebar(at, label):
 def test_every_tab_renders_with_the_committed_dataset(app):
     at = app.run()
     assert not at.exception, [e.value for e in at.exception]
-    assert [t.label for t in at.tabs] == ["Cash overview", "Accounts & currencies", "Forecast", "Cash-flow drivers", "Exceptions",
-                                          "Actual vs forecast", "Audit & exports"]
+    assert [t.label for t in at.tabs] == ["Start here", "Cash overview", "Accounts & currencies", "Entities & transactions", "Forecast",
+                                          "Cash-flow drivers", "Exceptions", "Actual vs forecast", "Audit & exports"]
     assert at.title[0].value == "CashPilot"
     labels = {m.label for m in at.metric}
-    assert {"Available", "Restricted", "Entities below buffer", "Validation"} <= labels
+    assert {"Available", "Restricted", "Entities below buffer", "Validation", "Companies", "Bank accounts", "Ledger entries"} <= labels
     assert any(len(d.value) for d in at.dataframe)
     assert not at.error
 
@@ -44,7 +44,7 @@ def test_every_scenario_and_entity_filter_works(app):
         sidebar(at, "Scenario").select_index(i)
         at = at.run()
         assert not at.exception, (scenarios[i], [e.value for e in at.exception])
-    sidebar(at, "Entity").select_index(2)          # a single entity instead of the group
+    sidebar(at, "Company").select_index(2)          # a single entity instead of the group
     at = at.run()
     assert not at.exception, [e.value for e in at.exception]
 
@@ -62,12 +62,12 @@ def test_every_forecast_run_can_be_selected(app):
 def test_an_exception_can_be_traced_to_its_evidence(app):
     at = app.run()
     trace = next(s for s in at.selectbox if s.label == "Trace an exception")
-    leak = next(i for i, o in enumerate(trace.options) if "LOOKAHEAD_LEAKAGE" in o)
+    leak = next(i for i, o in enumerate(trace.options) if "after its cutoff" in o)      # shown in plain words, not as a code
     trace.select_index(leak)
     at = at.run()
     assert not at.exception, [e.value for e in at.exception]
     text = " ".join(m.value for m in at.markdown)
-    assert "LOOKAHEAD_LEAKAGE" in text and "R-LEAK-001" in text and "SUPERSEDE_WITH_RERUN" in text
+    assert "Forecast used data from after its cutoff" in text and "R-LEAK-001" in text and "SUPERSEDE_WITH_RERUN" in text
 
 
 def test_reproducibility_can_be_verified_from_the_ui(app):
@@ -113,3 +113,48 @@ def test_the_dashboard_never_writes_to_the_dataset(app):
     at.run()
     after = {p: p.stat().st_mtime_ns for p in (REPO / "data" / "starter").rglob("*") if p.is_file()}
     assert before == after
+
+
+def test_start_here_explains_the_brief_in_plain_words(app):
+    at = app.run()
+    text = " ".join(m.value for m in at.markdown)
+    for needle in ("Daily balances reconcile", "Scenarios differ only by documented assumptions", "Forecasts are reproducible",
+                   "Actual-versus-forecast variance is explainable"):
+        assert needle in text, needle
+    assert all("PASS" in m.value for m in at.markdown if m.value.startswith("**✅"))
+    headers = " ".join(h.value for h in at.subheader)
+    for needle in ("What is CashPilot?", "The five edge cases the brief requires", "Who does what", "The four acceptance criteria"):
+        assert needle in headers, needle
+
+
+def test_every_explorer_section_renders(app):
+    at = app.run()
+    radio = next(r for r in at.radio if r.label == "Show")
+    for option in radio.options:
+        radio.set_value(option)
+        at = at.run()
+        assert not at.exception, (option, [e.value for e in at.exception])
+        radio = next(r for r in at.radio if r.label == "Show")
+    # the ledger section shows the opening + money in - money out = closing check, and it agrees
+    radio.set_value("Bank transactions (ledger)")
+    at = at.run()
+    assert any("They agree" in s.value for s in at.success), [e.value for e in at.error]
+
+
+def test_actual_vs_forecast_opens_on_a_past_version_with_data(app):
+    at = app.run()
+    pick = next(s for s in at.selectbox if s.label.startswith("Forecast version to evaluate"))
+    assert "live" not in pick.value and not any(i.value.startswith("No fully elapsed") for i in at.info)
+
+
+def test_tables_contain_no_python_none_or_mixed_type_cells(app):
+    """Blank cells instead of the word None, and one type per column (Arrow cannot serialise mixed columns)."""
+    at = app.run()
+    assert not at.exception
+    assert len(at.dataframe) > 10
+    for df in at.dataframe:
+        for col in df.value.columns:
+            values = df.value[col]
+            assert not (values.astype(str) == "None").any(), col
+            if values.dtype == object:
+                assert values.map(type).nunique() <= 1, (col, values.map(type).unique())

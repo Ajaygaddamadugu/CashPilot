@@ -23,9 +23,12 @@ from websockets.sync.client import connect
 
 BROWSERS = [r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe", r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
             r"C:\Program Files\Google\Chrome\Application\chrome.exe", "google-chrome", "chromium", "microsoft-edge"]
-TABS = {"01-cash-overview": "Cash overview", "02-accounts-currencies": "Accounts & currencies", "03-forecast": "Forecast",
-        "04-cash-flow-drivers": "Cash-flow drivers", "05-exceptions": "Exceptions", "06-actual-vs-forecast": "Actual vs forecast",
-        "07-audit-exports": "Audit & exports"}
+TABS = [("00-start-here", "Start here", None), ("01-cash-overview", "Cash overview", None), ("02-accounts-currencies", "Accounts & currencies", None),
+        ("03-entities-accounts", "Entities & transactions", None),
+        ("03b-ledger-transactions", "Entities & transactions", "Bank transactions (ledger)"),
+        ("03c-invoices-bills", "Entities & transactions", "Customer invoices & supplier bills"),
+        ("04-forecast", "Forecast", None), ("05-cash-flow-drivers", "Cash-flow drivers", None), ("06-exceptions", "Exceptions", None),
+        ("07-actual-vs-forecast", "Actual vs forecast", None), ("08-audit-exports", "Audit & exports", None)]
 PORT = 9333
 
 
@@ -95,8 +98,9 @@ def capture_all(cdp: Cdp, base: str, out_dir: Path) -> None:
 
     cdp.call("Page.enable")
     viewport(2400)
-    for name, tab in TABS.items():
-        cdp.call("Page.navigate", url=f"{base}/?tab={quote(tab)}")
+    for name, tab, section in TABS:
+        extra = f"&section={quote(section)}" if section else ""
+        cdp.call("Page.navigate", url=f"{base}/?tab={quote(tab)}{extra}")
         time.sleep(2)
         wait_rendered(cdp)
         height = int(cdp.js("Math.max(document.querySelector('[data-testid=\"stMain\"]')?.scrollHeight || 0, 900)"))
