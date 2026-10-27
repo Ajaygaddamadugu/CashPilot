@@ -14,7 +14,7 @@ pip install -r requirements-dashboard.txt      # the core pins first, then Strea
 pip install -e . --no-deps
 cashpilot dashboard                            # http://localhost:8501, dataset data/starter
 cashpilot dashboard --data out/check --port 8600
-cashpilot dashboard --data data/full           # after `cashpilot all --profile full` (the bulk files are not in git)
+cashpilot dashboard --data data/full           # the full dataset: its CSV files are in git (JSON and SQL regenerate with `cashpilot all --profile full`)
 ```
 
 * `requirements-dashboard.txt` starts with `-r requirements-dev.txt`, so numpy, pandas and PyYAML stay exactly

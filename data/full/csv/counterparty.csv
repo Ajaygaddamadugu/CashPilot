@@ -1,0 +1,1001 @@
+counterparty_id,counterparty_name,counterparty_type,country_code,default_currency,risk_tier,payment_terms_days
+CPTY-000001,Western Lumen Agritech B.V.,CUSTOMER,NL,EUR,B,45
+CPTY-000002,Northern Meridian Chemicals GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000003,Western Umber Ceramics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000004,Amber Packaging Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000005,Cobalt Pharma Inc.,CUSTOMER,US,USD,A,30
+CPTY-000006,Western Ember Motors Inc.,CUSTOMER,US,USD,A,45
+CPTY-000007,Global Vantage Pharma Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000008,Western Beacon Marine B.V.,CUSTOMER,NL,EUR,A,30
+CPTY-000009,Ember Apparel Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000010,Western Cedar Packaging GmbH,CUSTOMER,DE,EUR,B,30
+CPTY-000011,Northern Quarry Pharma Inc.,CUSTOMER,US,USD,A,30
+CPTY-000012,Northern Jade Logistics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000013,Global Quarry Foods Ltd,CUSTOMER,GB,GBP,C,45
+CPTY-000014,Northern Umber Marine Inc.,CUSTOMER,US,USD,D,60
+CPTY-000015,Global Willow Foods Ltd,CUSTOMER,GB,GBP,C,45
+CPTY-000016,Western Onyx Metals Inc.,CUSTOMER,US,USD,C,45
+CPTY-000017,Western Jade Foods Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000018,Northern Meridian Foods Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000019,Northern Harbor Electronics K.K.,CUSTOMER,JP,JPY,B,30
+CPTY-000020,Granite Power Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000021,Global Quarry Chemicals Inc.,CUSTOMER,US,USD,A,45
+CPTY-000022,Falcon Media Inc.,CUSTOMER,US,USD,B,30
+CPTY-000023,Pacific Summit Optics Pvt Ltd,CUSTOMER,IN,INR,C,45
+CPTY-000024,Ember Chemicals Inc.,CUSTOMER,US,USD,B,60
+CPTY-000025,Western Jade Furniture Inc.,CUSTOMER,US,USD,C,45
+CPTY-000026,Western Horizon Retail Inc.,CUSTOMER,US,USD,C,60
+CPTY-000027,Northern Nova Packaging Inc.,CUSTOMER,US,USD,B,60
+CPTY-000028,Western Tidal Chemicals Inc.,CUSTOMER,US,USD,C,90
+CPTY-000029,Sable Marine Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000030,Pacific Beacon Chemicals Inc.,CUSTOMER,US,USD,B,45
+CPTY-000031,Global Nova Marine Inc.,CUSTOMER,US,USD,B,60
+CPTY-000032,Amber Chemicals Pvt Ltd,CUSTOMER,IN,INR,D,60
+CPTY-000033,Global Pioneer Packaging Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000034,Vantage Ceramics Inc.,CUSTOMER,US,USD,B,45
+CPTY-000035,Pacific Lumen Packaging Inc.,CUSTOMER,US,USD,B,60
+CPTY-000036,Harbor Electronics B.V.,CUSTOMER,NL,EUR,C,45
+CPTY-000037,Keystone Packaging Inc.,CUSTOMER,US,USD,D,90
+CPTY-000038,Global Radiant Foods Ltd,CUSTOMER,GB,GBP,B,45
+CPTY-000039,Northern Willow Marine K.K.,CUSTOMER,JP,JPY,B,45
+CPTY-000040,Western Cedar Chemicals K.K.,CUSTOMER,JP,JPY,B,45
+CPTY-000041,Pacific Beacon Furniture Inc.,CUSTOMER,US,USD,B,30
+CPTY-000042,Cobalt Textiles Inc.,CUSTOMER,US,USD,A,45
+CPTY-000043,Western Lumen Foods Pvt Ltd,CUSTOMER,IN,INR,D,90
+CPTY-000044,Western Sable Apparel Inc.,CUSTOMER,US,USD,C,60
+CPTY-000045,Western Summit Motors GmbH,CUSTOMER,DE,EUR,B,60
+CPTY-000046,Vantage Media S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000047,Pacific Harbor Apparel Ltd,CUSTOMER,GB,GBP,B,45
+CPTY-000048,Northern Lumen Motors Inc.,CUSTOMER,US,USD,B,30
+CPTY-000049,Lumen Textiles Inc.,CUSTOMER,US,USD,B,30
+CPTY-000050,Cedar Textiles Inc.,CUSTOMER,US,USD,A,45
+CPTY-000051,Atlas Health S.A.S.,CUSTOMER,FR,EUR,B,45
+CPTY-000052,Global Granite Apparel Ltd,CUSTOMER,GB,GBP,C,90
+CPTY-000053,Radiant Apparel K.K.,CUSTOMER,JP,JPY,B,60
+CPTY-000054,Pacific Umber Logistics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000055,Pacific Crescent Ceramics Ltd,CUSTOMER,GB,GBP,C,60
+CPTY-000056,Western Crescent Electronics GmbH,CUSTOMER,DE,EUR,D,90
+CPTY-000057,Cedar Apparel Inc.,CUSTOMER,US,USD,B,30
+CPTY-000058,Northern Keystone Power Inc.,CUSTOMER,US,USD,B,45
+CPTY-000059,Northern Amber Optics Inc.,CUSTOMER,US,USD,C,90
+CPTY-000060,Northern Delta Ceramics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000061,Northern Willow Media Inc.,CUSTOMER,US,USD,B,30
+CPTY-000062,Northern Quarry Textiles GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000063,Global Delta Agritech Ltd,CUSTOMER,GB,GBP,B,30
+CPTY-000064,Global Iris Chemicals Inc.,CUSTOMER,US,USD,A,30
+CPTY-000065,Pacific Maple Media Inc.,CUSTOMER,US,USD,B,60
+CPTY-000066,Global Zephyr Marine K.K.,CUSTOMER,JP,JPY,B,60
+CPTY-000067,Pacific Jade Health Inc.,CUSTOMER,US,USD,B,45
+CPTY-000068,Northern Atlas Furniture Inc.,CUSTOMER,US,USD,A,30
+CPTY-000069,Iris Motors Pvt Ltd,CUSTOMER,IN,INR,C,60
+CPTY-000070,Global Sable Logistics K.K.,CUSTOMER,JP,JPY,A,30
+CPTY-000071,Northern Delta Chemicals Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000072,Global Ember Power Ltd,CUSTOMER,GB,GBP,B,45
+CPTY-000073,Northern Radiant Motors Inc.,CUSTOMER,US,USD,A,30
+CPTY-000074,Northern Crescent Power GmbH,CUSTOMER,DE,EUR,A,30
+CPTY-000075,Northern Cedar Packaging B.V.,CUSTOMER,NL,EUR,A,45
+CPTY-000076,Global Willow Health Inc.,CUSTOMER,US,USD,B,30
+CPTY-000077,Pacific Orchid Logistics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000078,Northern Summit Packaging Inc.,CUSTOMER,US,USD,A,45
+CPTY-000079,Maple Apparel Inc.,CUSTOMER,US,USD,A,30
+CPTY-000080,Global Onyx Metals S.A.S.,CUSTOMER,FR,EUR,B,60
+CPTY-000081,Global Meridian Foods Ltd,CUSTOMER,GB,GBP,B,30
+CPTY-000082,Western Atlas Ceramics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000083,Iris Electronics Inc.,CUSTOMER,US,USD,B,45
+CPTY-000084,Northern Umber Media Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000085,Western Willow Metals S.A.S.,CUSTOMER,FR,EUR,D,90
+CPTY-000086,Global Beacon Media Inc.,CUSTOMER,US,USD,D,60
+CPTY-000087,Northern Willow Power Pvt Ltd,CUSTOMER,IN,INR,D,90
+CPTY-000088,Pacific Vantage Software K.K.,CUSTOMER,JP,JPY,A,30
+CPTY-000089,Western Maple Retail Ltd,CUSTOMER,GB,GBP,B,30
+CPTY-000090,Pacific Iris Furniture Inc.,CUSTOMER,US,USD,B,60
+CPTY-000091,Global Willow Media Ltd,CUSTOMER,GB,GBP,B,45
+CPTY-000092,Western Harbor Chemicals K.K.,CUSTOMER,JP,JPY,A,30
+CPTY-000093,Pacific Iris Retail B.V.,CUSTOMER,NL,EUR,B,45
+CPTY-000094,Western Keystone Retail Inc.,CUSTOMER,US,USD,C,45
+CPTY-000095,Vantage Textiles Inc.,CUSTOMER,US,USD,B,45
+CPTY-000096,Western Horizon Apparel S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000097,Orchid Media Inc.,CUSTOMER,US,USD,B,60
+CPTY-000098,Meridian Textiles Ltd,CUSTOMER,GB,GBP,B,30
+CPTY-000099,Northern Willow Furniture Inc.,CUSTOMER,US,USD,A,30
+CPTY-000100,Pacific Cobalt Optics Ltd,CUSTOMER,GB,GBP,C,90
+CPTY-000101,Pacific Meridian Media Inc.,CUSTOMER,US,USD,A,30
+CPTY-000102,Western Summit Power Inc.,CUSTOMER,US,USD,A,45
+CPTY-000103,Pacific Willow Packaging Inc.,CUSTOMER,US,USD,A,45
+CPTY-000104,Global Pioneer Software Inc.,CUSTOMER,US,USD,B,45
+CPTY-000105,Pacific Jade Metals Ltd,CUSTOMER,GB,GBP,C,45
+CPTY-000106,Pacific Sable Textiles K.K.,CUSTOMER,JP,JPY,B,60
+CPTY-000107,Radiant Retail Inc.,CUSTOMER,US,USD,C,90
+CPTY-000108,Pacific Pioneer Ceramics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000109,Northern Meridian Pharma Inc.,CUSTOMER,US,USD,A,45
+CPTY-000110,Northern Orchid Health Inc.,CUSTOMER,US,USD,B,30
+CPTY-000111,Global Jade Logistics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000112,Global Maple Media Inc.,CUSTOMER,US,USD,C,45
+CPTY-000113,Global Falcon Packaging B.V.,CUSTOMER,NL,EUR,D,90
+CPTY-000114,Northern Cobalt Media Inc.,CUSTOMER,US,USD,B,30
+CPTY-000115,Western Zephyr Pharma K.K.,CUSTOMER,JP,JPY,B,30
+CPTY-000116,Northern Maple Agritech Inc.,CUSTOMER,US,USD,B,60
+CPTY-000117,Global Jade Motors Inc.,CUSTOMER,US,USD,A,30
+CPTY-000118,Quarry Chemicals B.V.,CUSTOMER,NL,EUR,C,90
+CPTY-000119,Northern Maple Marine K.K.,CUSTOMER,JP,JPY,C,60
+CPTY-000120,Western Tidal Media Inc.,CUSTOMER,US,USD,C,45
+CPTY-000121,Global Cobalt Software Pvt Ltd,CUSTOMER,IN,INR,B,60
+CPTY-000122,Western Ember Agritech K.K.,CUSTOMER,JP,JPY,B,45
+CPTY-000123,Global Vantage Electronics S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000124,Western Willow Retail Inc.,CUSTOMER,US,USD,D,60
+CPTY-000125,Global Umber Packaging Inc.,CUSTOMER,US,USD,B,60
+CPTY-000126,Meridian Ceramics B.V.,CUSTOMER,NL,EUR,B,60
+CPTY-000127,Global Amber Agritech Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000128,Northern Atlas Ceramics Inc.,CUSTOMER,US,USD,C,45
+CPTY-000129,Amber Pharma K.K.,CUSTOMER,JP,JPY,C,90
+CPTY-000130,Western Sable Optics Ltd,CUSTOMER,GB,GBP,B,30
+CPTY-000131,Pacific Willow Pharma Inc.,CUSTOMER,US,USD,A,30
+CPTY-000132,Global Sable Electronics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000133,Quarry Textiles Inc.,CUSTOMER,US,USD,A,30
+CPTY-000134,Western Sable Chemicals Inc.,CUSTOMER,US,USD,B,30
+CPTY-000135,Summit Marine K.K.,CUSTOMER,JP,JPY,B,60
+CPTY-000136,Granite Electronics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000137,Northern Keystone Retail S.A.S.,CUSTOMER,FR,EUR,A,30
+CPTY-000138,Northern Pioneer Motors Inc.,CUSTOMER,US,USD,B,30
+CPTY-000139,Pacific Beacon Motors Inc.,CUSTOMER,US,USD,B,30
+CPTY-000140,Global Jade Retail Ltd,CUSTOMER,GB,GBP,B,30
+CPTY-000141,Northern Radiant Chemicals Pvt Ltd,CUSTOMER,IN,INR,C,45
+CPTY-000142,Western Jade Optics Inc.,CUSTOMER,US,USD,C,90
+CPTY-000143,Northern Summit Health Inc.,CUSTOMER,US,USD,A,45
+CPTY-000144,Global Delta Ceramics Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000145,Global Lumen Packaging S.A.S.,CUSTOMER,FR,EUR,A,30
+CPTY-000146,Pacific Cobalt Foods Inc.,CUSTOMER,US,USD,B,30
+CPTY-000147,Pacific Keystone Media Pvt Ltd,CUSTOMER,IN,INR,C,60
+CPTY-000148,Global Ember Motors Inc.,CUSTOMER,US,USD,B,60
+CPTY-000149,Pacific Falcon Foods Pvt Ltd,CUSTOMER,IN,INR,B,30
+CPTY-000150,Lumen Marine Inc.,CUSTOMER,US,USD,A,45
+CPTY-000151,Global Pioneer Retail S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000152,Northern Iris Retail Inc.,CUSTOMER,US,USD,B,60
+CPTY-000153,Global Summit Ceramics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000154,Beacon Motors Pvt Ltd,CUSTOMER,IN,INR,B,30
+CPTY-000155,Meridian Motors Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000156,Tidal Electronics Inc.,CUSTOMER,US,USD,D,90
+CPTY-000157,Harbor Chemicals Inc.,CUSTOMER,US,USD,B,45
+CPTY-000158,Global Harbor Apparel Pvt Ltd,CUSTOMER,IN,INR,D,90
+CPTY-000159,Pacific Cobalt Health Inc.,CUSTOMER,US,USD,C,60
+CPTY-000160,Western Ember Marine Inc.,CUSTOMER,US,USD,A,45
+CPTY-000161,Western Zephyr Furniture GmbH,CUSTOMER,DE,EUR,A,30
+CPTY-000162,Global Atlas Metals Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000163,Global Maple Agritech Inc.,CUSTOMER,US,USD,A,30
+CPTY-000164,Western Zephyr Apparel GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000165,Western Cedar Agritech S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000166,Global Nova Optics Inc.,CUSTOMER,US,USD,B,30
+CPTY-000167,Global Atlas Retail B.V.,CUSTOMER,NL,EUR,B,60
+CPTY-000168,Global Iris Metals Inc.,CUSTOMER,US,USD,A,30
+CPTY-000169,Willow Agritech Inc.,CUSTOMER,US,USD,B,60
+CPTY-000170,Pioneer Power K.K.,CUSTOMER,JP,JPY,D,90
+CPTY-000171,Umber Chemicals Ltd,CUSTOMER,GB,GBP,B,60
+CPTY-000172,Global Onyx Chemicals Inc.,CUSTOMER,US,USD,C,90
+CPTY-000173,Pacific Ember Marine Pvt Ltd,CUSTOMER,IN,INR,C,60
+CPTY-000174,Northern Cedar Marine Inc.,CUSTOMER,US,USD,B,45
+CPTY-000175,Global Maple Ceramics Inc.,CUSTOMER,US,USD,B,45
+CPTY-000176,Western Crescent Retail Ltd,CUSTOMER,GB,GBP,D,90
+CPTY-000177,Western Meridian Marine GmbH,CUSTOMER,DE,EUR,D,90
+CPTY-000178,Pacific Meridian Motors Inc.,CUSTOMER,US,USD,D,60
+CPTY-000179,Northern Crescent Metals Inc.,CUSTOMER,US,USD,A,45
+CPTY-000180,Summit Packaging Ltd,CUSTOMER,GB,GBP,B,60
+CPTY-000181,Beacon Chemicals Inc.,CUSTOMER,US,USD,A,30
+CPTY-000182,Global Keystone Foods Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000183,Northern Onyx Apparel Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000184,Western Beacon Apparel Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000185,Global Tidal Foods B.V.,CUSTOMER,NL,EUR,C,60
+CPTY-000186,Global Iris Software Ltd,CUSTOMER,GB,GBP,B,60
+CPTY-000187,Northern Onyx Textiles Inc.,CUSTOMER,US,USD,A,45
+CPTY-000188,Western Vantage Textiles GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000189,Pacific Tidal Retail S.A.S.,CUSTOMER,FR,EUR,D,60
+CPTY-000190,Pacific Onyx Foods Inc.,CUSTOMER,US,USD,A,45
+CPTY-000191,Global Lumen Agritech Ltd,CUSTOMER,GB,GBP,B,60
+CPTY-000192,Pacific Iris Logistics K.K.,CUSTOMER,JP,JPY,A,30
+CPTY-000193,Maple Ceramics Pvt Ltd,CUSTOMER,IN,INR,C,45
+CPTY-000194,Western Horizon Power Inc.,CUSTOMER,US,USD,B,60
+CPTY-000195,Global Vantage Retail Inc.,CUSTOMER,US,USD,A,30
+CPTY-000196,Cobalt Electronics Pvt Ltd,CUSTOMER,IN,INR,C,60
+CPTY-000197,Western Atlas Motors Inc.,CUSTOMER,US,USD,A,30
+CPTY-000198,Pioneer Foods B.V.,CUSTOMER,NL,EUR,C,45
+CPTY-000199,Western Tidal Metals S.A.S.,CUSTOMER,FR,EUR,C,45
+CPTY-000200,Northern Lumen Ceramics Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000201,Global Zephyr Foods Inc.,CUSTOMER,US,USD,A,30
+CPTY-000202,Western Quarry Logistics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000203,Global Pioneer Metals S.A.S.,CUSTOMER,FR,EUR,B,30
+CPTY-000204,Northern Delta Software Ltd,CUSTOMER,GB,GBP,B,30
+CPTY-000205,Pacific Beacon Foods Inc.,CUSTOMER,US,USD,B,45
+CPTY-000206,Global Meridian Logistics Inc.,CUSTOMER,US,USD,B,45
+CPTY-000207,Northern Iris Metals GmbH,CUSTOMER,DE,EUR,B,30
+CPTY-000208,Pacific Vantage Textiles Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000209,Quarry Ceramics Inc.,CUSTOMER,US,USD,B,45
+CPTY-000210,Northern Beacon Pharma B.V.,CUSTOMER,NL,EUR,B,30
+CPTY-000211,Northern Orchid Software Inc.,CUSTOMER,US,USD,B,30
+CPTY-000212,Global Lumen Media Inc.,CUSTOMER,US,USD,A,30
+CPTY-000213,Global Harbor Optics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000214,Northern Pioneer Textiles Inc.,CUSTOMER,US,USD,A,30
+CPTY-000215,Global Lumen Textiles K.K.,CUSTOMER,JP,JPY,B,30
+CPTY-000216,Harbor Health Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000217,Western Sable Retail Inc.,CUSTOMER,US,USD,A,30
+CPTY-000218,Western Jade Apparel Inc.,CUSTOMER,US,USD,B,60
+CPTY-000219,Summit Electronics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000220,Northern Tidal Media Inc.,CUSTOMER,US,USD,A,45
+CPTY-000221,Northern Amber Agritech Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000222,Amber Logistics S.A.S.,CUSTOMER,FR,EUR,A,30
+CPTY-000223,Atlas Agritech Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000224,Northern Willow Ceramics Ltd,CUSTOMER,GB,GBP,C,60
+CPTY-000225,Global Harbor Electronics Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000226,Crescent Apparel S.A.S.,CUSTOMER,FR,EUR,A,30
+CPTY-000227,Northern Sable Health Inc.,CUSTOMER,US,USD,D,60
+CPTY-000228,Western Delta Health Inc.,CUSTOMER,US,USD,A,30
+CPTY-000229,Western Pioneer Power Inc.,CUSTOMER,US,USD,A,45
+CPTY-000230,Western Onyx Health S.A.S.,CUSTOMER,FR,EUR,C,90
+CPTY-000231,Western Umber Chemicals Inc.,CUSTOMER,US,USD,C,60
+CPTY-000232,Lumen Software K.K.,CUSTOMER,JP,JPY,C,90
+CPTY-000233,Iris Logistics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000234,Global Cedar Optics S.A.S.,CUSTOMER,FR,EUR,A,30
+CPTY-000235,Global Quarry Health Pvt Ltd,CUSTOMER,IN,INR,B,30
+CPTY-000236,Northern Meridian Optics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000237,Western Harbor Pharma Inc.,CUSTOMER,US,USD,D,60
+CPTY-000238,Pacific Radiant Apparel GmbH,CUSTOMER,DE,EUR,C,90
+CPTY-000239,Global Atlas Packaging K.K.,CUSTOMER,JP,JPY,C,90
+CPTY-000240,Beacon Agritech GmbH,CUSTOMER,DE,EUR,D,60
+CPTY-000241,Northern Atlas Chemicals Pvt Ltd,CUSTOMER,IN,INR,B,60
+CPTY-000242,Global Quarry Media Inc.,CUSTOMER,US,USD,A,45
+CPTY-000243,Global Cedar Textiles Inc.,CUSTOMER,US,USD,C,90
+CPTY-000244,Pacific Atlas Furniture Inc.,CUSTOMER,US,USD,C,90
+CPTY-000245,Pacific Onyx Health Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000246,Northern Iris Motors Inc.,CUSTOMER,US,USD,A,45
+CPTY-000247,Western Umber Apparel Inc.,CUSTOMER,US,USD,B,30
+CPTY-000248,Pacific Crescent Foods K.K.,CUSTOMER,JP,JPY,B,30
+CPTY-000249,Northern Quarry Foods Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000250,Nova Chemicals Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000251,Pacific Granite Motors Pvt Ltd,CUSTOMER,IN,INR,B,60
+CPTY-000252,Pacific Radiant Media Inc.,CUSTOMER,US,USD,A,45
+CPTY-000253,Global Vantage Apparel GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000254,Quarry Furniture Inc.,CUSTOMER,US,USD,C,45
+CPTY-000255,Western Jade Software Inc.,CUSTOMER,US,USD,B,60
+CPTY-000256,Ember Ceramics Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000257,Northern Keystone Chemicals Inc.,CUSTOMER,US,USD,B,60
+CPTY-000258,Pacific Radiant Chemicals Inc.,CUSTOMER,US,USD,A,45
+CPTY-000259,Global Sable Textiles Inc.,CUSTOMER,US,USD,A,30
+CPTY-000260,Falcon Ceramics Ltd,CUSTOMER,GB,GBP,B,60
+CPTY-000261,Northern Delta Optics GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000262,Northern Delta Agritech Ltd,CUSTOMER,GB,GBP,C,45
+CPTY-000263,Northern Keystone Optics Inc.,CUSTOMER,US,USD,B,30
+CPTY-000264,Global Summit Metals B.V.,CUSTOMER,NL,EUR,D,60
+CPTY-000265,Western Keystone Media S.A.S.,CUSTOMER,FR,EUR,B,45
+CPTY-000266,Western Granite Optics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000267,Pacific Amber Apparel Ltd,CUSTOMER,GB,GBP,C,90
+CPTY-000268,Global Jade Agritech B.V.,CUSTOMER,NL,EUR,A,30
+CPTY-000269,Vantage Chemicals B.V.,CUSTOMER,NL,EUR,A,30
+CPTY-000270,Pacific Onyx Packaging Inc.,CUSTOMER,US,USD,B,45
+CPTY-000271,Iris Agritech Inc.,CUSTOMER,US,USD,B,45
+CPTY-000272,Granite Marine S.A.S.,CUSTOMER,FR,EUR,C,60
+CPTY-000273,Cobalt Software Inc.,CUSTOMER,US,USD,D,60
+CPTY-000274,Atlas Furniture Inc.,CUSTOMER,US,USD,B,60
+CPTY-000275,Pacific Maple Software Inc.,CUSTOMER,US,USD,A,45
+CPTY-000276,Quarry Packaging Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000277,Pacific Onyx Chemicals Inc.,CUSTOMER,US,USD,A,45
+CPTY-000278,Zephyr Marine Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000279,Jade Logistics Inc.,CUSTOMER,US,USD,B,45
+CPTY-000280,Northern Nova Pharma Inc.,CUSTOMER,US,USD,A,45
+CPTY-000281,Northern Tidal Logistics S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000282,Northern Granite Agritech Inc.,CUSTOMER,US,USD,D,90
+CPTY-000283,Western Cobalt Textiles Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000284,Global Meridian Marine Inc.,CUSTOMER,US,USD,A,45
+CPTY-000285,Cobalt Health Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000286,Global Willow Power Inc.,CUSTOMER,US,USD,D,60
+CPTY-000287,Global Falcon Ceramics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000288,Global Keystone Software Ltd,CUSTOMER,GB,GBP,B,60
+CPTY-000289,Global Sable Pharma Inc.,CUSTOMER,US,USD,B,45
+CPTY-000290,Western Jade Ceramics Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000291,Willow Software Inc.,CUSTOMER,US,USD,A,45
+CPTY-000292,Pacific Radiant Agritech B.V.,CUSTOMER,NL,EUR,A,30
+CPTY-000293,Pacific Radiant Textiles Inc.,CUSTOMER,US,USD,A,30
+CPTY-000294,Northern Nova Metals Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000295,Western Summit Textiles Inc.,CUSTOMER,US,USD,B,30
+CPTY-000296,Northern Jade Textiles Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000297,Pacific Onyx Ceramics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000298,Umber Agritech Inc.,CUSTOMER,US,USD,C,60
+CPTY-000299,Global Vantage Software K.K.,CUSTOMER,JP,JPY,A,45
+CPTY-000300,Western Granite Media Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000301,Global Quarry Metals Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000302,Global Keystone Power K.K.,CUSTOMER,JP,JPY,A,30
+CPTY-000303,Western Granite Health GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000304,Global Delta Retail Inc.,CUSTOMER,US,USD,B,60
+CPTY-000305,Pacific Orchid Agritech Inc.,CUSTOMER,US,USD,C,60
+CPTY-000306,Western Delta Media Inc.,CUSTOMER,US,USD,C,60
+CPTY-000307,Global Onyx Marine Inc.,CUSTOMER,US,USD,B,45
+CPTY-000308,Meridian Logistics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000309,Pacific Maple Optics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000310,Western Maple Metals Inc.,CUSTOMER,US,USD,C,90
+CPTY-000311,Global Lumen Optics Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000312,Pacific Nova Foods Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000313,Global Crescent Agritech Pvt Ltd,CUSTOMER,IN,INR,C,90
+CPTY-000314,Pacific Pioneer Apparel Pvt Ltd,CUSTOMER,IN,INR,B,60
+CPTY-000315,Northern Onyx Electronics K.K.,CUSTOMER,JP,JPY,B,45
+CPTY-000316,Orchid Motors Inc.,CUSTOMER,US,USD,A,45
+CPTY-000317,Northern Ember Agritech Inc.,CUSTOMER,US,USD,D,60
+CPTY-000318,Pacific Falcon Furniture Inc.,CUSTOMER,US,USD,B,60
+CPTY-000319,Western Crescent Media Ltd,CUSTOMER,GB,GBP,D,60
+CPTY-000320,Western Maple Software S.A.S.,CUSTOMER,FR,EUR,C,90
+CPTY-000321,Western Crescent Power Inc.,CUSTOMER,US,USD,B,30
+CPTY-000322,Global Beacon Foods K.K.,CUSTOMER,JP,JPY,A,45
+CPTY-000323,Pacific Radiant Logistics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000324,Western Granite Electronics GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000325,Global Quarry Furniture Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000326,Maple Media Inc.,CUSTOMER,US,USD,C,60
+CPTY-000327,Western Jade Packaging S.A.S.,CUSTOMER,FR,EUR,D,90
+CPTY-000328,Summit Metals K.K.,CUSTOMER,JP,JPY,A,30
+CPTY-000329,Western Iris Apparel Inc.,CUSTOMER,US,USD,B,45
+CPTY-000330,Global Ember Textiles K.K.,CUSTOMER,JP,JPY,A,45
+CPTY-000331,Global Zephyr Retail Inc.,CUSTOMER,US,USD,A,45
+CPTY-000332,Keystone Chemicals Inc.,CUSTOMER,US,USD,C,60
+CPTY-000333,Pacific Quarry Ceramics Ltd,CUSTOMER,GB,GBP,B,45
+CPTY-000334,Northern Cedar Furniture Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000335,Global Amber Motors K.K.,CUSTOMER,JP,JPY,C,45
+CPTY-000336,Beacon Foods Ltd,CUSTOMER,GB,GBP,C,45
+CPTY-000337,Western Delta Motors Inc.,CUSTOMER,US,USD,B,30
+CPTY-000338,Global Jade Ceramics Inc.,CUSTOMER,US,USD,C,45
+CPTY-000339,Northern Atlas Software B.V.,CUSTOMER,NL,EUR,B,30
+CPTY-000340,Global Meridian Furniture Inc.,CUSTOMER,US,USD,B,60
+CPTY-000341,Global Jade Packaging Inc.,CUSTOMER,US,USD,C,45
+CPTY-000342,Western Iris Pharma Inc.,CUSTOMER,US,USD,B,30
+CPTY-000343,Nova Agritech Ltd,CUSTOMER,GB,GBP,C,90
+CPTY-000344,Northern Quarry Media Inc.,CUSTOMER,US,USD,A,30
+CPTY-000345,Western Maple Foods B.V.,CUSTOMER,NL,EUR,A,30
+CPTY-000346,Pacific Granite Chemicals Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000347,Falcon Motors GmbH,CUSTOMER,DE,EUR,B,30
+CPTY-000348,Western Onyx Apparel Inc.,CUSTOMER,US,USD,A,45
+CPTY-000349,Pacific Onyx Motors K.K.,CUSTOMER,JP,JPY,A,45
+CPTY-000350,Western Atlas Optics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000351,Northern Summit Software Inc.,CUSTOMER,US,USD,B,45
+CPTY-000352,Global Onyx Retail Inc.,CUSTOMER,US,USD,A,45
+CPTY-000353,Western Orchid Chemicals Inc.,CUSTOMER,US,USD,A,45
+CPTY-000354,Global Granite Metals Inc.,CUSTOMER,US,USD,B,30
+CPTY-000355,Pacific Pioneer Chemicals Ltd,CUSTOMER,GB,GBP,C,90
+CPTY-000356,Pacific Horizon Metals Inc.,CUSTOMER,US,USD,D,90
+CPTY-000357,Northern Beacon Logistics B.V.,CUSTOMER,NL,EUR,A,45
+CPTY-000358,Sable Motors Inc.,CUSTOMER,US,USD,B,60
+CPTY-000359,Ember Electronics GmbH,CUSTOMER,DE,EUR,A,30
+CPTY-000360,Northern Summit Power B.V.,CUSTOMER,NL,EUR,B,30
+CPTY-000361,Northern Quarry Retail Inc.,CUSTOMER,US,USD,D,90
+CPTY-000362,Global Radiant Optics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000363,Iris Pharma Inc.,CUSTOMER,US,USD,A,45
+CPTY-000364,Willow Retail B.V.,CUSTOMER,NL,EUR,B,45
+CPTY-000365,Onyx Chemicals S.A.S.,CUSTOMER,FR,EUR,B,60
+CPTY-000366,Meridian Software Inc.,CUSTOMER,US,USD,A,45
+CPTY-000367,Western Umber Electronics B.V.,CUSTOMER,NL,EUR,A,45
+CPTY-000368,Northern Falcon Metals Inc.,CUSTOMER,US,USD,C,90
+CPTY-000369,Quarry Media Inc.,CUSTOMER,US,USD,C,45
+CPTY-000370,Northern Willow Software Ltd,CUSTOMER,GB,GBP,B,45
+CPTY-000371,Pacific Orchid Optics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000372,Pacific Radiant Furniture Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000373,Pacific Nova Marine B.V.,CUSTOMER,NL,EUR,D,60
+CPTY-000374,Global Atlas Foods Inc.,CUSTOMER,US,USD,C,90
+CPTY-000375,Onyx Power S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000376,Pacific Maple Furniture Inc.,CUSTOMER,US,USD,D,60
+CPTY-000377,Western Falcon Motors Inc.,CUSTOMER,US,USD,D,60
+CPTY-000378,Pacific Tidal Furniture Inc.,CUSTOMER,US,USD,A,45
+CPTY-000379,Global Willow Optics Inc.,CUSTOMER,US,USD,D,90
+CPTY-000380,Pioneer Retail Inc.,CUSTOMER,US,USD,A,45
+CPTY-000381,Pacific Horizon Optics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000382,Pacific Pioneer Furniture Pvt Ltd,CUSTOMER,IN,INR,D,60
+CPTY-000383,Global Ember Health Inc.,CUSTOMER,US,USD,A,30
+CPTY-000384,Global Willow Pharma Inc.,CUSTOMER,US,USD,A,30
+CPTY-000385,Global Sable Software Inc.,CUSTOMER,US,USD,D,90
+CPTY-000386,Northern Meridian Health Inc.,CUSTOMER,US,USD,A,45
+CPTY-000387,Pacific Summit Health Pvt Ltd,CUSTOMER,IN,INR,C,90
+CPTY-000388,Amber Metals Inc.,CUSTOMER,US,USD,B,30
+CPTY-000389,Pacific Iris Agritech Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000390,Northern Cobalt Marine Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000391,Onyx Electronics Inc.,CUSTOMER,US,USD,D,60
+CPTY-000392,Northern Vantage Electronics Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000393,Global Sable Media S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000394,Western Willow Health Inc.,CUSTOMER,US,USD,C,60
+CPTY-000395,Global Jade Optics Inc.,CUSTOMER,US,USD,B,45
+CPTY-000396,Pacific Maple Chemicals Inc.,CUSTOMER,US,USD,C,60
+CPTY-000397,Meridian Chemicals GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000398,Western Maple Logistics Inc.,CUSTOMER,US,USD,C,45
+CPTY-000399,Northern Delta Logistics Inc.,CUSTOMER,US,USD,B,45
+CPTY-000400,Horizon Agritech Inc.,CUSTOMER,US,USD,A,30
+CPTY-000401,Pacific Crescent Logistics Ltd,CUSTOMER,GB,GBP,C,45
+CPTY-000402,Western Cedar Apparel Inc.,CUSTOMER,US,USD,B,60
+CPTY-000403,Western Meridian Software Inc.,CUSTOMER,US,USD,A,45
+CPTY-000404,Northern Iris Logistics S.A.S.,CUSTOMER,FR,EUR,B,30
+CPTY-000405,Western Umber Retail Inc.,CUSTOMER,US,USD,D,90
+CPTY-000406,Pacific Keystone Logistics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000407,Global Amber Retail Pvt Ltd,CUSTOMER,IN,INR,B,30
+CPTY-000408,Pacific Amber Power Inc.,CUSTOMER,US,USD,B,45
+CPTY-000409,Pacific Vantage Chemicals Pvt Ltd,CUSTOMER,IN,INR,C,60
+CPTY-000410,Northern Quarry Logistics Ltd,CUSTOMER,GB,GBP,C,60
+CPTY-000411,Western Maple Furniture K.K.,CUSTOMER,JP,JPY,C,45
+CPTY-000412,Pacific Keystone Retail Inc.,CUSTOMER,US,USD,A,30
+CPTY-000413,Pioneer Metals GmbH,CUSTOMER,DE,EUR,A,30
+CPTY-000414,Western Tidal Foods Inc.,CUSTOMER,US,USD,B,30
+CPTY-000415,Northern Vantage Metals Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000416,Northern Summit Motors B.V.,CUSTOMER,NL,EUR,B,30
+CPTY-000417,Western Summit Agritech B.V.,CUSTOMER,NL,EUR,A,45
+CPTY-000418,Global Delta Optics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000419,Global Atlas Furniture Inc.,CUSTOMER,US,USD,A,45
+CPTY-000420,Pacific Vantage Foods Pvt Ltd,CUSTOMER,IN,INR,C,60
+CPTY-000421,Northern Umber Textiles Inc.,CUSTOMER,US,USD,B,30
+CPTY-000422,Northern Radiant Electronics S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000423,Cedar Pharma Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000424,Orchid Agritech Inc.,CUSTOMER,US,USD,C,90
+CPTY-000425,Northern Jade Motors Inc.,CUSTOMER,US,USD,B,45
+CPTY-000426,Western Delta Marine Inc.,CUSTOMER,US,USD,C,60
+CPTY-000427,Northern Radiant Software Inc.,CUSTOMER,US,USD,B,30
+CPTY-000428,Global Beacon Motors Inc.,CUSTOMER,US,USD,A,30
+CPTY-000429,Jade Agritech K.K.,CUSTOMER,JP,JPY,A,30
+CPTY-000430,Horizon Chemicals S.A.S.,CUSTOMER,FR,EUR,C,60
+CPTY-000431,Northern Tidal Optics B.V.,CUSTOMER,NL,EUR,A,30
+CPTY-000432,Pacific Willow Optics Pvt Ltd,CUSTOMER,IN,INR,D,60
+CPTY-000433,Western Keystone Chemicals Inc.,CUSTOMER,US,USD,B,30
+CPTY-000434,Quarry Apparel B.V.,CUSTOMER,NL,EUR,D,90
+CPTY-000435,Northern Crescent Motors Pvt Ltd,CUSTOMER,IN,INR,B,30
+CPTY-000436,Radiant Ceramics Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000437,Global Horizon Textiles Inc.,CUSTOMER,US,USD,A,30
+CPTY-000438,Western Harbor Media Inc.,CUSTOMER,US,USD,A,30
+CPTY-000439,Pacific Beacon Pharma S.A.S.,CUSTOMER,FR,EUR,D,60
+CPTY-000440,Falcon Retail Inc.,CUSTOMER,US,USD,C,45
+CPTY-000441,Radiant Metals Inc.,CUSTOMER,US,USD,A,45
+CPTY-000442,Harbor Textiles GmbH,CUSTOMER,DE,EUR,B,30
+CPTY-000443,Northern Horizon Packaging S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000444,Pacific Lumen Textiles Inc.,CUSTOMER,US,USD,B,60
+CPTY-000445,Pacific Zephyr Pharma GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000446,Pacific Sable Pharma Inc.,CUSTOMER,US,USD,A,45
+CPTY-000447,Global Amber Packaging Inc.,CUSTOMER,US,USD,D,90
+CPTY-000448,Northern Amber Logistics Inc.,CUSTOMER,US,USD,B,30
+CPTY-000449,Global Sable Agritech Inc.,CUSTOMER,US,USD,B,45
+CPTY-000450,Northern Harbor Metals K.K.,CUSTOMER,JP,JPY,B,30
+CPTY-000451,Pacific Pioneer Metals Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000452,Pacific Amber Software Inc.,CUSTOMER,US,USD,A,30
+CPTY-000453,Pacific Ember Health Inc.,CUSTOMER,US,USD,D,90
+CPTY-000454,Western Crescent Logistics B.V.,CUSTOMER,NL,EUR,B,60
+CPTY-000455,Northern Ember Power Ltd,CUSTOMER,GB,GBP,D,60
+CPTY-000456,Pacific Ember Agritech Inc.,CUSTOMER,US,USD,A,30
+CPTY-000457,Pacific Cobalt Furniture Inc.,CUSTOMER,US,USD,B,30
+CPTY-000458,Horizon Metals Inc.,CUSTOMER,US,USD,B,45
+CPTY-000459,Summit Apparel Ltd,CUSTOMER,GB,GBP,B,30
+CPTY-000460,Northern Beacon Agritech Inc.,CUSTOMER,US,USD,C,60
+CPTY-000461,Northern Iris Agritech Inc.,CUSTOMER,US,USD,A,45
+CPTY-000462,Western Umber Optics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000463,Nova Foods Inc.,CUSTOMER,US,USD,C,45
+CPTY-000464,Radiant Health Inc.,CUSTOMER,US,USD,D,60
+CPTY-000465,Northern Quarry Chemicals Inc.,CUSTOMER,US,USD,A,30
+CPTY-000466,Western Pioneer Foods Inc.,CUSTOMER,US,USD,A,30
+CPTY-000467,Global Nova Retail Inc.,CUSTOMER,US,USD,A,45
+CPTY-000468,Global Crescent Motors Inc.,CUSTOMER,US,USD,A,45
+CPTY-000469,Western Amber Health K.K.,CUSTOMER,JP,JPY,B,30
+CPTY-000470,Global Cobalt Health Inc.,CUSTOMER,US,USD,B,60
+CPTY-000471,Jade Chemicals Ltd,CUSTOMER,GB,GBP,D,90
+CPTY-000472,Western Nova Software Ltd,CUSTOMER,GB,GBP,B,45
+CPTY-000473,Western Jade Power Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000474,Amber Retail Inc.,CUSTOMER,US,USD,B,45
+CPTY-000475,Pacific Pioneer Logistics Inc.,CUSTOMER,US,USD,C,90
+CPTY-000476,Global Nova Media Inc.,CUSTOMER,US,USD,A,30
+CPTY-000477,Global Sable Power Inc.,CUSTOMER,US,USD,A,30
+CPTY-000478,Global Delta Power Inc.,CUSTOMER,US,USD,C,45
+CPTY-000479,Pacific Delta Media Inc.,CUSTOMER,US,USD,D,90
+CPTY-000480,Pacific Delta Pharma Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000481,Pacific Ember Pharma Pvt Ltd,CUSTOMER,IN,INR,C,90
+CPTY-000482,Pacific Cobalt Pharma Ltd,CUSTOMER,GB,GBP,C,90
+CPTY-000483,Global Amber Ceramics K.K.,CUSTOMER,JP,JPY,B,30
+CPTY-000484,Pacific Amber Foods S.A.S.,CUSTOMER,FR,EUR,B,45
+CPTY-000485,Northern Tidal Chemicals Inc.,CUSTOMER,US,USD,C,60
+CPTY-000486,Falcon Furniture Ltd,CUSTOMER,GB,GBP,B,60
+CPTY-000487,Sable Foods Inc.,CUSTOMER,US,USD,B,60
+CPTY-000488,Global Zephyr Power Inc.,CUSTOMER,US,USD,D,60
+CPTY-000489,Lumen Media Inc.,CUSTOMER,US,USD,C,45
+CPTY-000490,Willow Motors Inc.,CUSTOMER,US,USD,B,60
+CPTY-000491,Northern Pioneer Media Inc.,CUSTOMER,US,USD,C,90
+CPTY-000492,Global Atlas Marine Inc.,CUSTOMER,US,USD,A,30
+CPTY-000493,Pacific Pioneer Optics Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000494,Quarry Power Inc.,CUSTOMER,US,USD,A,30
+CPTY-000495,Western Pioneer Electronics Inc.,CUSTOMER,US,USD,D,60
+CPTY-000496,Western Delta Metals Inc.,CUSTOMER,US,USD,B,45
+CPTY-000497,Pacific Sable Foods S.A.S.,CUSTOMER,FR,EUR,B,30
+CPTY-000498,Delta Chemicals S.A.S.,CUSTOMER,FR,EUR,B,60
+CPTY-000499,Willow Foods Inc.,CUSTOMER,US,USD,A,30
+CPTY-000500,Pacific Beacon Agritech Ltd,CUSTOMER,GB,GBP,C,60
+CPTY-000501,Lumen Packaging Inc.,CUSTOMER,US,USD,A,30
+CPTY-000502,Zephyr Textiles Inc.,CUSTOMER,US,USD,A,30
+CPTY-000503,Western Onyx Media Inc.,CUSTOMER,US,USD,B,45
+CPTY-000504,Northern Meridian Textiles B.V.,CUSTOMER,NL,EUR,A,30
+CPTY-000505,Atlas Media Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000506,Maple Foods Inc.,CUSTOMER,US,USD,B,45
+CPTY-000507,Western Radiant Packaging Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000508,Pacific Atlas Apparel GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000509,Pacific Ember Optics Inc.,CUSTOMER,US,USD,C,60
+CPTY-000510,Falcon Metals Inc.,CUSTOMER,US,USD,A,45
+CPTY-000511,Western Umber Packaging S.A.S.,CUSTOMER,FR,EUR,A,30
+CPTY-000512,Pacific Lumen Agritech Ltd,CUSTOMER,GB,GBP,B,60
+CPTY-000513,Pacific Sable Health Inc.,CUSTOMER,US,USD,D,90
+CPTY-000514,Global Crescent Electronics Pvt Ltd,CUSTOMER,IN,INR,B,30
+CPTY-000515,Northern Cobalt Agritech Inc.,CUSTOMER,US,USD,A,45
+CPTY-000516,Cobalt Agritech B.V.,CUSTOMER,NL,EUR,B,45
+CPTY-000517,Pacific Delta Ceramics Ltd,CUSTOMER,GB,GBP,B,30
+CPTY-000518,Western Radiant Chemicals Inc.,CUSTOMER,US,USD,A,30
+CPTY-000519,Northern Cobalt Packaging Inc.,CUSTOMER,US,USD,B,30
+CPTY-000520,Pioneer Furniture Inc.,CUSTOMER,US,USD,B,60
+CPTY-000521,Pacific Granite Logistics Inc.,CUSTOMER,US,USD,C,60
+CPTY-000522,Tidal Pharma GmbH,CUSTOMER,DE,EUR,D,90
+CPTY-000523,Pacific Falcon Metals Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000524,Pacific Lumen Chemicals Inc.,CUSTOMER,US,USD,A,45
+CPTY-000525,Pacific Harbor Agritech Ltd,CUSTOMER,GB,GBP,D,90
+CPTY-000526,Western Pioneer Furniture Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000527,Western Horizon Optics S.A.S.,CUSTOMER,FR,EUR,A,30
+CPTY-000528,Northern Onyx Pharma Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000529,Northern Granite Metals K.K.,CUSTOMER,JP,JPY,A,45
+CPTY-000530,Global Pioneer Pharma Inc.,CUSTOMER,US,USD,A,45
+CPTY-000531,Western Sable Ceramics Inc.,CUSTOMER,US,USD,B,30
+CPTY-000532,Western Lumen Textiles S.A.S.,CUSTOMER,FR,EUR,B,45
+CPTY-000533,Northern Sable Apparel Inc.,CUSTOMER,US,USD,B,45
+CPTY-000534,Pacific Quarry Textiles Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000535,Western Sable Power Inc.,CUSTOMER,US,USD,A,30
+CPTY-000536,Horizon Media Inc.,CUSTOMER,US,USD,C,90
+CPTY-000537,Northern Lumen Logistics Inc.,CUSTOMER,US,USD,A,45
+CPTY-000538,Western Lumen Optics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000539,Western Summit Packaging Pvt Ltd,CUSTOMER,IN,INR,A,30
+CPTY-000540,Western Horizon Foods Inc.,CUSTOMER,US,USD,A,45
+CPTY-000541,Global Beacon Textiles S.A.S.,CUSTOMER,FR,EUR,C,60
+CPTY-000542,Northern Umber Retail K.K.,CUSTOMER,JP,JPY,B,30
+CPTY-000543,Beacon Textiles K.K.,CUSTOMER,JP,JPY,A,30
+CPTY-000544,Western Keystone Apparel Ltd,CUSTOMER,GB,GBP,C,45
+CPTY-000545,Zephyr Chemicals Inc.,CUSTOMER,US,USD,A,45
+CPTY-000546,Umber Health Inc.,CUSTOMER,US,USD,A,45
+CPTY-000547,Crescent Motors Inc.,CUSTOMER,US,USD,A,30
+CPTY-000548,Tidal Retail S.A.S.,CUSTOMER,FR,EUR,A,30
+CPTY-000549,Northern Cobalt Electronics B.V.,CUSTOMER,NL,EUR,A,45
+CPTY-000550,Ember Retail S.A.S.,CUSTOMER,FR,EUR,A,45
+CPTY-000551,Lumen Motors Inc.,CUSTOMER,US,USD,C,90
+CPTY-000552,Northern Sable Metals Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000553,Northern Sable Packaging Inc.,CUSTOMER,US,USD,B,45
+CPTY-000554,Pacific Atlas Ceramics K.K.,CUSTOMER,JP,JPY,B,45
+CPTY-000555,Northern Zephyr Ceramics Inc.,CUSTOMER,US,USD,A,30
+CPTY-000556,Western Beacon Motors Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000557,Northern Harbor Apparel K.K.,CUSTOMER,JP,JPY,A,30
+CPTY-000558,Western Summit Furniture Inc.,CUSTOMER,US,USD,C,45
+CPTY-000559,Pacific Iris Software GmbH,CUSTOMER,DE,EUR,C,45
+CPTY-000560,Pacific Pioneer Packaging Inc.,CUSTOMER,US,USD,A,45
+CPTY-000561,Global Horizon Retail B.V.,CUSTOMER,NL,EUR,A,30
+CPTY-000562,Global Amber Electronics Inc.,CUSTOMER,US,USD,C,60
+CPTY-000563,Pacific Meridian Packaging Ltd,CUSTOMER,GB,GBP,C,45
+CPTY-000564,Western Orchid Optics Inc.,CUSTOMER,US,USD,B,60
+CPTY-000565,Global Onyx Ceramics GmbH,CUSTOMER,DE,EUR,B,60
+CPTY-000566,Pacific Beacon Retail K.K.,CUSTOMER,JP,JPY,A,45
+CPTY-000567,Pacific Radiant Ceramics Inc.,CUSTOMER,US,USD,C,45
+CPTY-000568,Global Willow Electronics K.K.,CUSTOMER,JP,JPY,D,90
+CPTY-000569,Pacific Delta Optics S.A.S.,CUSTOMER,FR,EUR,B,45
+CPTY-000570,Global Crescent Metals Inc.,CUSTOMER,US,USD,B,60
+CPTY-000571,Pacific Harbor Packaging B.V.,CUSTOMER,NL,EUR,B,60
+CPTY-000572,Northern Crescent Agritech Ltd,CUSTOMER,GB,GBP,D,60
+CPTY-000573,Zephyr Agritech Ltd,CUSTOMER,GB,GBP,A,45
+CPTY-000574,Northern Crescent Chemicals B.V.,CUSTOMER,NL,EUR,A,45
+CPTY-000575,Vantage Agritech Inc.,CUSTOMER,US,USD,C,60
+CPTY-000576,Northern Tidal Pharma Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000577,Western Meridian Foods Inc.,CUSTOMER,US,USD,A,30
+CPTY-000578,Northern Horizon Pharma Inc.,CUSTOMER,US,USD,B,30
+CPTY-000579,Pacific Umber Software K.K.,CUSTOMER,JP,JPY,A,45
+CPTY-000580,Northern Iris Furniture Ltd,CUSTOMER,GB,GBP,A,30
+CPTY-000581,Western Vantage Health K.K.,CUSTOMER,JP,JPY,A,45
+CPTY-000582,Western Harbor Motors Inc.,CUSTOMER,US,USD,D,90
+CPTY-000583,Northern Lumen Agritech Inc.,CUSTOMER,US,USD,A,30
+CPTY-000584,Global Summit Motors Inc.,CUSTOMER,US,USD,A,45
+CPTY-000585,Pacific Harbor Health Inc.,CUSTOMER,US,USD,A,45
+CPTY-000586,Northern Sable Power Pvt Ltd,CUSTOMER,IN,INR,A,45
+CPTY-000587,Global Horizon Packaging Inc.,CUSTOMER,US,USD,A,30
+CPTY-000588,Tidal Apparel Pvt Ltd,CUSTOMER,IN,INR,B,45
+CPTY-000589,Western Amber Retail Ltd,CUSTOMER,GB,GBP,B,45
+CPTY-000590,Western Beacon Chemicals GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000591,Northern Summit Chemicals Inc.,CUSTOMER,US,USD,A,30
+CPTY-000592,Northern Horizon Retail GmbH,CUSTOMER,DE,EUR,A,45
+CPTY-000593,Global Cedar Pharma Pvt Ltd,CUSTOMER,IN,INR,B,60
+CPTY-000594,Western Sable Logistics Inc.,CUSTOMER,US,USD,C,90
+CPTY-000595,Pacific Nova Chemicals Inc.,CUSTOMER,US,USD,A,30
+CPTY-000596,Western Quarry Optics S.A.S.,CUSTOMER,FR,EUR,B,60
+CPTY-000597,Global Sable Chemicals Inc.,CUSTOMER,US,USD,C,90
+CPTY-000598,Global Sable Foods Inc.,CUSTOMER,US,USD,A,45
+CPTY-000599,Global Horizon Metals Inc.,CUSTOMER,US,USD,D,60
+CPTY-000600,Global Harbor Packaging Inc.,CUSTOMER,US,USD,D,60
+CPTY-000601,Northern Beacon Chemicals Pvt Ltd,SUPPLIER,IN,INR,A,45
+CPTY-000602,Pacific Ember Motors Inc.,SUPPLIER,US,USD,A,60
+CPTY-000603,Western Cedar Software Pvt Ltd,SUPPLIER,IN,INR,A,45
+CPTY-000604,Global Orchid Retail Inc.,SUPPLIER,US,USD,B,60
+CPTY-000605,Pacific Summit Software Ltd,SUPPLIER,GB,GBP,B,60
+CPTY-000606,Northern Onyx Health S.A.S.,SUPPLIER,FR,EUR,B,60
+CPTY-000607,Global Vantage Health Pvt Ltd,SUPPLIER,IN,INR,B,45
+CPTY-000608,Beacon Apparel Inc.,SUPPLIER,US,USD,A,60
+CPTY-000609,Ember Power Inc.,SUPPLIER,US,USD,A,30
+CPTY-000610,Western Quarry Motors S.A.S.,SUPPLIER,FR,EUR,A,30
+CPTY-000611,Western Amber Packaging Inc.,SUPPLIER,US,USD,B,30
+CPTY-000612,Western Onyx Retail Inc.,SUPPLIER,US,USD,A,45
+CPTY-000613,Harbor Motors Inc.,SUPPLIER,US,USD,B,45
+CPTY-000614,Northern Beacon Furniture GmbH,SUPPLIER,DE,EUR,B,30
+CPTY-000615,Pacific Ember Metals K.K.,SUPPLIER,JP,JPY,A,30
+CPTY-000616,Global Beacon Furniture Ltd,SUPPLIER,GB,GBP,A,60
+CPTY-000617,Beacon Retail Inc.,SUPPLIER,US,USD,C,45
+CPTY-000618,Northern Umber Logistics Pvt Ltd,SUPPLIER,IN,INR,B,45
+CPTY-000619,Western Pioneer Chemicals S.A.S.,SUPPLIER,FR,EUR,B,15
+CPTY-000620,Global Horizon Marine Inc.,SUPPLIER,US,USD,A,45
+CPTY-000621,Northern Vantage Optics Inc.,SUPPLIER,US,USD,A,45
+CPTY-000622,Global Tidal Apparel Inc.,SUPPLIER,US,USD,B,60
+CPTY-000623,Global Quarry Ceramics B.V.,SUPPLIER,NL,EUR,B,30
+CPTY-000624,Pacific Crescent Chemicals Inc.,SUPPLIER,US,USD,B,60
+CPTY-000625,Northern Atlas Packaging Inc.,SUPPLIER,US,USD,A,60
+CPTY-000626,Northern Onyx Metals Inc.,SUPPLIER,US,USD,A,60
+CPTY-000627,Western Horizon Motors Inc.,SUPPLIER,US,USD,A,15
+CPTY-000628,Global Quarry Textiles Pvt Ltd,SUPPLIER,IN,INR,A,15
+CPTY-000629,Pacific Onyx Retail GmbH,SUPPLIER,DE,EUR,A,45
+CPTY-000630,Tidal Logistics Ltd,SUPPLIER,GB,GBP,A,15
+CPTY-000631,Pacific Quarry Health Ltd,SUPPLIER,GB,GBP,B,30
+CPTY-000632,Global Cedar Media Inc.,SUPPLIER,US,USD,B,30
+CPTY-000633,Atlas Motors Inc.,SUPPLIER,US,USD,A,15
+CPTY-000634,Global Iris Textiles Ltd,SUPPLIER,GB,GBP,B,45
+CPTY-000635,Northern Falcon Pharma S.A.S.,SUPPLIER,FR,EUR,B,15
+CPTY-000636,Maple Agritech B.V.,SUPPLIER,NL,EUR,A,30
+CPTY-000637,Northern Keystone Motors Pvt Ltd,SUPPLIER,IN,INR,B,60
+CPTY-000638,Western Atlas Agritech Inc.,SUPPLIER,US,USD,B,45
+CPTY-000639,Pacific Umber Apparel S.A.S.,SUPPLIER,FR,EUR,B,30
+CPTY-000640,Global Keystone Metals B.V.,SUPPLIER,NL,EUR,B,45
+CPTY-000641,Northern Beacon Ceramics Pvt Ltd,SUPPLIER,IN,INR,A,15
+CPTY-000642,Western Meridian Media K.K.,SUPPLIER,JP,JPY,B,60
+CPTY-000643,Pacific Lumen Motors K.K.,SUPPLIER,JP,JPY,A,45
+CPTY-000644,Northern Falcon Foods Inc.,SUPPLIER,US,USD,B,15
+CPTY-000645,Sable Ceramics GmbH,SUPPLIER,DE,EUR,A,15
+CPTY-000646,Northern Maple Software GmbH,SUPPLIER,DE,EUR,A,60
+CPTY-000647,Pacific Keystone Software Inc.,SUPPLIER,US,USD,A,15
+CPTY-000648,Northern Vantage Furniture Inc.,SUPPLIER,US,USD,A,30
+CPTY-000649,Pacific Onyx Power Pvt Ltd,SUPPLIER,IN,INR,A,30
+CPTY-000650,Global Sable Metals GmbH,SUPPLIER,DE,EUR,B,45
+CPTY-000651,Global Keystone Logistics Inc.,SUPPLIER,US,USD,A,60
+CPTY-000652,Falcon Apparel GmbH,SUPPLIER,DE,EUR,A,15
+CPTY-000653,Northern Nova Motors B.V.,SUPPLIER,NL,EUR,B,30
+CPTY-000654,Pacific Willow Marine S.A.S.,SUPPLIER,FR,EUR,B,60
+CPTY-000655,Western Jade Electronics Pvt Ltd,SUPPLIER,IN,INR,A,30
+CPTY-000656,Global Keystone Pharma Inc.,SUPPLIER,US,USD,C,45
+CPTY-000657,Global Orchid Foods Inc.,SUPPLIER,US,USD,A,60
+CPTY-000658,Sable Apparel Inc.,SUPPLIER,US,USD,A,30
+CPTY-000659,Pacific Sable Furniture Inc.,SUPPLIER,US,USD,A,60
+CPTY-000660,Global Radiant Chemicals K.K.,SUPPLIER,JP,JPY,B,60
+CPTY-000661,Umber Pharma Ltd,SUPPLIER,GB,GBP,A,15
+CPTY-000662,Global Amber Logistics K.K.,SUPPLIER,JP,JPY,A,45
+CPTY-000663,Western Sable Motors K.K.,SUPPLIER,JP,JPY,B,15
+CPTY-000664,Northern Radiant Furniture Ltd,SUPPLIER,GB,GBP,B,45
+CPTY-000665,Global Zephyr Logistics Inc.,SUPPLIER,US,USD,A,30
+CPTY-000666,Delta Foods Ltd,SUPPLIER,GB,GBP,B,60
+CPTY-000667,Northern Iris Textiles Inc.,SUPPLIER,US,USD,A,15
+CPTY-000668,Pacific Cedar Ceramics Inc.,SUPPLIER,US,USD,C,60
+CPTY-000669,Global Crescent Furniture Inc.,SUPPLIER,US,USD,B,30
+CPTY-000670,Global Pioneer Marine GmbH,SUPPLIER,DE,EUR,B,45
+CPTY-000671,Pacific Sable Ceramics S.A.S.,SUPPLIER,FR,EUR,B,45
+CPTY-000672,Western Keystone Logistics Inc.,SUPPLIER,US,USD,A,15
+CPTY-000673,Western Onyx Software Inc.,SUPPLIER,US,USD,B,45
+CPTY-000674,Northern Keystone Marine K.K.,SUPPLIER,JP,JPY,A,15
+CPTY-000675,Global Cobalt Furniture Inc.,SUPPLIER,US,USD,A,60
+CPTY-000676,Radiant Marine K.K.,SUPPLIER,JP,JPY,A,15
+CPTY-000677,Pacific Horizon Electronics Inc.,SUPPLIER,US,USD,A,15
+CPTY-000678,Northern Nova Power Ltd,SUPPLIER,GB,GBP,A,60
+CPTY-000679,Global Maple Pharma Inc.,SUPPLIER,US,USD,A,45
+CPTY-000680,Atlas Foods Inc.,SUPPLIER,US,USD,B,45
+CPTY-000681,Pacific Summit Retail K.K.,SUPPLIER,JP,JPY,A,15
+CPTY-000682,Cobalt Media Inc.,SUPPLIER,US,USD,B,45
+CPTY-000683,Global Cedar Electronics Inc.,SUPPLIER,US,USD,A,60
+CPTY-000684,Cobalt Logistics Inc.,SUPPLIER,US,USD,B,30
+CPTY-000685,Pacific Horizon Ceramics Inc.,SUPPLIER,US,USD,B,15
+CPTY-000686,Pacific Nova Electronics Pvt Ltd,SUPPLIER,IN,INR,A,15
+CPTY-000687,Western Orchid Marine Inc.,SUPPLIER,US,USD,A,60
+CPTY-000688,Pacific Tidal Metals B.V.,SUPPLIER,NL,EUR,B,30
+CPTY-000689,Pacific Iris Packaging GmbH,SUPPLIER,DE,EUR,A,15
+CPTY-000690,Pacific Cedar Foods Inc.,SUPPLIER,US,USD,A,45
+CPTY-000691,Northern Beacon Motors Pvt Ltd,SUPPLIER,IN,INR,B,30
+CPTY-000692,Pacific Vantage Motors Pvt Ltd,SUPPLIER,IN,INR,A,15
+CPTY-000693,Beacon Logistics Inc.,SUPPLIER,US,USD,C,60
+CPTY-000694,Northern Harbor Retail Inc.,SUPPLIER,US,USD,A,15
+CPTY-000695,Global Sable Packaging K.K.,SUPPLIER,JP,JPY,B,60
+CPTY-000696,Northern Tidal Electronics Inc.,SUPPLIER,US,USD,A,30
+CPTY-000697,Global Umber Agritech K.K.,SUPPLIER,JP,JPY,A,60
+CPTY-000698,Pacific Jade Foods GmbH,SUPPLIER,DE,EUR,B,30
+CPTY-000699,Vantage Apparel GmbH,SUPPLIER,DE,EUR,A,45
+CPTY-000700,Global Nova Foods Ltd,SUPPLIER,GB,GBP,A,60
+CPTY-000701,Global Cobalt Foods Inc.,SUPPLIER,US,USD,A,45
+CPTY-000702,Northern Orchid Optics Inc.,SUPPLIER,US,USD,A,15
+CPTY-000703,Delta Metals S.A.S.,SUPPLIER,FR,EUR,B,15
+CPTY-000704,Global Falcon Motors Inc.,SUPPLIER,US,USD,A,60
+CPTY-000705,Meridian Optics Inc.,SUPPLIER,US,USD,B,45
+CPTY-000706,Onyx Optics Ltd,SUPPLIER,GB,GBP,B,45
+CPTY-000707,Global Cedar Power Inc.,SUPPLIER,US,USD,C,30
+CPTY-000708,Global Meridian Apparel Inc.,SUPPLIER,US,USD,B,30
+CPTY-000709,Horizon Pharma Inc.,SUPPLIER,US,USD,B,15
+CPTY-000710,Pacific Meridian Software Ltd,SUPPLIER,GB,GBP,A,30
+CPTY-000711,Western Orchid Media Inc.,SUPPLIER,US,USD,A,15
+CPTY-000712,Pacific Beacon Metals K.K.,SUPPLIER,JP,JPY,A,30
+CPTY-000713,Pacific Summit Electronics Inc.,SUPPLIER,US,USD,C,15
+CPTY-000714,Pacific Ember Chemicals Pvt Ltd,SUPPLIER,IN,INR,C,15
+CPTY-000715,Western Crescent Textiles Inc.,SUPPLIER,US,USD,B,45
+CPTY-000716,Global Pioneer Foods B.V.,SUPPLIER,NL,EUR,A,45
+CPTY-000717,Pacific Iris Marine Ltd,SUPPLIER,GB,GBP,D,60
+CPTY-000718,Western Delta Power Inc.,SUPPLIER,US,USD,B,45
+CPTY-000719,Beacon Electronics Ltd,SUPPLIER,GB,GBP,A,45
+CPTY-000720,Crescent Textiles B.V.,SUPPLIER,NL,EUR,A,15
+CPTY-000721,Global Zephyr Software K.K.,SUPPLIER,JP,JPY,A,15
+CPTY-000722,Northern Harbor Software K.K.,SUPPLIER,JP,JPY,A,15
+CPTY-000723,Northern Granite Logistics Pvt Ltd,SUPPLIER,IN,INR,A,15
+CPTY-000724,Northern Crescent Textiles Inc.,SUPPLIER,US,USD,A,60
+CPTY-000725,Pacific Jade Marine Inc.,SUPPLIER,US,USD,B,45
+CPTY-000726,Western Willow Apparel Inc.,SUPPLIER,US,USD,B,60
+CPTY-000727,Global Falcon Optics B.V.,SUPPLIER,NL,EUR,A,15
+CPTY-000728,Northern Orchid Agritech S.A.S.,SUPPLIER,FR,EUR,A,30
+CPTY-000729,Western Atlas Metals Pvt Ltd,SUPPLIER,IN,INR,B,15
+CPTY-000730,Global Cobalt Marine Inc.,SUPPLIER,US,USD,C,60
+CPTY-000731,Western Radiant Retail GmbH,SUPPLIER,DE,EUR,B,60
+CPTY-000732,Global Jade Media Pvt Ltd,SUPPLIER,IN,INR,A,30
+CPTY-000733,Pacific Iris Media S.A.S.,SUPPLIER,FR,EUR,A,45
+CPTY-000734,Western Harbor Electronics Inc.,SUPPLIER,US,USD,B,15
+CPTY-000735,Pacific Radiant Pharma Inc.,SUPPLIER,US,USD,A,60
+CPTY-000736,Pacific Jade Electronics Ltd,SUPPLIER,GB,GBP,A,30
+CPTY-000737,Western Maple Pharma GmbH,SUPPLIER,DE,EUR,A,30
+CPTY-000738,Global Cobalt Agritech Ltd,SUPPLIER,GB,GBP,A,60
+CPTY-000739,Global Tidal Furniture Inc.,SUPPLIER,US,USD,B,15
+CPTY-000740,Pacific Onyx Apparel Inc.,SUPPLIER,US,USD,A,30
+CPTY-000741,Amber Media Inc.,SUPPLIER,US,USD,A,60
+CPTY-000742,Cobalt Furniture Inc.,SUPPLIER,US,USD,B,60
+CPTY-000743,Global Nova Packaging Inc.,SUPPLIER,US,USD,B,15
+CPTY-000744,Western Willow Textiles Inc.,SUPPLIER,US,USD,B,60
+CPTY-000745,Northern Atlas Retail S.A.S.,SUPPLIER,FR,EUR,D,30
+CPTY-000746,Northern Amber Ceramics Inc.,SUPPLIER,US,USD,B,60
+CPTY-000747,Western Radiant Marine Inc.,SUPPLIER,US,USD,A,60
+CPTY-000748,Sable Electronics Inc.,SUPPLIER,US,USD,B,30
+CPTY-000749,Pacific Willow Health Inc.,SUPPLIER,US,USD,B,60
+CPTY-000750,Orchid Packaging B.V.,SUPPLIER,NL,EUR,A,45
+CPTY-000751,Pacific Lumen Optics Inc.,SUPPLIER,US,USD,A,60
+CPTY-000752,Global Granite Ceramics Ltd,SUPPLIER,GB,GBP,A,45
+CPTY-000753,Western Atlas Electronics Inc.,SUPPLIER,US,USD,A,15
+CPTY-000754,Delta Media Inc.,SUPPLIER,US,USD,B,60
+CPTY-000755,Western Summit Apparel Inc.,SUPPLIER,US,USD,B,30
+CPTY-000756,Western Keystone Power Inc.,SUPPLIER,US,USD,B,60
+CPTY-000757,Pacific Onyx Logistics K.K.,SUPPLIER,JP,JPY,A,30
+CPTY-000758,Western Lumen Media B.V.,SUPPLIER,NL,EUR,B,45
+CPTY-000759,Western Granite Pharma Inc.,SUPPLIER,US,USD,B,60
+CPTY-000760,Northern Nova Agritech Pvt Ltd,SUPPLIER,IN,INR,A,30
+CPTY-000761,Pacific Lumen Health Inc.,SUPPLIER,US,USD,A,45
+CPTY-000762,Northern Ember Logistics Inc.,SUPPLIER,US,USD,A,45
+CPTY-000763,Western Iris Logistics Ltd,SUPPLIER,GB,GBP,A,45
+CPTY-000764,Western Onyx Motors S.A.S.,SUPPLIER,FR,EUR,B,60
+CPTY-000765,Western Falcon Foods GmbH,SUPPLIER,DE,EUR,B,60
+CPTY-000766,Global Quarry Retail S.A.S.,SUPPLIER,FR,EUR,B,15
+CPTY-000767,Pacific Amber Packaging Pvt Ltd,SUPPLIER,IN,INR,A,30
+CPTY-000768,Western Keystone Ceramics Inc.,SUPPLIER,US,USD,B,30
+CPTY-000769,Western Tidal Power Inc.,SUPPLIER,US,USD,A,60
+CPTY-000770,Northern Zephyr Optics Pvt Ltd,SUPPLIER,IN,INR,B,45
+CPTY-000771,Global Lumen Motors Ltd,SUPPLIER,GB,GBP,A,30
+CPTY-000772,Radiant Agritech S.A.S.,SUPPLIER,FR,EUR,B,30
+CPTY-000773,Global Summit Agritech Inc.,SUPPLIER,US,USD,A,30
+CPTY-000774,Quarry Pharma Ltd,SUPPLIER,GB,GBP,A,60
+CPTY-000775,Western Tidal Software Inc.,SUPPLIER,US,USD,B,30
+CPTY-000776,Northern Tidal Metals Pvt Ltd,SUPPLIER,IN,INR,A,30
+CPTY-000777,Umber Retail Inc.,SUPPLIER,US,USD,A,15
+CPTY-000778,Keystone Optics Inc.,SUPPLIER,US,USD,A,30
+CPTY-000779,Northern Iris Packaging Inc.,SUPPLIER,US,USD,A,45
+CPTY-000780,Northern Granite Packaging K.K.,SUPPLIER,JP,JPY,A,30
+CPTY-000781,Pacific Lumen Retail Pvt Ltd,SUPPLIER,IN,INR,B,60
+CPTY-000782,Global Ember Software Inc.,SUPPLIER,US,USD,B,15
+CPTY-000783,Western Vantage Media Inc.,SUPPLIER,US,USD,A,30
+CPTY-000784,Summit Software Inc.,SUPPLIER,US,USD,B,45
+CPTY-000785,Global Beacon Pharma Inc.,SUPPLIER,US,USD,A,15
+CPTY-000786,Global Tidal Logistics Ltd,SUPPLIER,GB,GBP,A,45
+CPTY-000787,Northern Atlas Power Inc.,SUPPLIER,US,USD,B,45
+CPTY-000788,Western Radiant Pharma Pvt Ltd,SUPPLIER,IN,INR,B,45
+CPTY-000789,Pacific Quarry Pharma GmbH,SUPPLIER,DE,EUR,B,30
+CPTY-000790,Pacific Horizon Textiles Inc.,SUPPLIER,US,USD,A,60
+CPTY-000791,Pacific Crescent Packaging Inc.,SUPPLIER,US,USD,A,30
+CPTY-000792,Western Cedar Electronics Inc.,SUPPLIER,US,USD,B,60
+CPTY-000793,Western Keystone Packaging Inc.,SUPPLIER,US,USD,A,45
+CPTY-000794,Western Willow Electronics Ltd,SUPPLIER,GB,GBP,A,30
+CPTY-000795,Cedar Ceramics K.K.,SUPPLIER,JP,JPY,C,60
+CPTY-000796,Northern Jade Electronics B.V.,SUPPLIER,NL,EUR,C,45
+CPTY-000797,Northern Ember Pharma Inc.,SUPPLIER,US,USD,A,15
+CPTY-000798,Pacific Amber Optics Ltd,SUPPLIER,GB,GBP,A,60
+CPTY-000799,Western Cobalt Furniture Ltd,SUPPLIER,GB,GBP,A,30
+CPTY-000800,Global Willow Furniture Inc.,SUPPLIER,US,USD,A,30
+CPTY-000801,Pacific Granite Media Inc.,SUPPLIER,US,USD,A,60
+CPTY-000802,Northern Lumen Packaging Inc.,SUPPLIER,US,USD,A,30
+CPTY-000803,Summit Ceramics Ltd,SUPPLIER,GB,GBP,D,45
+CPTY-000804,Global Keystone Packaging Pvt Ltd,SUPPLIER,IN,INR,B,30
+CPTY-000805,Harbor Optics Ltd,SUPPLIER,GB,GBP,B,45
+CPTY-000806,Western Vantage Foods Inc.,SUPPLIER,US,USD,C,45
+CPTY-000807,Global Sable Ceramics S.A.S.,SUPPLIER,FR,EUR,A,15
+CPTY-000808,Western Jade Retail Inc.,SUPPLIER,US,USD,A,15
+CPTY-000809,Pacific Nova Agritech Inc.,SUPPLIER,US,USD,A,60
+CPTY-000810,Western Nova Electronics Inc.,SUPPLIER,US,USD,B,60
+CPTY-000811,Pacific Atlas Power Pvt Ltd,SUPPLIER,IN,INR,A,30
+CPTY-000812,Western Keystone Electronics Inc.,SUPPLIER,US,USD,A,45
+CPTY-000813,Zephyr Ceramics Pvt Ltd,SUPPLIER,IN,INR,C,60
+CPTY-000814,Nova Ceramics Inc.,SUPPLIER,US,USD,A,60
+CPTY-000815,Onyx Textiles Ltd,SUPPLIER,GB,GBP,A,45
+CPTY-000816,Northern Zephyr Agritech Inc.,SUPPLIER,US,USD,A,30
+CPTY-000817,Harbor Marine Inc.,SUPPLIER,US,USD,D,45
+CPTY-000818,Vantage Pharma B.V.,SUPPLIER,NL,EUR,B,60
+CPTY-000819,Northern Horizon Apparel K.K.,SUPPLIER,JP,JPY,A,45
+CPTY-000820,Global Jade Furniture B.V.,SUPPLIER,NL,EUR,C,30
+CPTY-000821,Global Orchid Software Ltd,SUPPLIER,GB,GBP,B,15
+CPTY-000822,Western Willow Optics Pvt Ltd,SUPPLIER,IN,INR,B,60
+CPTY-000823,Global Nova Textiles Ltd,SUPPLIER,GB,GBP,C,60
+CPTY-000824,Beacon Packaging Inc.,SUPPLIER,US,USD,A,45
+CPTY-000825,Global Pioneer Power Ltd,SUPPLIER,GB,GBP,A,15
+CPTY-000826,Northern Horizon Logistics Inc.,SUPPLIER,US,USD,A,60
+CPTY-000827,Pacific Falcon Marine B.V.,SUPPLIER,NL,EUR,B,15
+CPTY-000828,Northern Willow Optics Ltd,SUPPLIER,GB,GBP,A,60
+CPTY-000829,Western Zephyr Motors Pvt Ltd,SUPPLIER,IN,INR,A,45
+CPTY-000830,Northern Cobalt Software Inc.,SUPPLIER,US,USD,B,30
+CPTY-000831,Global Radiant Logistics Inc.,SUPPLIER,US,USD,A,30
+CPTY-000832,Northern Zephyr Power GmbH,SUPPLIER,DE,EUR,B,45
+CPTY-000833,Pacific Falcon Optics Inc.,SUPPLIER,US,USD,B,45
+CPTY-000834,Pacific Harbor Retail Inc.,SUPPLIER,US,USD,C,60
+CPTY-000835,Western Granite Ceramics Inc.,SUPPLIER,US,USD,A,30
+CPTY-000836,Cobalt Metals Inc.,SUPPLIER,US,USD,A,30
+CPTY-000837,Western Onyx Foods GmbH,SUPPLIER,DE,EUR,A,15
+CPTY-000838,Meridian Metals Inc.,SUPPLIER,US,USD,A,30
+CPTY-000839,Cedar Logistics GmbH,SUPPLIER,DE,EUR,A,15
+CPTY-000840,Pacific Meridian Power GmbH,SUPPLIER,DE,EUR,B,45
+CPTY-000841,Willow Chemicals Pvt Ltd,SUPPLIER,IN,INR,B,15
+CPTY-000842,Pacific Atlas Foods Ltd,SUPPLIER,GB,GBP,A,30
+CPTY-000843,Northern Granite Textiles Inc.,SUPPLIER,US,USD,A,60
+CPTY-000844,Northern Tidal Motors Pvt Ltd,SUPPLIER,IN,INR,A,60
+CPTY-000845,Northern Cobalt Optics Inc.,SUPPLIER,US,USD,A,45
+CPTY-000846,Northern Tidal Marine Inc.,SUPPLIER,US,USD,B,60
+CPTY-000847,Western Harbor Metals Inc.,SUPPLIER,US,USD,A,15
+CPTY-000848,Pacific Cobalt Agritech Inc.,SUPPLIER,US,USD,A,15
+CPTY-000849,Global Jade Marine Inc.,SUPPLIER,US,USD,A,15
+CPTY-000850,Pacific Willow Textiles Ltd,SUPPLIER,GB,GBP,B,30
+CPTY-000851,Pacific Nova Media Ltd,SUPPLIER,GB,GBP,A,30
+CPTY-000852,Northern Keystone Furniture Inc.,SUPPLIER,US,USD,A,15
+CPTY-000853,Pacific Meridian Chemicals Ltd,SUPPLIER,GB,GBP,A,15
+CPTY-000854,Global Tidal Motors Inc.,SUPPLIER,US,USD,B,15
+CPTY-000855,Northern Lumen Health Inc.,SUPPLIER,US,USD,A,15
+CPTY-000856,Northern Orchid Power Inc.,SUPPLIER,US,USD,B,15
+CPTY-000857,Pacific Willow Agritech S.A.S.,SUPPLIER,FR,EUR,A,30
+CPTY-000858,Western Willow Foods Inc.,SUPPLIER,US,USD,D,60
+CPTY-000859,Western Granite Logistics Inc.,SUPPLIER,US,USD,B,15
+CPTY-000860,Northern Crescent Optics Inc.,SUPPLIER,US,USD,A,15
+CPTY-000861,Northern Cobalt Textiles S.A.S.,SUPPLIER,FR,EUR,A,60
+CPTY-000862,Iris Apparel Inc.,SUPPLIER,US,USD,B,30
+CPTY-000863,Western Crescent Marine Inc.,SUPPLIER,US,USD,A,45
+CPTY-000864,Maple Power B.V.,SUPPLIER,NL,EUR,B,60
+CPTY-000865,Northern Sable Agritech Inc.,SUPPLIER,US,USD,B,45
+CPTY-000866,Lumen Foods Pvt Ltd,SUPPLIER,IN,INR,B,45
+CPTY-000867,Pacific Jade Logistics Inc.,SUPPLIER,US,USD,C,60
+CPTY-000868,Northern Horizon Furniture Inc.,SUPPLIER,US,USD,A,15
+CPTY-000869,Global Nova Ceramics Inc.,SUPPLIER,US,USD,C,45
+CPTY-000870,Global Onyx Health Inc.,SUPPLIER,US,USD,B,30
+CPTY-000871,Granite Retail Pvt Ltd,SUPPLIER,IN,INR,A,45
+CPTY-000872,Western Atlas Textiles Inc.,SUPPLIER,US,USD,B,45
+CPTY-000873,Western Harbor Power Inc.,SUPPLIER,US,USD,C,45
+CPTY-000874,Western Lumen Electronics K.K.,SUPPLIER,JP,JPY,A,15
+CPTY-000875,Global Vantage Metals Ltd,SUPPLIER,GB,GBP,C,60
+CPTY-000876,Pacific Horizon Marine Inc.,SUPPLIER,US,USD,A,60
+CPTY-000877,Zephyr Electronics B.V.,SUPPLIER,NL,EUR,D,60
+CPTY-000878,Northern Ember Apparel Pvt Ltd,SUPPLIER,IN,INR,A,15
+CPTY-000879,Global Vantage Ceramics Pvt Ltd,SUPPLIER,IN,INR,C,15
+CPTY-000880,Radiant Chemicals Inc.,SUPPLIER,US,USD,B,15
+CPTY-000881,Global Tidal Power Inc.,SUPPLIER,US,USD,A,45
+CPTY-000882,Pacific Harbor Chemicals K.K.,SUPPLIER,JP,JPY,A,45
+CPTY-000883,Northern Onyx Foods Ltd,SUPPLIER,GB,GBP,C,30
+CPTY-000884,Northern Harbor Optics Pvt Ltd,SUPPLIER,IN,INR,B,15
+CPTY-000885,Global Iris Power Inc.,SUPPLIER,US,USD,B,45
+CPTY-000886,Northern Delta Textiles Inc.,SUPPLIER,US,USD,A,60
+CPTY-000887,Cedar Software Inc.,SUPPLIER,US,USD,A,30
+CPTY-000888,Global Keystone Optics Pvt Ltd,SUPPLIER,IN,INR,A,15
+CPTY-000889,Pacific Crescent Apparel K.K.,SUPPLIER,JP,JPY,A,45
+CPTY-000890,Global Jade Electronics Inc.,SUPPLIER,US,USD,A,45
+CPTY-000891,Northern Tidal Apparel Pvt Ltd,SUPPLIER,IN,INR,B,30
+CPTY-000892,Crescent Ceramics Pvt Ltd,SUPPLIER,IN,INR,B,15
+CPTY-000893,Northern Keystone Ceramics Inc.,SUPPLIER,US,USD,D,30
+CPTY-000894,Western Granite Packaging Inc.,SUPPLIER,US,USD,A,30
+CPTY-000895,Maple Health Inc.,SUPPLIER,US,USD,A,15
+CPTY-000896,Northern Pioneer Health Ltd,SUPPLIER,GB,GBP,A,15
+CPTY-000897,Amber Textiles Inc.,SUPPLIER,US,USD,B,30
+CPTY-000898,Western Cobalt Apparel Inc.,SUPPLIER,US,USD,B,60
+CPTY-000899,Western Harbor Textiles K.K.,SUPPLIER,JP,JPY,A,30
+CPTY-000900,Falcon Pharma Ltd,SUPPLIER,GB,GBP,A,45
+CPTY-000901,Pacific Vantage Packaging B.V.,SUPPLIER,NL,EUR,B,45
+CPTY-000902,Global Maple Power Inc.,SUPPLIER,US,USD,B,15
+CPTY-000903,Global Harbor Power S.A.S.,SUPPLIER,FR,EUR,A,30
+CPTY-000904,Pacific Keystone Apparel Ltd,SUPPLIER,GB,GBP,B,15
+CPTY-000905,Northern Crescent Retail Inc.,SUPPLIER,US,USD,A,15
+CPTY-000906,Pacific Iris Electronics Pvt Ltd,SUPPLIER,IN,INR,C,15
+CPTY-000907,Northern Atlas Pharma GmbH,SUPPLIER,DE,EUR,A,45
+CPTY-000908,Harbor Furniture K.K.,SUPPLIER,JP,JPY,B,30
+CPTY-000909,Delta Apparel Inc.,SUPPLIER,US,USD,A,30
+CPTY-000910,Pacific Horizon Media Pvt Ltd,SUPPLIER,IN,INR,B,45
+CPTY-000911,Global Sable Motors Inc.,SUPPLIER,US,USD,A,15
+CPTY-000912,Global Cedar Foods Ltd,SUPPLIER,GB,GBP,A,60
+CPTY-000913,Ember Health Inc.,SUPPLIER,US,USD,A,60
+CPTY-000914,Western Amber Motors Inc.,SUPPLIER,US,USD,A,15
+CPTY-000915,Zephyr Packaging Inc.,SUPPLIER,US,USD,A,15
+CPTY-000916,Global Granite Marine GmbH,SUPPLIER,DE,EUR,A,45
+CPTY-000917,Pacific Cedar Electronics S.A.S.,SUPPLIER,FR,EUR,A,60
+CPTY-000918,Northern Sable Logistics GmbH,SUPPLIER,DE,EUR,B,15
+CPTY-000919,Western Cedar Furniture Inc.,SUPPLIER,US,USD,B,45
+CPTY-000920,Global Radiant Marine Inc.,SUPPLIER,US,USD,B,45
+CPTY-000921,Northern Summit Marine Inc.,SUPPLIER,US,USD,A,60
+CPTY-000922,Global Radiant Software Inc.,SUPPLIER,US,USD,A,45
+CPTY-000923,Pacific Keystone Agritech Inc.,SUPPLIER,US,USD,A,60
+CPTY-000924,Global Orchid Motors K.K.,SUPPLIER,JP,JPY,A,15
+CPTY-000925,Pacific Onyx Optics B.V.,SUPPLIER,NL,EUR,B,60
+CPTY-000926,Western Granite Chemicals Inc.,SUPPLIER,US,USD,B,30
+CPTY-000927,Keystone Software Inc.,SUPPLIER,US,USD,B,60
+CPTY-000928,Northern Lumen Software Inc.,SUPPLIER,US,USD,B,45
+CPTY-000929,Western Meridian Pharma Ltd,SUPPLIER,GB,GBP,A,30
+CPTY-000930,Global Umber Health Ltd,SUPPLIER,GB,GBP,A,15
+CPTY-000931,Global Cedar Packaging Inc.,SUPPLIER,US,USD,A,60
+CPTY-000932,Willow Textiles GmbH,SUPPLIER,DE,EUR,A,30
+CPTY-000933,Horizon Apparel Inc.,SUPPLIER,US,USD,A,45
+CPTY-000934,Western Tidal Health S.A.S.,SUPPLIER,FR,EUR,A,60
+CPTY-000935,Northern Crescent Marine Ltd,SUPPLIER,GB,GBP,B,30
+CPTY-000936,Maple Motors Ltd,SUPPLIER,GB,GBP,B,60
+CPTY-000937,Northern Vantage Power Inc.,SUPPLIER,US,USD,B,15
+CPTY-000938,Tidal Power Ltd,SUPPLIER,GB,GBP,A,15
+CPTY-000939,Western Orchid Ceramics Inc.,SUPPLIER,US,USD,A,60
+CPTY-000940,Global Tidal Health Ltd,SUPPLIER,GB,GBP,B,30
+CPTY-000941,Pacific Quarry Furniture Pvt Ltd,SUPPLIER,IN,INR,A,45
+CPTY-000942,Summit Health Inc.,SUPPLIER,US,USD,A,45
+CPTY-000943,Global Cobalt Electronics GmbH,SUPPLIER,DE,EUR,A,30
+CPTY-000944,Global Crescent Health Pvt Ltd,SUPPLIER,IN,INR,A,30
+CPTY-000945,Northern Sable Textiles Inc.,SUPPLIER,US,USD,A,45
+CPTY-000946,Atlas Retail Inc.,SUPPLIER,US,USD,B,30
+CPTY-000947,Pacific Maple Health Inc.,SUPPLIER,US,USD,A,15
+CPTY-000948,Northern Delta Retail Inc.,SUPPLIER,US,USD,A,45
+CPTY-000949,Global Lumen Chemicals Inc.,SUPPLIER,US,USD,B,45
+CPTY-000950,Orchid Textiles Ltd,SUPPLIER,GB,GBP,B,30
+CPTY-000951,Global Willow Logistics S.A.S.,SUPPLIER,FR,EUR,A,15
+CPTY-000952,Pacific Tidal Motors Inc.,SUPPLIER,US,USD,A,30
+CPTY-000953,Cobalt Retail Inc.,SUPPLIER,US,USD,A,60
+CPTY-000954,Pacific Beacon Electronics K.K.,SUPPLIER,JP,JPY,A,60
+CPTY-000955,Cedar Furniture GmbH,SUPPLIER,DE,EUR,A,15
+CPTY-000956,Global Harbor Retail Inc.,SUPPLIER,US,USD,A,30
+CPTY-000957,Western Summit Pharma Inc.,SUPPLIER,US,USD,D,15
+CPTY-000958,Pacific Quarry Media K.K.,SUPPLIER,JP,JPY,B,15
+CPTY-000959,Western Falcon Optics Inc.,SUPPLIER,US,USD,A,45
+CPTY-000960,Onyx Media Inc.,SUPPLIER,US,USD,A,45
+CPTY-000961,Pacific Cedar Health Inc.,SUPPLIER,US,USD,A,15
+CPTY-000962,Radiant Pharma Inc.,SUPPLIER,US,USD,A,60
+CPTY-000963,Western Keystone Metals Inc.,SUPPLIER,US,USD,C,30
+CPTY-000964,Cedar Metals GmbH,SUPPLIER,DE,EUR,C,15
+CPTY-000965,Global Maple Logistics Pvt Ltd,SUPPLIER,IN,INR,B,15
+CPTY-000966,Northern Jade Pharma Inc.,SUPPLIER,US,USD,A,15
+CPTY-000967,Northern Zephyr Software Inc.,SUPPLIER,US,USD,A,15
+CPTY-000968,Pacific Summit Foods Inc.,SUPPLIER,US,USD,A,15
+CPTY-000969,Orchid Power Inc.,SUPPLIER,US,USD,A,30
+CPTY-000970,Global Vantage Packaging Inc.,SUPPLIER,US,USD,A,30
+CPTY-000971,Ember Media Inc.,SUPPLIER,US,USD,B,45
+CPTY-000972,Northern Willow Agritech K.K.,SUPPLIER,JP,JPY,B,45
+CPTY-000973,Western Umber Power Inc.,SUPPLIER,US,USD,A,60
+CPTY-000974,Global Iris Electronics Inc.,SUPPLIER,US,USD,A,30
+CPTY-000975,Northern Cedar Motors Inc.,SUPPLIER,US,USD,B,45
+CPTY-000976,Global Zephyr Chemicals Inc.,SUPPLIER,US,USD,A,45
+CPTY-000977,Global Summit Electronics Inc.,SUPPLIER,US,USD,B,15
+CPTY-000978,Northern Willow Pharma Pvt Ltd,SUPPLIER,IN,INR,B,45
+CPTY-000979,Onyx Software Pvt Ltd,SUPPLIER,IN,INR,B,30
+CPTY-000980,Western Iris Optics Inc.,SUPPLIER,US,USD,B,15
+CPTY-000981,Northern Onyx Furniture Inc.,SUPPLIER,US,USD,A,30
+CPTY-000982,Northern Willow Logistics Inc.,SUPPLIER,US,USD,A,60
+CPTY-000983,Northern Lumen Marine Inc.,SUPPLIER,US,USD,B,45
+CPTY-000984,Western Zephyr Packaging Ltd,SUPPLIER,GB,GBP,B,45
+CPTY-000985,Northern Umber Ceramics Ltd,SUPPLIER,GB,GBP,A,15
+CPTY-000986,Northern Granite Foods Inc.,SUPPLIER,US,USD,A,45
+CPTY-000987,Pacific Sable Logistics Ltd,SUPPLIER,GB,GBP,B,60
+CPTY-000988,Lumen Apparel Pvt Ltd,SUPPLIER,IN,INR,C,60
+CPTY-000989,Pacific Nova Optics Inc.,SUPPLIER,US,USD,A,15
+CPTY-000990,Umber Furniture Inc.,SUPPLIER,US,USD,B,45
+CPTY-000991,Global Summit Retail Inc.,SUPPLIER,US,USD,A,15
+CPTY-000992,Pacific Cobalt Chemicals K.K.,SUPPLIER,JP,JPY,A,45
+CPTY-000993,Northern Meridian Logistics Pvt Ltd,SUPPLIER,IN,INR,A,60
+CPTY-000994,Western Willow Ceramics Inc.,SUPPLIER,US,USD,A,15
+CPTY-000995,Pacific Atlas Health Ltd,SUPPLIER,GB,GBP,B,60
+CPTY-000996,Western Crescent Agritech GmbH,SUPPLIER,DE,EUR,B,45
+CPTY-000997,Northern Atlas Marine Inc.,SUPPLIER,US,USD,A,15
+CPTY-000998,Delta Textiles Inc.,SUPPLIER,US,USD,A,60
+CPTY-000999,Pacific Cobalt Textiles Inc.,SUPPLIER,US,USD,B,60
+CPTY-001000,Western Cedar Media Inc.,SUPPLIER,US,USD,A,15

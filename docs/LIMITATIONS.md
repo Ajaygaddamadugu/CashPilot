@@ -48,8 +48,9 @@ Stated plainly so that reviewers can judge what the numbers mean.
   (`requirements.txt`). Floating-point maths is limited to FX conversions (IEEE-754
   multiplication, deterministic on every platform) and seeded random draws; CI compares the
   starter checksums on Ubuntu and Windows.
-* **Size.** The full bundle (CSV + JSON + SQL) is ~0.6 GB, so only its manifest, ground truth,
-  validation summary and reports are committed; the bulk files are regenerated with one command.
+* **Size.** The full bundle (CSV + JSON + SQL) is ~0.6 GB. Its CSV files (128 MB, every table) are committed so the
+  full-scale data can be opened directly; the JSON (326 MB) and SQL (160 MB) renderings are not, because two of their files
+  exceed GitHub's 100 MB limit. They are recreated byte-identically with one command, and their checksums are in the manifest.
 
 ## Currency and consolidation
 

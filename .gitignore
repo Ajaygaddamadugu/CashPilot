@@ -7,9 +7,10 @@ __pycache__/
 build/
 dist/
 
-# Full-scale bulk data is regenerated with one command (see README).
-# Its manifest, validation summary, ground truth and reports are committed.
-data/full/csv/
+# The full-scale dataset: its CSV files (all 34 tables) are committed, so reviewers can open the 30-entity / 150-account /
+# 100,000-ledger-entry data directly. The JSON and SQL renderings of the same rows are not, because GitHub rejects files over
+# 100 MB (seed.sql is 160 MB, forecast_position.json 110 MB). `cashpilot all --profile full` recreates them byte-identically;
+# their checksums are in data/full/manifest.json.
 data/full/json/
 data/full/sql/
 

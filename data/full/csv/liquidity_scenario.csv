@@ -1,0 +1,5 @@
+scenario_id,scenario_code,version,scenario_name,description,effective_from,effective_to,status,supersedes_scenario_id,created_by,created_at
+SCN-BASE-V01,BASE,1,Base,Latest known expected dates and amounts; FX held at the cutoff rate.,2026-01-01,,ACTIVE,,USR-0002,2025-12-15T10:00:00Z
+SCN-DELAY-V01,DELAY,1,Delayed receipt,Customer receipts slip by a number of days set per customer risk tier.,2026-01-01,,ACTIVE,,USR-0002,2025-12-15T10:00:00Z
+SCN-STRESS-V01,STRESS,1,Stress,"Delayed receipts, collection haircuts on weaker customers, earlier supplier payments, weaker operating receipts and an 8% USD appreciation.",2026-01-01,2026-05-31,RETIRED,,USR-0002,2025-12-15T10:00:00Z
+SCN-STRESS-V02,STRESS,2,Stress,"As V01 but with a 10% USD appreciation, recalibrated after the May GBP shock.",2026-06-01,,ACTIVE,SCN-STRESS-V01,USR-0002,2026-05-25T10:00:00Z

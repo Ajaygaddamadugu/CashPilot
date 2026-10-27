@@ -45,7 +45,7 @@ cashpilot all --profile starter --out out/starter
 runs CashPilot (positions → audit → exceptions → remediation → live forecast → actual vs
 forecast), validates, evaluates against the ground truth and exports everything. The starter
 profile takes well under a minute; `--profile full` builds the full-scale dataset in a few minutes
-(~0.6 GB in CSV + JSON + SQL).
+(~0.6 GB in CSV + JSON + SQL; the full dataset's CSV files are already committed in `data/full/csv/`).
 
 ## Open the dashboard (optional)
 
@@ -102,7 +102,8 @@ src/cashpilot/
   export/      CSV / JSON / SQL bundle and manifest        report/  Markdown reports
   dashboard/   Streamlit-free data layer + the Streamlit app (optional extra)
 data/starter/  the starter dataset in every format (+ ground truth, reports, manifest)
-data/full/     full-scale manifest, ground truth, validation summary and reports (bulk files regenerate)
+data/full/     the full-scale dataset: all CSV tables (30 entities, 150 accounts, 100,000 ledger entries, 20,000 forecast items),
+               ground truth, manifest, validation summary, reports (JSON and SQL regenerate: files over GitHub's 100 MB limit)
 docs/          design, decisions, rules, data dictionary, ERD, scenarios, workflow, variance method,
                testing, limitations, provenance, walkthrough, requirements traceability
 tests/         171 tests               prompts/  prompt history          AI_USAGE.md          scripts/  helpers
