@@ -53,7 +53,10 @@ profile takes well under a minute; `--profile full` builds the full-scale datase
 pip install -r requirements-dashboard.txt     # the core pins first, then Streamlit
 pip install -e . --no-deps
 cashpilot dashboard                           # http://localhost:8501, on the committed data/starter
+cashpilot dashboard --data data/full          # the full-scale dataset (30 entities, 150 accounts, 100,000 ledger entries); the first load takes about 25 s
 ```
+
+The dataset can also be switched in the sidebar (*Starter* or *Full*).
 
 Start on the **Start here** tab. The dashboard is read-only and reuses the engine; see [docs/DASHBOARD.md](docs/DASHBOARD.md) for the nine tabs, what is tested and the limits.
 
