@@ -163,3 +163,23 @@ skeleton and planning docs; data dictionary and core helpers; generator; engine;
 injection and legacy history; detection and workflow; validation suite; CLI, export, evaluation
 and reproducibility; data bundles; CI and documentation. See `git log` for the sequence and the
 decision log for the reasoning.
+
+## 7. Resume
+
+After a long autonomous stretch (the AI wrote the generator, engine, validation, export, CLI, docs and committed the starter dataset), the candidate wrote:
+
+> hey continue the work where you stopped
+
+**AI response.** Found that the full-scale background run had failed only in its reproducibility step
+(a Windows/OneDrive file lock while deleting a folder), made the cleanup retry, re-ran the check
+(82/82 files identical), cross-checked the README figures against the generated manifest and
+corrected two overstated numbers, committed the full-scale artifacts, then verified the result
+from a fresh clone of the public repository (49 tests pass; regenerated starter data is
+byte-identical to the committed bundle) and confirmed GitHub Actions is green on Ubuntu and Windows.
+
+## 8. Model switch
+
+The candidate ran Claude Code's `/model sonnet` command, switching the session from Claude Opus 5.5 to
+Claude Sonnet 5.5. This is a local command, not a prompt; it is recorded here because the
+`Co-Authored-By` trailer of later commits names the new model.
+

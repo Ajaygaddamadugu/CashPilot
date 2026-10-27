@@ -7,8 +7,10 @@ commit carries a `Co-Authored-By: Claude` trailer.
 
 ## Tool
 
-* **Claude Code** (Anthropic's coding agent, model Claude Opus 5.5) inside VS Code on Windows,
-  with access to the project folder, a terminal and git.
+* **Claude Code** (Anthropic's coding agent) inside VS Code on Windows, with access to the project
+  folder, a terminal and git. Most of the work used model Claude Opus 5.5; the model was switched to
+  Claude Sonnet 5.5 (via `/model`) near the end, and the later commits carry that model in their
+  `Co-Authored-By` trailer.
 * No other LLM tools were used. No data was sent to external services other than the model and
   GitHub (`git push`).
 
@@ -51,6 +53,8 @@ defended rather than taken on trust.
 | Too few cross-currency invoices to inject mixed-currency cases | injection failed loudly | foreign-customer share 15% → 25% | "feat(generate): labelled edge cases…" |
 | Revisions of an injected item kept the old currency | validator check `I-JOIN-revision-currency` FAILED | the item's own revisions follow its currency | same commit |
 | Committed starter bundle 79 MB | size check before committing | fortnightly runs in the starter profile | data commit |
+| Docs overstated the full dataset (~1.4 M rows, ~0.5 GB) | cross-checking README figures against the generated manifest | corrected to ~1.2 M rows, ~0.6 GB | commit d75d9d7 |
+| First full reproducibility run crashed deleting a folder locked by OneDrive | background task failed after generation had succeeded | retrying cleanup in `repro-check`, then re-ran: 82/82 files identical | commit d75d9d7 |
 
 ## What the candidate reviewed, changed or validated
 

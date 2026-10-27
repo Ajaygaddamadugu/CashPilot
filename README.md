@@ -21,7 +21,7 @@ append-only history.
 | Edge-case detection | Balance breaks, FX gaps, mixed currency, look-ahead runs: **100%** precision and recall. Duplicates: 100% within the matching tolerance, 87% overall (hard cases by design). **0 of 35** negative controls flagged - [evaluation](data/full/reports/evaluation.md) |
 | Forecast | Group cash-balance error (MAPE) **1.6%** in week 1, 3.1% in weeks 2-4, 6.6% in weeks 5-13; variance explained with **zero residual** on 43,147 entity-weeks |
 | Liquidity outlook | As of 2026-10-01: group available cash ≈ USD 690 M; in the stress case it bottoms at ≈ USD 621 M and 13 entities need intra-group funding - [outlook](data/full/reports/liquidity_outlook.md) |
-| Reproducibility | Two independent regenerations, every file byte-identical - [report](data/full/reproducibility.md) |
+| Reproducibility | Two independent regenerations, every file byte-identical - [report](data/full/reproducibility.md). CI regenerates the starter data on Ubuntu (Python 3.12) and Windows (Python 3.13) and gets the same bytes as the committed bundle |
 
 ## Quick start
 
