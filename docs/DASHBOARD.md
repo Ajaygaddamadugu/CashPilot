@@ -66,6 +66,23 @@ scenario; every tab follows those choices. Throughout, four kinds of content are
 | LiquidityScenario | Forecast (base / delayed receipt / stress, their assumptions and effects) |
 | ForecastRun | Forecast, Cash-flow drivers (compare runs) and Audit & exports (versions, lifecycle, reproducibility) |
 
+## Input, calculation, result
+
+Wherever a figure matters, the dashboard shows the three steps side by side, built from the **selected dataset's own numbers** (never a typed-in example):
+
+| Where | Input | Calculation | Result |
+|---|---|---|---|
+| Cash overview | total cash, restricted cash, minimum buffers | available = total - restricted; headroom = available - buffers | headroom over buffers, and the liquidity status |
+| Forecast, *Who falls short, and why* | opening cash, receipts and payments due up to the first breach day, the buffer | opening + receipts - payments = projected cash; projected - buffer = headroom | the shortfall and its date, with the largest items behind it |
+| Accounts & currencies | one account's balance, its rate and rate date | balance x rate = value in USD; the chosen FX move applied | value now and after the move |
+| Accounts & currencies, exposure | cash in the affected currencies, the move | value x move = effect; today's cash + effect | group cash after the move |
+| Cash-flow drivers | starting cash, net inflows, net outflows | start + inflows - outflows | projected cash after 13 weeks |
+| Actual vs forecast | forecast and actual net cash of a week | actual - forecast = timing + amount + FX + everything else | the difference and the unexplained remainder (zero) |
+
+These blocks only *present* engine results ([`insights.py`](../src/cashpilot/dashboard/insights.py) holds no financial logic). Tests recompute each one from the engine: for every breaching company in every scenario, opening cash + receipts - payments equals the projected cash the forecast stored for that day; for every scenario and company, the waterfall steps add up to the stored closing cash; the transactions behind each waterfall bar sum to the bar; each week's drivers sum to its variance.
+
+What changed per tab: *Cash overview* has bordered number cards and a plain liquidity status (it follows one documented rule: below buffer = available cash less than the minimum buffer, and says "cannot be fully assessed" when an FX rate is missing instead of guessing). *Forecast* shades the days below the buffer, shows the 13 weeks as bars against the buffer, and explains each shortfall. *Accounts & currencies* has an exposure chart with values on the bars, an FX move that can target one currency, and a worked example per account. *Cash-flow drivers* has a waterfall and a "choose a bar, see its transactions" selector. *Exceptions* lists severity, problem, company, affected record and status, with IDs, rule codes and decisions in an expandable section. *Actual vs forecast* puts forecast and actual side by side with timing, amount and FX cards. *Audit & exports* keeps hashes, the audit log, item handling, checksums and the regeneration command in explained expandable sections.
+
 ## Nothing technical on screen
 
 A second review of the running dashboard (screenshots from the candidate's browser) looked for anything a non-programmer should not see:

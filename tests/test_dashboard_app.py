@@ -178,3 +178,66 @@ def test_table_cells_use_words_and_names_not_codes(app):
         assert raw not in cells, raw
     assert "Not needed (USD)" in cells
 
+
+
+def _text(at):
+    return " ".join(m.value for m in at.markdown)
+
+
+def test_important_results_show_input_calculation_and_result_with_the_datasets_real_numbers(app):
+    from cashpilot.dashboard import data as D
+    at = app.run()
+    assert not at.exception, [e.value for e in at.exception]
+    assert {"INPUT", "CALCULATION", "RESULT"} <= {c.value for c in at.caption}
+    bundle = D.load_bundle(REPO / "data" / "starter")
+    g = D.group_summary(D.cash_overview(bundle, D.default_date(bundle.ds)))
+    text = _text(at)
+    assert f"Headroom = {g['available_usd']:,.0f} - {g['min_buffer_usd']:,.0f} = {g['headroom_usd']:,.0f}" in text         # not a hard-coded example
+    status = [m.value for m in (*at.success, *at.warning, *at.error) if "Liquidity status" in m.value]
+    assert len(status) == 1 and "buffer" in status[0]
+    assert "How headroom is worked out" in text
+
+
+def test_the_forecast_explains_a_shortfall_from_real_items(app):
+    at = app.run()
+    who = next(s for s in at.selectbox if s.label == "Explain the shortfall of")
+    assert len(who.options) >= 1
+    text = _text(at)
+    assert "first day below the buffer" in text and "Shortfall of" in text and "Projected cash = " in text
+    who.select_index(len(who.options) - 1)
+    at = at.run()
+    assert not at.exception, [e.value for e in at.exception]
+    assert "first day below the buffer" in _text(at)
+
+
+def test_a_waterfall_bar_can_be_inspected_down_to_its_transactions(app):
+    at = app.run()
+    pick = next(s for s in at.selectbox if s.label == "Inspect the transactions behind a bar")
+    assert pick.value is None and len(pick.options) >= 4
+    pick.select_index(0)
+    at = at.run()
+    assert not at.exception, [e.value for e in at.exception]
+    assert "items add up to" in _text(at)
+
+
+def test_exceptions_show_a_plain_list_and_keep_the_codes_in_an_expandable_section(app):
+    at = app.run()
+    assert any(e.label.startswith("Technical details: IDs, rule codes") for e in at.expander)
+    assert {"Exceptions shown", "High or critical", "Resolved", "Waived"} <= {m.label for m in at.metric}
+
+
+def test_audit_keeps_hashes_and_history_inside_explained_expanders(app):
+    at = app.run()
+    labels = [e.label for e in at.expander]
+    for needle in ("Fingerprints (hashes) of this forecast", "Who tried to do what", "How each forecast item was handled", "How to recreate exactly this dataset", "Files and checksums"):
+        assert any(l.startswith(needle) for l in labels), needle
+
+
+def test_currency_move_can_be_applied_to_one_currency_and_one_account_is_explained(app):
+    at = app.run()
+    applied = next(m for m in at.multiselect if m.label.startswith("Currencies that move against"))
+    applied.set_value([applied.options[0]])
+    at = at.run()
+    assert not at.exception, [e.value for e in at.exception]
+    text = _text(at)
+    assert "What an exchange-rate move would do" in text and "How this balance is valued" in text

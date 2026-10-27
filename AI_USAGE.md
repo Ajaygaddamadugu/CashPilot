@@ -65,6 +65,8 @@ defended rather than taken on trust.
 | A test I had written ended in `or True` and asserted nothing | re-reading the test file | replaced by a real check | `feat(dashboard)` commit |
 | Chart hover text showed `position_date`, `value`, `color`; a *Deploy* button and developer menu were visible; the sidebar showed `data\starter` and `SCN-BASE-V01`; cells showed `NOT_REQUIRED`, `USR-0004`, `EXCLUDED_DUPLICATE` and raw JSON | the candidate sent screenshots of the running dashboard and asked whether anything technical leaks; the AI read the code and then opened the screenshots it rendered | own chart module, Streamlit toolbar and error details switched off, names for datasets and scenarios, a code-to-words layer with an unknown-code fallback, tests for each | `feat(dashboard)` commit |
 | A first version of the chart helper named its internal column `Amount`, which collided with a real driver column called Amount and crashed the Actual vs forecast tab | the dashboard test run failed | internal names now start with an underscore | `feat(dashboard)` commit |
+| A waterfall chart showed only every other step label (Customer receipts, Manual items, Tax and Payroll were hidden), and the worked-account example opened on a USD account where nothing is converted | the AI opened the rendered screenshots after the tests passed | label overlap switched off, the example defaults to a foreign-currency account | `feat(dashboard)` commit |
+| A cleanup command meant to stop the AI's own test server matched its own shell and killed it | the command exited without output | the stop step is now a small script that excludes its own process | - |
 | An overly broad command to stop leftover test processes (it would also have killed any other Python process, including a dashboard the candidate had open) was blocked by the permission system | tool permission denial | replaced by a command that targets only the AI's own process by its command line; the candidate's dashboard was never touched | - |
 
 ## Second phase: hardening and the web dashboard
@@ -110,7 +112,7 @@ To confirm yourself (suggested):
 ## How to check the AI's claims independently
 
 ```bash
-pytest                                        # 153 tests, incl. the four acceptance criteria
+pytest                                        # 171 tests, incl. the four acceptance criteria
 cashpilot all --profile starter --out out/me  # regenerate; compare out/me/manifest.json with data/starter/manifest.json
 cashpilot repro-check --profile starter       # two fresh runs, every checksum compared
 ```

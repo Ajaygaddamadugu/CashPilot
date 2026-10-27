@@ -214,10 +214,11 @@ def account_balances(b: Bundle, on) -> pd.DataFrame:
     return out.sort_values(["entity_id", "account_id"]).reset_index(drop=True)
 
 
-def currency_exposure(b: Bundle, on, shock_pct: float = -10.0) -> pd.DataFrame:
+def currency_exposure(b: Bundle, on, shock_pct: float = -10.0, currencies: list[str] | None = None) -> pd.DataFrame:
     """Cash by currency with its reporting-currency value and a simple sensitivity to a uniform FX move.
 
-    The sensitivity is plain arithmetic (value x shock), labelled as such in the app; it is not a forecast.
+    The sensitivity is plain arithmetic (value x shock), labelled as such in the app; it is not a forecast. ``currencies`` limits the move to
+    those currencies (default: every currency except the reporting one).
     """
     a = account_balances(b, on)
     g = a.groupby("currency").agg(
@@ -226,7 +227,8 @@ def currency_exposure(b: Bundle, on, shock_pct: float = -10.0) -> pd.DataFrame:
         worst_fx_status=("fx_status", lambda s: "MISSING" if (s == "MISSING").any() else ("FALLBACK" if (s == "FALLBACK").any() else "OK"))).reset_index()
     total = g["usd_value"].sum()
     g["share_of_total"] = g["usd_value"] / total if total else np.nan
-    g["usd_impact_of_shock"] = np.where(g["currency"] == b.reporting, 0.0, g["usd_value"] * shock_pct / 100.0)
+    moves = (g["currency"] != b.reporting) & (g["currency"].isin(currencies) if currencies is not None else True)
+    g["usd_impact_of_shock"] = np.where(moves, g["usd_value"] * shock_pct / 100.0, 0.0)
     return g.sort_values("usd_value", ascending=False).reset_index(drop=True)
 
 

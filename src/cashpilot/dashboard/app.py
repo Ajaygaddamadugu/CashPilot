@@ -19,6 +19,7 @@ from cashpilot.dashboard import charts as C
 from cashpilot.dashboard import data as D
 from cashpilot.dashboard import explorer as X
 from cashpilot.dashboard import guide as G
+from cashpilot.dashboard import insights as I
 from cashpilot.dashboard import text as T
 from cashpilot.engine.explain import variance_breakdown
 
@@ -60,14 +61,18 @@ def get_run_diff(path: str, signature: tuple, run_a: str, run_b: str) -> dict:
 
 # ------------------------------------------------------------------ helpers
 
+def _is_currency_code(column: str) -> bool:
+    return len(column) == 3 and column.isupper() and column.isalpha()          # the EUR, GBP, ... columns of the entity-by-currency table
+
+
 def _is_money(column: str) -> bool:
-    return column.endswith("_usd") or column in MONEY_NAMES
+    return column.endswith("_usd") or column in MONEY_NAMES or _is_currency_code(column)
 
 
 def column_config(df: pd.DataFrame, labels: dict | None = None, pct: tuple = ()) -> dict:
     cfg = {}
     for c in df.columns:
-        label = (labels or {}).get(c) or T.LABELS.get(c) or c.replace("_", " ").capitalize()
+        label = (labels or {}).get(c) or T.LABELS.get(c) or (c if _is_currency_code(c) else c.replace("_", " ").capitalize())
         help_text = T.HELP.get(c)
         if c in pct:
             cfg[c] = st.column_config.NumberColumn(label, format="%.1f%%", help=help_text)
@@ -135,6 +140,27 @@ def chart(c) -> None:
 
 def sname(scenario_id: str) -> str:
     return SHOW["scenarios"].get(scenario_id, scenario_id)
+
+
+def kpi(col, label: str, value, help: str | None = None, delta=None, delta_color: str = "normal") -> None:
+    """A bordered number card."""
+    with col:
+        st.metric(label, value, delta, help=help, delta_color=delta_color, border=True)
+
+
+def insight(ins: dict) -> None:
+    """Input -> calculation -> result, built from the selected dataset's own numbers (see insights.py)."""
+    with st.container(border=True):
+        st.markdown(f"**{ins['title']}**")
+        left, middle, right = st.columns([3, 4, 3])
+        left.caption("INPUT")
+        for label, value in ins["inputs"]:
+            left.markdown(f"{label}: **{value}**")
+        middle.caption("CALCULATION")
+        for line in ins["calculation"]:
+            middle.markdown(line)
+        right.caption("RESULT")
+        right.markdown(f"**{ins['result']}**")
 
 
 def usd(x: float) -> str:
@@ -208,19 +234,20 @@ def tab_start(b: D.Bundle) -> None:
 
 
 def tab_overview(b: D.Bundle, on, entity) -> None:
-    st.markdown(f"{ACTUAL} How much cash the group actually holds, in {b.reporting}, as of the date chosen in the sidebar.")
+    st.markdown(f"{ACTUAL} How much cash {'the group' if not entity else b.entity_names[entity]} actually holds, in {b.reporting}, as of the date chosen in the sidebar.")
     overview = D.cash_overview(b, on)
-    if (overview["buffer_status"] == "INCOMPLETE FX").any():
-        st.warning("On this date some balances could not be converted because an exchange rate is missing. Those entities' totals leave the unconverted "
-                   "balance out and are marked INCOMPLETE.")
-    g = D.group_summary(overview)
-    cols = st.columns(5)
-    cols[0].metric(f"Total cash ({b.reporting})", usd(g["total_usd"]), help="Every bank account, converted at the day's exchange rate")
-    cols[1].metric("Available", usd(g["available_usd"]), help="Total minus restricted accounts")
-    cols[2].metric("Restricted", usd(g["restricted_usd"]), help="Held in restricted accounts and not usable")
-    cols[3].metric("Headroom over buffers", usd(g["headroom_usd"]), help="Available cash minus the sum of the entities' minimum buffers")
-    cols[4].metric("Entities below buffer", g["entities_below_buffer"], help=f"out of {g['entities']} entities")
     view = overview if not entity else overview[overview["entity_id"] == entity]
+    g = D.group_summary(view)
+    status = I.liquidity_status(g, b.reporting)
+    getattr(st, status["level"])(f"**Liquidity status: {status['headline']}.** {status['text']}")
+    cols = st.columns(5)
+    kpi(cols[0], f"Total cash ({b.reporting})", usd(g["total_usd"]), help="Every bank account, converted at the day's exchange rate")
+    kpi(cols[1], "Available", usd(g["available_usd"]), help="Total minus restricted accounts")
+    kpi(cols[2], "Restricted", usd(g["restricted_usd"]), help="Held in restricted accounts and not usable")
+    kpi(cols[3], "Headroom over buffers", usd(g["headroom_usd"]), help="Available cash minus the sum of the entities' minimum buffers")
+    kpi(cols[4], "Entities below buffer", g["entities_below_buffer"], help=f"out of {g['entities']} entities")
+    insight(I.headroom_insight(g, b.reporting))
+    st.subheader("Company by company")
     table(view.drop(columns=["size_tier"]))
     hist = D.cash_history(b, entity)
     st.subheader("Actual cash over time" + (f" - {b.entity_names[entity]}" if entity else " - whole group"))
@@ -228,9 +255,10 @@ def tab_overview(b: D.Bundle, on, entity) -> None:
                        "position_date", ["Total cash", "Available cash", "Minimum buffer"], f"Cash ({b.reporting})"))
     if hist["incomplete"].any():
         st.caption(f"{int(hist['incomplete'].sum())} day(s) are INCOMPLETE (a balance could not be converted); the dips on those days are missing data, not cash leaving.")
-    how_to_read("Each row is one company. **Available** = total cash minus restricted accounts; **Headroom** = available cash minus the company's minimum buffer.",
-                "A negative headroom (shown as BELOW BUFFER) is a shortfall: the company holds less than it must keep.",
-                "The chart shows the whole group (or the entity chosen in the sidebar). The flat line is the minimum buffer the available cash must stay above.")
+    how_to_read("Each row is one company, tightest headroom first. **Available** = total cash minus restricted accounts; **Headroom** = available cash minus the company's minimum buffer.",
+                "The liquidity status follows one documented rule: a company is below buffer when its available cash is less than its minimum buffer.",
+                "A negative headroom (shown as Below buffer) is a shortfall: the company holds less than it must keep.",
+                "The chart shows the whole group (or the entity chosen in the sidebar). The dashed line is the minimum buffer the available cash must stay above.")
     download("Cash overview", view, f"cash_overview_{pd.Timestamp(on):%Y%m%d}")
 
 
@@ -245,14 +273,30 @@ def tab_accounts(b: D.Bundle, on, entity) -> None:
     if len(problems):
         st.warning(f"{len(problems)} account(s) use a fallback or missing rate on this date (FALLBACK = the previous rate was used; MISSING = not converted).")
     table(acc.drop(columns=["entity_name", "fx_rate_id"]))
-    st.subheader("Currency exposure")
-    shock = st.slider("What if every non-USD currency moved by (%)?", -30, 30, -10, help="Simple arithmetic: value x move. Not a forecast.")
-    expo = D.currency_exposure(b, on, shock)
-    left, right = st.columns([3, 2])
-    with left:
-        chart(C.simple_bar(expo, "currency", "usd_value", "Currency", f"Value ({b.reporting})"))
-    right.caption("The bars show how much of the group's cash sits in each currency, in USD. The table also shows what the move above would do to the USD value.")
+    st.subheader("Currency exposure (whole group)")
+    others = sorted(c for c in D.currency_exposure(b, on)["currency"] if c != b.reporting)
+    c1, c2 = st.columns([2, 3])
+    shock = c1.slider(f"What if the exchange rate moved by (%)?", -30, 30, -10, help="Plain arithmetic: value x move. Not a forecast.")
+    applied = c2.multiselect(f"Currencies that move against {b.reporting}", others, default=others)
+    expo = D.currency_exposure(b, on, shock, applied)
+    effect, total = float(expo["usd_impact_of_shock"].sum()), float(expo["usd_value"].sum())
+    cards = st.columns(3)
+    kpi(cards[0], f"Group cash today ({b.reporting})", usd(total), help="Every account converted at the latest rate")
+    kpi(cards[1], f"Effect of the {shock:+d}% move", usd(effect), help="Value in the affected currencies x the move")
+    kpi(cards[2], "Group cash after the move", usd(total + effect), delta=f"{(effect / total * 100 if total else 0):+.1f}%")
+    chart(C.exposure_chart(expo.assign(share=expo["share_of_total"] * 100), f"Value ({b.reporting})"))
+    st.caption(f"The bars show how much of the group's cash sits in each currency, in {b.reporting}. Hover for the balance in the currency itself and its share.")
+    insight(I.fx_move_insight(expo, shock, b.reporting, applied))
     table(expo.assign(share_of_total=expo["share_of_total"] * 100).rename(columns={"usd_impact_of_shock": "usd_impact_of_move"}), pct=("share_of_total",))
+    st.subheader("How one account is valued")
+    if len(acc):
+        info = acc.set_index("account_id")
+        converted = [i for i in info.index if info.at[i, "currency"] != b.reporting and pd.notna(info.at[i, "balance_usd"])]
+        options = info.index.tolist()
+        one = st.selectbox("Choose an account", options, index=options.index(converted[0]) if converted else 0,
+                           format_func=lambda a: f"{a} · {info.at[a, 'currency']} · {T.plain_value('account_type', info.at[a, 'account_type']).lower()}")
+        insight(I.account_conversion(info.loc[one], shock, b.reporting))
+        st.caption("The figures come from the account table above; the move is the one chosen in the exposure section.")
     st.caption("Cash by entity and currency (USD value)")
     table(D.exposure_matrix(b, on))
     st.subheader("Exchange rates")
@@ -349,20 +393,48 @@ def tab_forecast(b: D.Bundle, run_id: str, scenario: str, entity) -> None:
     series = D.forecast_series(ds, run_id, scenario, entity)
     cur = D.scenario_curves(ds, run_id, entity)
     label = b.entity_names[entity] if entity else "whole group (buffers added up)"
-    st.subheader(f"Projected available cash, day by day - {sname(scenario)} - {label}")
-    chart(C.line_chart(series.rename(columns={"closing_available_usd": "Projected available cash", "min_buffer_usd": "Minimum buffer"}),
-                       "position_date", ["Projected available cash", "Minimum buffer"], f"Cash ({b.reporting})"))
-    below = int((series["headroom_usd"] < 0).sum())
-    worst = int(series["entities_below_buffer"].max())
-    if below:
-        st.error(f"{below} of {len(series)} projected days are below the minimum buffer.")
-    elif worst:
-        st.warning(f"The {'group total' if not entity else 'entity'} stays above {'the buffers added up' if not entity else 'its buffer'}, but up to {worst} "
-                   f"entit{'y falls' if worst == 1 else 'ies fall'} below {'its' if worst == 1 else 'their'} own buffer (listed below). A group total can hide an entity shortfall.")
+    head = I.forecast_headline(series)
+    st.subheader(f"Projected cash against the minimum buffer - {sname(scenario)} - {label}")
+    if head["days_below"]:
+        st.error(f"**Shortfall:** {head['days_below']} of {head['days']} projected days are below the minimum buffer. The lowest point is {usd(head['lowest_usd'])} {b.reporting} on {head['lowest_on']:%Y-%m-%d}.")
+    elif head["max_entities_below"]:
+        st.warning(f"**Watch:** the {'group total' if not entity else 'entity'} stays above {'the buffers added up' if not entity else 'its buffer'}, but up to {head['max_entities_below']} "
+                   f"entit{'y falls' if head['max_entities_below'] == 1 else 'ies fall'} below {'its' if head['max_entities_below'] == 1 else 'their'} own buffer (see *Who falls short, and why*). "
+                   "A group total can hide an entity shortfall.")
     else:
-        st.success("No projected day is below the minimum buffer.")
+        st.success("**No shortfall:** no projected day is below the minimum buffer.")
+    cards = st.columns(4)
+    kpi(cards[0], f"Lowest projected cash ({b.reporting})", usd(head["lowest_usd"]), help=f"On {head['lowest_on']:%Y-%m-%d}")
+    kpi(cards[1], "Minimum buffer that day", usd(head["buffer_then_usd"]))
+    kpi(cards[2], "Days below the buffer", f"{head['days_below']} of {head['days']}")
+    kpi(cards[3], "Most companies below at once", head["max_entities_below"])
+    chart(C.shortfall_chart(series.rename(columns={"closing_available_usd": "Projected available cash", "min_buffer_usd": "Minimum buffer"}),
+                            "position_date", "Projected available cash", "Minimum buffer", f"Cash ({b.reporting})"))
+    st.caption("Solid line: projected available cash, day by day. Dashed line: the minimum buffer. Red shading: days when the cash is below the buffer.")
+
     st.subheader("The 13 weeks week by week")
-    table(D.weekly_view(series))
+    weeks = D.weekly_view(series)
+    chart(C.weekly_cash_chart(weeks, f"Available cash at week end ({b.reporting})"))
+    table(weeks)
+
+    st.subheader(f"Who falls short, and why - {sname(scenario)}")
+    breaches = D.entity_breaches(ds, run_id, scenario)
+    table(breaches, empty="No company falls below its buffer in this scenario.")
+    if len(breaches):
+        ids = breaches["entity_id"].tolist()
+        who = st.selectbox("Explain the shortfall of", ids, index=ids.index(entity) if entity in ids else 0, format_func=lambda e: f"{e} · {b.entity_names[e]}")
+        first = breaches.set_index("entity_id").at[who, "first_breach"]
+        story = I.breach_story(ds, get_items(str(b.path), D.dataset_signature(b.path), run_id, scenario), run_id, scenario, who, first, b.reporting)
+        chart(C.shortfall_chart(story["series"].rename(columns={"closing_available_usd": "Projected available cash", "min_buffer_usd": "Minimum buffer"}),
+                                "position_date", "Projected available cash", "Minimum buffer", f"Cash ({b.reporting})"))
+        insight(story["insight"])
+        st.write(f"**The largest receipts and payments due up to {pd.Timestamp(first):%Y-%m-%d}** (from this scenario's own forecast items):")
+        table(story["biggest"][["cf_id", "direction", "flow_category", "counterparty_id", "source_reference", "date", "shifted_days", "usd"]])
+        if story["reconciles"]:
+            st.caption("Check: the opening cash plus all receipts minus all payments equals the projected cash the forecast stored for that day.")
+        else:
+            st.warning("The listed items do not add up to the stored projection for that day; use the audit tab to investigate.")
+
     st.subheader(f"Base, delayed-receipt and stress compared {SCENARIO}")
     curves = cur.rename(columns={**SHOW["scenarios"], "minimum buffer": "Minimum buffer"})
     chart(C.line_chart(curves, "position_date", [c for c in curves.columns if c != "position_date"], f"Available cash ({b.reporting})"))
@@ -374,18 +446,6 @@ def tab_forecast(b: D.Bundle, run_id: str, scenario: str, entity) -> None:
         table(assumptions[assumptions["scenario_id"] == scenario])
     else:
         st.caption(f"{sname(scenario)} has no assumptions: it uses the latest known dates and amounts with exchange rates held at the cutoff rate.")
-    st.subheader(f"Companies that fall below their buffer - {sname(scenario)}")
-    breaches = D.entity_breaches(ds, run_id, scenario)
-    table(breaches)
-    if entity and not breaches[breaches["entity_id"] == entity].empty:
-        first = pd.Timestamp(breaches.loc[breaches["entity_id"] == entity, "first_breach"].iloc[0])
-        with st.expander(f"Why does {b.entity_names[entity]} fall below its buffer on {first:%Y-%m-%d}?", expanded=True):
-            items = get_items(str(b.path), D.dataset_signature(b.path), run_id, scenario)
-            window = items[(items["entity_id"] == entity) & items["in_horizon"] & (items["date"] <= first)]
-            st.write(f"It starts with {usd(series['opening_usd'].iloc[0])} of available cash; the receipts and payments up to that day net to "
-                     f"{usd(window['signed_usd'].sum())}. The biggest ones:")
-            table(window.reindex(window["usd"].sort_values(ascending=False).index).head(10)[
-                ["cf_id", "direction", "flow_category", "counterparty_id", "date", "shifted_days", "usd"]])
     how_to_read("The projection starts from the latest bank balances and adds each expected receipt and subtracts each expected payment on its date.",
                 "**Delayed receipt** pushes customer payments later by their risk tier; **Stress** adds collection losses, earlier supplier payments, weaker operating receipts and a stronger USD.",
                 "A company is *below buffer* when its projected available cash is lower than the minimum it must keep. The **funding gap** adds up the largest shortfalls.")
@@ -396,12 +456,31 @@ def tab_drivers(b: D.Bundle, run_id: str, scenario: str, entity) -> None:
     ds = b.ds
     run_header(ds, run_id)
     items = get_items(str(b.path), D.dataset_signature(b.path), run_id, scenario)
-    st.subheader(f"What drives cash over the 13 weeks - {sname(scenario)}")
-    drivers = D.driver_summary(items, entity)
-    if len(drivers):
-        chart(C.bar_chart(drivers.rename(columns=T.FLOW_LABEL), "week_no", [T.FLOW_LABEL.get(c, c) for c in drivers.columns if c != "week_no"],
-                          f"Net cash ({b.reporting})", "Week", x_label="Week"))
-    st.caption("Net cash per week by type of flow (receipts above the line, payments below). Amounts are in USD at the scenario's exchange rates.")
+    st.subheader(f"How cash moves over the 13 weeks - {sname(scenario)}" + (f" - {b.entity_names[entity]}" if entity else ""))
+    series = D.forecast_series(ds, run_id, scenario, entity)
+    bridge = I.cash_bridge(items, series, entity)
+    chart(C.waterfall(bridge, f"Available cash ({b.reporting})"))
+    st.caption("Starting cash, then the net of each type of flow (green raises cash, red lowers it), then the projected cash after 13 weeks. Amounts are at the scenario's exchange rates.")
+    if not bridge.attrs["reconciles"]:
+        st.warning("The flows do not add up to the stored projection for this selection.")
+    insight(I.bridge_insight(bridge, b.reporting))
+    steps = bridge[bridge["code"] != ""]
+    pick = st.selectbox("Inspect the transactions behind a bar", steps["code"].tolist(), index=None, placeholder="Choose a type of flow",
+                        format_func=lambda c: f"{T.FLOW_LABEL.get(c, c)} ({usd(steps.set_index('code').at[c, 'amount'])})")
+    if pick:
+        behind = items[items["in_horizon"] & (items["flow_category"] == pick)]
+        if entity:
+            behind = behind[behind["entity_id"] == entity]
+        st.write(f"**{len(behind):,} items add up to {usd(behind['signed_usd'].sum())} {b.reporting}** - the bar above. Largest first:")
+        shown = behind.reindex(behind["signed_usd"].abs().sort_values(ascending=False).index).drop(columns=["entity_name", "live", "in_horizon", "week_no"]).head(500)
+        table(shown.assign(treatment=shown["treatment"].map(lambda t: T.TREATMENT_TEXT.get(t, t))))
+    with st.expander("Week by week"):
+        drivers = D.driver_summary(items, entity)
+        if len(drivers):
+            chart(C.bar_chart(drivers.rename(columns=T.FLOW_LABEL), "week_no", [T.FLOW_LABEL.get(c, c) for c in drivers.columns if c != "week_no"],
+                              f"Net cash ({b.reporting})", "Week", x_label="Week"))
+        st.caption("Net cash per week by type of flow (receipts above the line, payments below).")
+    st.subheader("All forecast items")
     c1, c2, c3 = st.columns(3)
     direction = c1.selectbox("Direction", ["All", "INFLOW", "OUTFLOW"], format_func=lambda x: {"All": "All", "INFLOW": "Receipts (money in)", "OUTFLOW": "Payments (money out)"}[x])
     moved = c2.checkbox("Only items this scenario moved in time", value=False)
@@ -467,9 +546,16 @@ def tab_exceptions(b: D.Bundle) -> None:
         view = view[view["severity"].isin(sev)]
     if status:
         view = view[view["status_at_end"].isin(status)]
-    st.write(f"{len(view)} of {len(exc)} exceptions")
-    shown = view.assign(exception_type=view["exception_type"].map(names)).drop(columns=["details", "entity_name", "category", "record_table"])
-    table(shown, labels={"exception_type": "Problem"})
+    cards = st.columns(4)
+    kpi(cards[0], "Exceptions shown", f"{len(view)} of {len(exc)}")
+    kpi(cards[1], "High or critical", int(view["severity"].isin(["CRITICAL", "HIGH"]).sum()), help="How serious the rule judges them")
+    kpi(cards[2], "Resolved", int((view["status_at_end"] == "RESOLVED").sum()))
+    kpi(cards[3], "Waived", int((view["status_at_end"] == "WAIVED").sum()), help="Accepted with a written reason")
+    table(I.exception_list(view), labels={"impact_usd": "Estimated impact (USD)"})
+    with st.expander("Technical details: IDs, rule codes and decisions for every exception"):
+        st.caption("The same exceptions with their identifiers, the rule that raised each one and the decision taken. Use these to find the records in the CSV files or to ask about a rule in docs/RULES.md.")
+        shown = view.assign(exception_type=view["exception_type"].map(names)).drop(columns=["details", "entity_name", "category", "record_table"])
+        table(shown, labels={"exception_type": "Problem"})
     download("Exceptions", view, "exceptions")
     if view.empty:
         return
@@ -517,7 +603,18 @@ def tab_accuracy(b: D.Bundle, scenario: str, entity) -> None:
     run_header(ds, run_id)
     fva = D.forecast_vs_actual(ds, run_id, sc, entity)
     st.subheader(f"Week by week: forecast vs actual net cash - {sname(sc)}")
+    chart(C.grouped_bar(fva.rename(columns={"forecast_net_usd": "Forecast net cash", "actual_net_usd": "Actual net cash"}), "week_no",
+                        ["Forecast net cash", "Actual net cash"], f"Net cash ({b.reporting})", "Week"))
+    st.caption("Net cash = money in minus money out in the week. Grey: what the forecast expected. Blue: what actually happened.")
     table(fva)
+    totals = I.variance_totals(fva)
+    st.write("**Where the differences came from, over the weeks shown** (actual minus forecast)")
+    cards = st.columns(5)
+    kpi(cards[0], "Total difference", usd(totals["variance"]))
+    kpi(cards[1], "Timing", usd(totals["timing"]), help="Cash arrived in a different week than forecast")
+    kpi(cards[2], "Amount", usd(totals["amount"]), help="Cash arrived for a different amount than forecast")
+    kpi(cards[3], "Exchange rates", usd(totals["fx"]), help="Rates moved between the forecast and the day the cash arrived")
+    kpi(cards[4], "Everything else", usd(totals["other"]), help="New business, items never forecast, items that did not happen, small daily flows, data-quality rules")
     drivers = [c for c in fva.columns if c.endswith("_usd") and c not in ("forecast_net_usd", "actual_net_usd", "variance_usd", "residual_usd")]
     chart(C.bar_chart(fva[["week_no", *drivers]].rename(columns={d: T.LABELS[d].replace(" (USD)", "") for d in drivers}), "week_no",
                       [T.LABELS[d].replace(" (USD)", "") for d in drivers], f"Actual minus forecast ({b.reporting})", "Week", x_label="Week"))
@@ -526,6 +623,7 @@ def tab_accuracy(b: D.Bundle, scenario: str, entity) -> None:
     week = c1.selectbox("Drill into week", fva["week_no"].tolist())
     ents = [entity] if entity else sorted(ds["forecast_vs_actual"].query("run_id == @run_id")["entity_id"].unique())
     who = c2.selectbox("Company", ents, format_func=lambda x: f"{x} · {b.entity_names[x]}")
+    insight(I.variance_insight(fva[fva["week_no"] == week].iloc[0], b.reporting))
     br = variance_breakdown(ds, run_id, who, int(week), scenario_prefix=sc, top=5)
     if br:
         st.write(f"Forecast {br['forecast_usd'] / 100:,.2f} · actual {br['actual_usd'] / 100:,.2f} · difference **{br['variance_usd'] / 100:,.2f}** (unexplained {br['residual_usd'] / 100:,.2f})")
@@ -584,17 +682,18 @@ def tab_audit(b: D.Bundle, run_id: str) -> None:
     run_header(ds, run_id)
     trail = D.audit_trail(ds, run_id)
     r = trail["run"]
-    st.write(f"Version {r['version']} of the forecast as of {r['cutoff_date']:%Y-%m-%d}, created by {SHOW['users'].get(r['created_by'], r['created_by'])}. Replaces: "
-             f"{r['supersedes_run_id'] if pd.notna(r['supersedes_run_id']) else 'nothing (first version)'}.")
-    st.caption("The two fingerprints below identify exactly which inputs were used and what was produced; recomputing them is how reproducibility is proven.")
-    st.code(f"inputs   {r['input_hash']}\nresults  {r['result_hash']}", language="text")
+    who = SHOW["users"].get(r["created_by"], r["created_by"])
+    last = trail["events"].iloc[-1] if len(trail["events"]) else None
+    cards = st.columns(4)
+    kpi(cards[0], "Version", f"{r['version']}", help="Corrections create a new version; older versions stay")
+    kpi(cards[1], "Status", str(r["status_at_end"]).capitalize())
+    kpi(cards[2], "Items used", f"{int(trail['lineage']['items'].sum()):,}", help="Forecast items the run used, moved, dropped or converted")
+    kpi(cards[3], "Latest step", T.plain_value("event_type", last["event_type"]) if last is not None else "none", help="The most recent event in this forecast's life")
+    st.write(f"Version {r['version']} of the forecast as of {r['cutoff_date']:%Y-%m-%d}, created by {who}. Replaces: "
+             f"{r['supersedes_run_id'] if pd.notna(r['supersedes_run_id']) else 'nothing (first version)'}."
+             + (f" Latest step: {T.plain_value('event_type', last['event_type']).lower()} on {pd.Timestamp(last['event_ts']):%Y-%m-%d %H:%M} by {SHOW['users'].get(last['actor_id'], last['actor_id'])}." if last is not None else ""))
     st.write("**Life of this forecast** (append-only: nothing is overwritten)")
     table(trail["events"])
-    st.write("**Who tried to do what to it** (allowed and refused attempts)")
-    table(trail["audit"], empty="No allowed or refused actions are recorded against this forecast version.")
-    st.write("**Which forecast items were used, and how each was handled**")
-    lineage = trail["lineage"].assign(meaning=lambda d: d["treatment"].map(lambda t: T.TREATMENT_TEXT.get(t, t)))
-    table(lineage, labels={"treatment": "Handling", "meaning": "What it means"})
     if st.button("Verify reproducibility", help="Re-run this version from the data known at its cutoff and compare the fingerprints"):
         with st.spinner("Re-running…"):
             v = D.verify_reproducibility(b, run_id)
@@ -605,23 +704,39 @@ def tab_audit(b: D.Bundle, run_id: str) -> None:
         st.caption("Fingerprints of the original run and of the re-run")
         table(pd.DataFrame({"Fingerprint": ["Inputs", "Results"], "Stored": [v["stored_input_hash"], v["stored_result_hash"]],
                             "Re-run": [v["recomputed_input_hash"], v["recomputed_result_hash"]], "Identical": ["Yes" if v["input_hash_matches"] else "No", "Yes" if v["result_hash_matches"] else "No"]}))
+
+    st.subheader("Technical details")
+    with st.expander("Fingerprints (hashes) of this forecast"):
+        st.caption("A fingerprint is a short code computed from data: change one number and it changes completely. The *inputs* fingerprint covers everything the forecast "
+                   "was allowed to know; the *results* fingerprint covers what it produced. Re-running the forecast and getting the same two codes proves it can be reproduced.")
+        st.code(f"inputs   {r['input_hash']}\nresults  {r['result_hash']}", language="text")
+    with st.expander("Who tried to do what (allowed and refused attempts)"):
+        st.caption("Every action on this forecast, including attempts the permission rules refused, so you can see who did what and when.")
+        table(trail["audit"], empty="No allowed or refused actions are recorded against this forecast version.")
+    with st.expander("How each forecast item was handled"):
+        st.caption("The record of exactly which items this run used and what it did with each: used as recorded, moved to a later date, dropped as a duplicate, or converted.")
+        lineage = trail["lineage"].assign(meaning=lambda d: d["treatment"].map(lambda t: T.TREATMENT_TEXT.get(t, t)))
+        table(lineage, labels={"treatment": "Handling", "meaning": "What it means"})
+
     st.subheader("Dataset and validation")
     val = D.validation_overview(path)
     if val:
         cols = st.columns(4)
-        cols[0].metric("Validation", val["overall"])
-        cols[1].metric("Checks run", val["checks"])
-        cols[2].metric("Passed / expected / failed", " / ".join(str(val["by_status"].get(k, 0)) for k in ("PASS", "EXPECTED", "FAIL")),
-                       help="EXPECTED = the check found only deliberately planted problems")
-        cols[3].metric("Problems in the clean data", val.get("baseline", {}).get("violations", "n/a"), help="Before any problem was planted")
+        kpi(cols[0], "Validation", val["overall"])
+        kpi(cols[1], "Checks run", val["checks"])
+        kpi(cols[2], "Passed / expected / failed", " / ".join(str(val["by_status"].get(k, 0)) for k in ("PASS", "EXPECTED", "FAIL")),
+            help="EXPECTED = the check found only deliberately planted problems")
+        kpi(cols[3], "Problems in the clean data", val.get("baseline", {}).get("violations", "n/a"), help="Before any problem was planted")
     manifest_path = Path(path) / "manifest.json"
     if manifest_path.is_file():
         m = json.loads(manifest_path.read_text(encoding="utf-8"))
-        st.write(f"Profile **{m['profile']}**, seed **{m['seed']}**. Recreate exactly this dataset with:")
-        st.code(m["command"], language="bash")
-        st.caption(f"Provenance: {m['provenance']}")
+        with st.expander("How to recreate exactly this dataset"):
+            st.write(f"Profile **{m['profile']}**, seed **{m['seed']}**. Running this command again gives byte-identical files:")
+            st.code(m["command"], language="bash")
+            st.caption(f"Provenance: {m['provenance']}")
     files = D.manifest_files(path)
     with st.expander(f"Files and checksums ({len(files)})"):
+        st.caption("Every file in the dataset with its row count and a SHA-256 checksum. If a file changes by even one character, its checksum changes.")
         table(files)
     st.subheader("Export")
     runs = D.run_catalog(ds)
