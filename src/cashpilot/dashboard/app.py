@@ -750,8 +750,10 @@ def tab_audit(b: D.Bundle, run_id: str) -> None:
 
 def main() -> None:
     st.set_page_config(page_title="CashPilot", layout="wide", menu_items={"About": "CashPilot - multi-entity cash consolidation and 13-week liquidity forecasting on synthetic data. Read-only."})
-    st.title("CashPilot")
-    st.caption("Multi-entity cash consolidation and 13-week liquidity forecasting · synthetic data · read-only")
+    # the name sits at the top-left, above the dataset picker; the page starts closer to the top because the title no longer takes room there
+    st.markdown('<style>[data-testid="stMainBlockContainer"]{padding-top:2.5rem}[data-testid="stSidebarUserContent"]{padding-top:0.5rem}</style>', unsafe_allow_html=True)
+    st.sidebar.title("CashPilot")
+    st.sidebar.caption("Multi-entity cash consolidation and 13-week liquidity forecasting · synthetic data · read-only")
 
     default = os.environ.get("CASHPILOT_DATA", "data/starter")
     options = [str(p) for p in D.discover_datasets(Path.cwd())]
