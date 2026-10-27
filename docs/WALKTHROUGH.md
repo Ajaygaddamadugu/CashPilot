@@ -35,7 +35,7 @@ cashpilot exceptions --data out/demo --limit 12
 ```
 
 * Each exception names its rule and the decision taken (see [RULES.md](RULES.md)).
-* `out/demo/ground_truth/anomalies.csv` is separate from the data. Detection never reads it
+* `out/demo/ground_truth/ground_truth.csv` is separate from the data. Detection never reads it
   (test: `test_detection_never_reads_the_ground_truth`); it is only joined afterwards to score the
   detectors - `data/full/reports/evaluation.md`: 100% on four edge cases, 87% recall on duplicates
   because some are deliberately re-keyed outside the matching tolerance, 0 negative controls flagged.
@@ -87,6 +87,17 @@ cashpilot explain --data out/demo --run FCAST-2026-03-12-001 --entity ENT-000002
 
 * `data/full/reproducibility.md`: two independent regenerations, every file byte-identical.
 * [LIMITATIONS.md](LIMITATIONS.md) and [AI_USAGE.md](../AI_USAGE.md).
+
+## 9. The same story in the browser (optional, 2 min)
+
+```bash
+cashpilot dashboard --data out/demo
+```
+
+* **Forecast** tab: the three scenarios on one chart, and the assumptions table whose effects add up to the difference from base.
+* **Exceptions** tab: pick the look-ahead exception and show the inputs the run saw from the future and the run that superseded it.
+* **Audit & exports** tab: press *Verify reproducibility* on the live run (reproduced) and on `FCAST-2026-05-21-001` (not reproducible).
+* Everything is read-only; actions stay in the CLI where permissions and four-eyes exist ([DASHBOARD.md](DASHBOARD.md)).
 
 ## Likely questions
 

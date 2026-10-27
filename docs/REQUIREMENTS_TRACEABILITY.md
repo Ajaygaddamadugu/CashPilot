@@ -66,7 +66,7 @@ demonstrates them).
 | 4 | 30 / 150 / 100,000 / 20,000 / 5 currencies; delayed receivables, FX movement, large one-offs; fixed seed; scale parameter | `profiles/full.yaml`, `profiles/starter.yaml` (same generator) | validator `V-*`; `data/full/manifest.json`; `test_generator::test_volumes_hit_the_profile_targets_exactly`; `reports/data_profile.md` |
 | 5 | Valid baseline first, then labelled edge cases | `generate_baseline` → validate → `inject` | `test_validation::test_clean_baseline_has_no_violations` |
 | 6 | Derived values from source records | statements, positions, statuses, totals, forecasts computed | validator `A-*`, `L-*-status` |
-| 7 | Separate ground truth, never leaked | `ground_truth/anomalies.csv|json`; detectors cannot see it | `test_anomalies::test_ground_truth_lives_outside_the_dataset`, `::test_detection_never_reads_the_ground_truth`; validator `G-no-labels` |
+| 7 | Separate ground truth, never leaked | `ground_truth/ground_truth.csv|json` (identical `anomalies.*` aliases kept for older consumers); detectors cannot see it | `test_anomalies::test_ground_truth_lives_outside_the_dataset`, `::test_detection_never_reads_the_ground_truth`; validator `G-no-labels` |
 | 8 | Validation: PK, FK, enums, date ordering, reconciliation, lifecycle, duplicates | `quality/validate.py` | `validation_summary.md`; `test_validation.py` |
 | 9 | CSV/JSON/SQL + README, dictionary, generator command, seed, source manifest, validation summary | `export/bundle.py` | `data/starter/`; `test_export.py` |
 | 10 | Regenerate twice, compare counts and checksums | `cashpilot repro-check` | `data/starter/reproducibility.md`, `data/full/reproducibility.md`; `test_export::test_same_seed_gives_identical_bytes…`; CI |
@@ -110,3 +110,16 @@ demonstrates them).
 | J2 | Public repository, meaningful commits | `git log` (one commit per layer, each tested) |
 | J3 | LLM use disclosed, prompt history | [AI_USAGE.md](../AI_USAGE.md), [prompts/PROMPT_HISTORY.md](../prompts/PROMPT_HISTORY.md) |
 | J4 | Reasoning visible | [DESIGN.md](DESIGN.md), [DECISION_LOG.md](DECISION_LOG.md), [TESTING.md](TESTING.md), [LIMITATIONS.md](LIMITATIONS.md), [WALKTHROUGH.md](WALKTHROUGH.md) |
+
+## K. Product interface and additional assurance (beyond the brief)
+
+| ID | Item | Implementation | Evidence |
+|---|---|---|---|
+| K1 | Required file names `ground_truth.csv/json` | written under those names; `anomalies.*` kept as byte-identical aliases; the loader accepts either | `test_export::test_ground_truth_files_have_the_required_names_and_the_legacy_aliases_match` |
+| K2 | FX correctness: known conversions, inverse and cross rates, rounding, missing and stale rates | `core/money.py`, `engine/fx.py`; micro dataset with hand-calculated expectations | `test_fx_positions.py` |
+| K3 | Never silently mix currencies; missing rate leaves the value empty and flags the entity total | `engine/positions.py` (`fx_status`, INCOMPLETE); balance accuracy skips incomplete actuals | `test_fx_positions::test_totals_are_sums_of_usd_values_never_of_mixed_local_amounts`, `::test_a_missing_rate_marks_the_entity_total_incomplete`; `test_metrics::test_balance_accuracy_by_hand_and_skips_actuals_with_missing_fx` |
+| K4 | Receipt/payment timing and scenario behaviour on small manual examples | `engine/forecast.py` | `test_forecast_logic.py` |
+| K5 | The same cash flow is not counted twice | data-quality gate in CashPilot runs | `test_engine::test_the_same_cash_flow_is_never_counted_twice_in_a_cashpilot_run` |
+| K6 | Evaluation metrics verified against hand-calculated answers | `evaluate/metrics.py` | `test_metrics.py` |
+| K7 | CLI behaviour and failure modes | `cli.py` | `test_cli.py` |
+| K8 | Web interface that consumes the engine without duplicating it, read-only, with traceability and explanations | `dashboard/` ([DASHBOARD.md](DASHBOARD.md)) | `test_dashboard_data.py`, `test_dashboard_app.py`, screenshots in `docs/screenshots/` |

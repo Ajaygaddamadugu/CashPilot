@@ -50,6 +50,7 @@ flowchart LR
 | `evaluate/` | metrics against the ground truth, reproducibility check |
 | `export/`, `report/` | CSV/JSON/SQL bundle and manifest; Markdown reports |
 | `cli.py`, `pipeline.py` | commands for the pipeline and for the workflow actors |
+| `dashboard/` | optional read-only web dashboard: `data.py` (Streamlit-free views over existing engine results, tested) and `app.py` (Streamlit layout); see [DASHBOARD.md](DASHBOARD.md) |
 
 ## Time model
 
@@ -79,7 +80,7 @@ flowchart LR
 
 ## How we know it works
 
-* **Tests** - 49 tests, including the four acceptance criteria ([TESTING.md](TESTING.md)).
+* **Tests** - 130 tests, including the four acceptance criteria and hand-calculated FX and forecast fixtures ([TESTING.md](TESTING.md)).
 * **Validation** - clean baseline: 0 violations; final dataset: no unexpected violations, every
   anomaly check matches the ground truth exactly ([data/full/validation_summary.md](../data/full/validation_summary.md)).
 * **Evaluation** - detection precision/recall per edge case, forecast and balance accuracy,

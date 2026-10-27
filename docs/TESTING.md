@@ -2,7 +2,7 @@
 
 Three layers of evidence, from fastest to broadest:
 
-1. **Unit and acceptance tests** (`pytest`, ~1 minute): run against the starter profile, which uses the
+1. **Unit and acceptance tests** (`pytest`, about 5 minutes): run against the starter profile, which uses the
    same generator and engine as the full profile.
 2. **The validation suite** (`cashpilot validate`): 300+ checks on any dataset; PASS / EXPECTED /
    FAIL against the ground truth. Runs automatically inside `cashpilot all`.
@@ -24,6 +24,12 @@ and Windows, and compares the generated checksums with the committed `data/start
 | `test_workflow.py` | Leaky runs superseded by approved as-of re-runs; live forecast approved by a different person; processing only appends history; permissions, illegal transitions and terminal states enforced and audited; variance residual is zero |
 | `test_validation.py` | Clean baseline has 0 violations; final dataset has no unexpected violations and every check category ran; a corrupted row is reported as FAIL |
 | `test_export.py` | CSV round trip is lossless; JSON mirrors CSV with exact decimals; SQL seed loads with FKs and append-only triggers; manifest covers every file with correct SHA-256 and no timestamps; stored runs are re-created exactly from exported files; same seed → same bytes, other seed → different data |
+| `test_fx_positions.py` | **Hand-calculated** multi-currency arithmetic on a micro dataset: half-even rounding, JPY without decimals, inverse and cross rates; the staleness rule at its boundaries (OK / FALLBACK at 1-3 missing fixings / MISSING at 4, weekends, nothing known yet); a rate recorded after the cutoff instant is invisible; daily roll-forward; USD values at each day's rate; a missing rate leaves the value empty (not zero) and flags the entity total INCOMPLETE; totals never add local amounts of different currencies |
+| `test_forecast_logic.py` | **Hand-calculated** projection of four receipts/payments: daily balances, buffer breaches (equal to the buffer is not a breach), excluded items never reach the projection, a delayed receipt moves to its new date and the cash is not lost, a receipt delayed past the horizon leaves the window but stays an item, collection haircuts round half-even, supplier timing never precedes the cutoff, FX shocks change foreign balances and flows but not USD, restricted cash is reported but not available |
+| `test_metrics.py` | Precision / recall / F1, decision accuracy, negative controls, WAPE and bias, balance MAPE (including skipping actuals with missing FX) on tiny fixtures with answers worked out by hand |
+| `test_cli.py` | Every read-only command's output; forecast then four-eyes approval (analyst refused, reviewer allowed); illegal transitions refused and history unchanged; account holders denied and audited; clean errors (exit 2) for a missing dataset, a malformed date, an unknown profile and an unknown command |
+| `test_dashboard_data.py` | The dashboard's figures reconcile with the engine: overview = entity positions, exposure = consolidated total, forecast series = sum of entity positions, **scenario items reproduce the engine's daily flows to the cent in every scenario**, run differences carry reasons, exception traces have rule/decision/history/evidence, the reproducibility check passes for clean runs and fails for the look-ahead run, cache signatures change with the files |
+| `test_dashboard_app.py` | Headless run of the real Streamlit app: every tab, scenario, run and entity filter, an exception trace, the reproducibility button, the "no dataset" and "not processed" messages, and that nothing in the dataset is written |
 
 ## Acceptance criteria → automated proof
 
@@ -48,7 +54,7 @@ and Windows, and compares the generated checksums with the committed `data/start
 
 ```bash
 pip install -r requirements-dev.txt && pip install -e .
-pytest                      # ~1 minute
+pytest                      # about 5 minutes
 cashpilot all --profile starter --out out/check   # then compare out/check/manifest.json with data/starter/manifest.json
 cashpilot repro-check --profile starter           # two fresh runs, every checksum compared
 ```

@@ -50,3 +50,22 @@ Stated plainly so that reviewers can judge what the numbers mean.
   starter checksums on Ubuntu and Windows.
 * **Size.** The full bundle (CSV + JSON + SQL) is ~0.6 GB, so only its manifest, ground truth,
   validation summary and reports are committed; the bulk files are regenerated with one command.
+
+## Currency and consolidation
+
+* **Entity totals on a missing-rate day are understated, by design, and flagged.** If a balance cannot be converted
+  (more than 3 missing fixings) its USD value stays empty and the entity total holds only what could be converted,
+  with `fx_status = INCOMPLETE`. Totals are not estimated. Evaluation metrics skip such days
+  (`excluded_incomplete_fx`) and the dashboard marks them. In the committed data no comparison was affected.
+* **One reporting currency per dataset (USD).** Engine columns embed `usd` and amounts are held per currency in minor
+  units; making the reporting currency configurable would change the schema, so it was not attempted.
+* **The FX shock** in the stress scenario is a uniform percentage on every non-reporting currency applied to balances
+  and flows alike; it is not a currency-by-currency view.
+
+## Dashboard
+
+* Read-only by design (see [DASHBOARD.md](DASHBOARD.md)); actions live in the CLI where permissions, four-eyes and audit exist.
+* No authentication: a local review tool for synthetic data, not for exposure to a network.
+* Item-level variance drill-down exists for the base scenario only.
+* The screenshots were captured from the running app on one machine; widget layout may differ slightly between
+  Streamlit versions (1.66.1 is pinned).

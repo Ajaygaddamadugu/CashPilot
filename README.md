@@ -21,6 +21,7 @@ append-only history.
 | Edge-case detection | Balance breaks, FX gaps, mixed currency, look-ahead runs: **100%** precision and recall. Duplicates: 100% within the matching tolerance, 87% overall (hard cases by design). **0 of 35** negative controls flagged - [evaluation](data/full/reports/evaluation.md) |
 | Forecast | Group cash-balance error (MAPE) **1.6%** in week 1, 3.1% in weeks 2-4, 6.6% in weeks 5-13; variance explained with **zero residual** on 43,147 entity-weeks |
 | Liquidity outlook | As of 2026-10-01: group available cash ≈ USD 690 M; in the stress case it bottoms at ≈ USD 621 M and 13 entities need intra-group funding - [outlook](data/full/reports/liquidity_outlook.md) |
+| Interface | Optional read-only web dashboard (Streamlit) over the same engine: cash, accounts and FX exposure, forecasts and scenarios, cash-flow drivers, exceptions with traceable evidence, forecast vs actual, audit and exports - [docs/DASHBOARD.md](docs/DASHBOARD.md) |
 | Reproducibility | Two independent regenerations, every file byte-identical - [report](data/full/reproducibility.md). CI regenerates the starter data on Ubuntu (Python 3.12) and Windows (Python 3.13) and gets the same bytes as the committed bundle |
 
 ## Quick start
@@ -36,7 +37,7 @@ python -m venv .venv
 pip install -r requirements-dev.txt     # exact pins: checksums depend on them
 pip install -e . --no-deps
 
-pytest                                   # 49 tests, ~1 minute
+pytest                                   # 130 tests, about 5 minutes (the dashboard tests skip without Streamlit)
 cashpilot all --profile starter --out out/starter
 ```
 
@@ -45,6 +46,18 @@ runs CashPilot (positions → audit → exceptions → remediation → live fore
 forecast), validates, evaluates against the ground truth and exports everything. The starter
 profile takes well under a minute; `--profile full` builds the full-scale dataset in a few minutes
 (~0.6 GB in CSV + JSON + SQL).
+
+## Open the dashboard (optional)
+
+```bash
+pip install -r requirements-dashboard.txt     # the core pins first, then Streamlit
+pip install -e . --no-deps
+cashpilot dashboard                           # http://localhost:8501, on the committed data/starter
+```
+
+It is read-only and reuses the engine; see [docs/DASHBOARD.md](docs/DASHBOARD.md) for the screens, what is tested and the limits.
+
+![Forecast tab](docs/screenshots/03-forecast.png)
 
 ## Verify the key behaviour
 
@@ -55,7 +68,7 @@ profile takes well under a minute; `--profile full` builds the full-scale datase
 | Scenarios differ only by documented assumptions | `pytest tests/test_engine.py -k scenario`; the assumption-effect table in `out/starter/reports/liquidity_outlook.md` |
 | Forecasts are reproducible | `pytest tests/test_engine.py -k "rerunning or recorded_after"` and `tests/test_export.py -k recreated` |
 | Variance is explainable | `cashpilot explain --data out/starter --run FCAST-2026-03-12-001 --entity ENT-000002 --week 3` |
-| Edge cases and ground truth | `cashpilot exceptions --data out/starter`; labels in `out/starter/ground_truth/anomalies.csv`; scores in `out/starter/reports/evaluation.md` |
+| Edge cases and ground truth | `cashpilot exceptions --data out/starter`; labels in `out/starter/ground_truth/ground_truth.csv` (also `.json`); scores in `out/starter/reports/evaluation.md` |
 | Roles and audit | the commands in [docs/ACTORS_WORKFLOW.md](docs/ACTORS_WORKFLOW.md#try-it) |
 
 A guided tour with talking points is in [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md).
@@ -70,6 +83,7 @@ A guided tour with talking points is in [docs/WALKTHROUGH.md](docs/WALKTHROUGH.m
 | `cashpilot forecast --data DIR --cutoff YYYY-MM-DD --as-user USR-…` | create a CashPilot forecast version |
 | `cashpilot run-event`, `exceptions`, `exception`, `view-entity`, `explain` | act as an analyst, reviewer or account holder (permission-checked, audited) |
 | `cashpilot docs` | regenerate the data dictionary from `schema/dictionary.yaml` |
+| `cashpilot dashboard [--data DIR] [--port N]` | read-only web dashboard (optional Streamlit extra) |
 
 Configuration lives in [`src/cashpilot/profiles/`](src/cashpilot/profiles): volumes, calendar,
 policies (FX staleness tolerance, materiality, overdue rules) and anomaly counts. `starter` and
@@ -86,11 +100,12 @@ src/cashpilot/
   quality/     detectors and the validation suite
   evaluate/    metrics against ground truth, reproducibility check
   export/      CSV / JSON / SQL bundle and manifest        report/  Markdown reports
+  dashboard/   Streamlit-free data layer + the Streamlit app (optional extra)
 data/starter/  the starter dataset in every format (+ ground truth, reports, manifest)
 data/full/     full-scale manifest, ground truth, validation summary and reports (bulk files regenerate)
 docs/          design, decisions, rules, data dictionary, ERD, scenarios, workflow, variance method,
                testing, limitations, provenance, walkthrough, requirements traceability
-tests/         49 tests                prompts/  prompt history          AI_USAGE.md
+tests/         130 tests               prompts/  prompt history          AI_USAGE.md          scripts/  helpers
 ```
 
 ## Documentation
@@ -102,6 +117,7 @@ tests/         49 tests                prompts/  prompt history          AI_USAG
 | [docs/DATA_DICTIONARY.md](docs/DATA_DICTIONARY.md) · [docs/ERD.md](docs/ERD.md) · [docs/ID_CONVENTIONS.md](docs/ID_CONVENTIONS.md) | the data model |
 | [docs/RULES.md](docs/RULES.md) · [docs/SCENARIOS.md](docs/SCENARIOS.md) · [docs/ACTORS_WORKFLOW.md](docs/ACTORS_WORKFLOW.md) · [docs/VARIANCE_METHOD.md](docs/VARIANCE_METHOD.md) | business, detection and workflow rules |
 | [docs/TESTING.md](docs/TESTING.md) · [docs/LIMITATIONS.md](docs/LIMITATIONS.md) · [docs/PROVENANCE.md](docs/PROVENANCE.md) | how we know it works, what it does not do, lawful use |
+| [docs/DASHBOARD.md](docs/DASHBOARD.md) | the web dashboard: screens, data sources, guarantees, limits, screenshots |
 | [docs/DECISION_LOG.md](docs/DECISION_LOG.md) | decisions with alternatives, in the order they were made |
 | [AI_USAGE.md](AI_USAGE.md) · [prompts/PROMPT_HISTORY.md](prompts/PROMPT_HISTORY.md) | how AI was used, and the prompts |
 
