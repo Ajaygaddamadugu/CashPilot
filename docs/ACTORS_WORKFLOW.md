@@ -83,7 +83,7 @@ cashpilot all --profile starter --out out/demo          # work on a copy
 cashpilot exceptions --data out/demo --type LOOKAHEAD_LEAKAGE
 cashpilot forecast --data out/demo --cutoff 2026-10-01 --as-user USR-0003 --purpose LIVE
 cashpilot run-event --data out/demo --run FCAST-2026-10-01-002 --event SUBMITTED --as-user USR-0003
-cashpilot run-event --data out/demo --run FCAST-2026-10-01-002 --event APPROVED --as-user USR-0003   # refused: four-eyes
+cashpilot run-event --data out/demo --run FCAST-2026-10-01-002 --event APPROVED --as-user USR-0003   # refused: OPS_ANALYST is not permitted to approve runs
 cashpilot run-event --data out/demo --run FCAST-2026-10-01-002 --event APPROVED --as-user USR-0005   # reviewer: approved
 cashpilot view-entity --data out/demo --entity ENT-000002 --as-user USR-0007   # denied: not their entity
 ```

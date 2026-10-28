@@ -187,6 +187,7 @@ def test_dataset_names_hide_the_folder_path():
 
 
 def test_charts_show_titles_and_formatted_tooltips_never_column_names():
+    pytest.importorskip("altair")                      # the charts need the optional dashboard extra
     import pandas as pd
     from cashpilot.dashboard import charts as C
     days = pd.DataFrame({"position_date": pd.date_range("2026-01-01", periods=4), "Projected available cash": [1.0, 2, 3, 4], "Minimum buffer": [2.0] * 4})

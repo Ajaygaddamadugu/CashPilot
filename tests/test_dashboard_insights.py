@@ -3,7 +3,6 @@
 import pandas as pd
 import pytest
 
-from cashpilot.dashboard import charts as C
 from cashpilot.dashboard import data as D
 from cashpilot.dashboard import insights as I
 
@@ -169,6 +168,8 @@ def visible_titles(node) -> list[str]:
 
 
 def test_new_charts_validate_and_carry_titles_and_formats():
+    pytest.importorskip("altair")                      # the charts need the optional dashboard extra; the other tests here do not
+    from cashpilot.dashboard import charts as C
     steps = pd.DataFrame({"step": ["Cash at the start", "Customer receipts", "Payroll", "Cash after 13 weeks"], "amount": [100.0, 50.0, -30.0, 120.0],
                           "start": [0.0, 100.0, 150.0, 0.0], "end": [100.0, 150.0, 120.0, 120.0], "kind": ["Cash at start", "Increase", "Decrease", "Cash at end"]})
     weeks = pd.DataFrame({"week_no": [1, 2], "week_start": pd.to_datetime(["2026-01-01", "2026-01-08"]), "closing_available_usd": [5.0, 3.0],

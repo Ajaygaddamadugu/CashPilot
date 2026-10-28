@@ -22,11 +22,11 @@ append-only history.
 | Forecast | Group cash-balance error (MAPE) **1.6%** in week 1, 3.1% in weeks 2-4, 6.6% in weeks 5-13; variance explained with **zero residual** on 43,147 entity-weeks |
 | Liquidity outlook | As of 2026-10-01: group available cash ≈ USD 690 M; in the stress case it bottoms at ≈ USD 621 M and 13 entities need intra-group funding - [outlook](data/full/reports/liquidity_outlook.md) |
 | Interface | Optional read-only web dashboard (Streamlit), written for non-programmers: a *Start here* guide that shows the brief's acceptance criteria and edge cases, cash and FX exposure, companies / accounts / bank transactions / invoices, forecasts and scenarios, cash-flow drivers, exceptions with traceable evidence, forecast vs actual, audit and exports - [docs/DASHBOARD.md](docs/DASHBOARD.md) |
-| Reproducibility | Two independent regenerations, every file byte-identical - [report](data/full/reproducibility.md). CI regenerates the starter data on Ubuntu (Python 3.12) and Windows (Python 3.13) and gets the same bytes as the committed bundle |
+| Reproducibility | Two independent regenerations, every file byte-identical - [report](data/full/reproducibility.md). CI regenerates the starter data on Ubuntu and Windows (Python 3.12 on both) and gets the same bytes as the committed bundle |
 
 ## Quick start
 
-Requirements: Python 3.11 or newer (developed on 3.13, CI on 3.12) and git.
+Requirements: git and Python 3.11 or newer (the minimum declared in `pyproject.toml`). Developed and verified on 3.13; CI runs 3.12; 3.11 itself has not been tested.
 
 ```bash
 git clone https://github.com/Ajaygaddamadugu/CashPilot.git
@@ -37,20 +37,32 @@ python -m venv .venv
 pip install -r requirements-dev.txt     # exact pins: checksums depend on them
 pip install -e . --no-deps
 
-pytest                                   # 172 tests, about 5 minutes (the dashboard tests skip without Streamlit)
+pytest                                   # core tests: 149 pass, 4 skip (the dashboard tests need the extra below), about 5 minutes
 cashpilot all --profile starter --out out/starter
 ```
 
 `cashpilot all` generates the data, validates the clean baseline, injects the labelled edge cases,
 runs CashPilot (positions → audit → exceptions → remediation → live forecast → actual vs
 forecast), validates, evaluates against the ground truth and exports everything. The starter
-profile takes well under a minute; `--profile full` builds the full-scale dataset in a few minutes
-(~0.6 GB in CSV + JSON + SQL; the full dataset's CSV files are already committed in `data/full/csv/`).
+profile takes about a minute and a half; `--profile full` builds the full-scale dataset in several
+minutes (about six on the verification machine; ~0.6 GB in CSV + JSON + SQL; the full dataset's CSV
+files are already committed in `data/full/csv/`).
+
+**Two ways to run the tests.** The commands above install the core dependencies only, so the tests that
+need the optional dashboard packages (Streamlit, Altair) are skipped cleanly. Install the dashboard extra
+(next section) and the same `pytest` runs all of them:
+
+| Install | `pytest` result |
+|---|---|
+| `pip install -r requirements-dev.txt` (core, as above) | 149 passed, 4 skipped (two dashboard test modules that skip as a whole, and two chart tests) |
+| `pip install -r requirements-dashboard.txt` (core + dashboard) | 172 passed, 1 skipped (the opt-in browser layout check, `CASHPILOT_LAYOUT_TEST=1`) |
+
+Both were measured on Windows with Python 3.13 in fresh virtual environments.
 
 ## Open the dashboard (optional)
 
 ```bash
-pip install -r requirements-dashboard.txt     # the core pins first, then Streamlit
+pip install -r requirements-dashboard.txt     # the core pins first, then Streamlit (this also enables the dashboard tests)
 pip install -e . --no-deps
 cashpilot dashboard                           # http://localhost:8501, on the committed data/starter
 cashpilot dashboard --data data/full          # the full-scale dataset (30 entities, 150 accounts, 100,000 ledger entries); the first load takes about 25 s
@@ -123,7 +135,7 @@ data/full/     the full-scale dataset: all CSV tables (30 entities, 150 accounts
                ground truth, manifest, validation summary, reports (JSON and SQL regenerate: files over GitHub's 100 MB limit)
 docs/          design, decisions, rules, data dictionary, ERD, scenarios, workflow, variance method,
                testing, limitations, provenance, walkthrough, requirements traceability
-tests/         172 tests               prompts/  prompt history          AI_USAGE.md          scripts/  helpers
+tests/         172 tests (149 core)    prompts/  prompt history          AI_USAGE.md          scripts/  helpers
 ```
 
 ## Documentation

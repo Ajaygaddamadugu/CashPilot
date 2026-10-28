@@ -35,3 +35,27 @@ jobs:
       - name: Same bytes as the committed starter dataset (cross-platform, informational)
         continue-on-error: true
         run: python scripts/compare_manifests.py data/starter/manifest.json out/repro/run-1/manifest.json
+
+  # What a reviewer gets from the README's core commands: requirements-dev.txt only, no Streamlit or Altair.
+  # The dashboard tests must skip cleanly here; the job above runs them with the dashboard extra.
+  core:
+    name: core tests, no dashboard extra
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install (core only)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -e . --no-deps
+
+      - name: Confirm the dashboard extra is not installed
+        run: python -c "import importlib.util, sys; sys.exit(1 if any(importlib.util.find_spec(m) for m in ('streamlit', 'altair')) else 0)"
+
+      - name: Tests (dashboard tests skip)
+        run: pytest -q -rs

@@ -9,8 +9,21 @@ Three layers of evidence, from fastest to broadest:
 3. **Evaluation and reproducibility** (`cashpilot all`, `cashpilot repro-check`): detection
    precision/recall, forecast accuracy, and two independent regenerations compared file by file.
 
-CI (`.github/workflows/ci.yml`) runs the tests and the starter reproducibility check on Ubuntu
-and Windows, and compares the generated checksums with the committed `data/starter/manifest.json`.
+`.github/workflows/ci.yml` defines two jobs. `test` installs the dashboard extra, runs every test and the
+starter reproducibility check on Ubuntu and Windows (Python 3.12), and compares the generated checksums with the
+committed `data/starter/manifest.json`. `core` installs only `requirements-dev.txt`, confirms Streamlit and Altair
+are absent, and runs `pytest -rs` on Ubuntu, so the README's core commands are exercised in CI as well (the job
+adds `-rs` to print the skip reasons).
+
+**Core and dashboard-enabled runs.** The tests that need the optional dashboard packages skip cleanly when they are
+absent: `test_dashboard_app.py` and `test_dashboard_layout.py` skip as modules (Streamlit), and the one chart test in
+each of `test_dashboard_insights.py` and `test_dashboard_explorer.py` skips on a missing Altair while the other tests
+in those files keep running. Measured on Windows, Python 3.13, fresh virtual environments:
+
+| Install | Result |
+|---|---|
+| `requirements-dev.txt` (core) | 149 passed, 4 skipped |
+| `requirements-dashboard.txt` | 172 passed, 1 skipped (the opt-in browser layout check) |
 
 ## What each test file proves
 
@@ -27,7 +40,7 @@ and Windows, and compares the generated checksums with the committed `data/start
 | `test_fx_positions.py` | **Hand-calculated** multi-currency arithmetic on a micro dataset: half-even rounding, JPY without decimals, inverse and cross rates; the staleness rule at its boundaries (OK / FALLBACK at 1-3 missing fixings / MISSING at 4, weekends, nothing known yet); a rate recorded after the cutoff instant is invisible; daily roll-forward; USD values at each day's rate; a missing rate leaves the value empty (not zero) and flags the entity total INCOMPLETE; totals never add local amounts of different currencies |
 | `test_forecast_logic.py` | **Hand-calculated** projection of four receipts/payments: daily balances, buffer breaches (equal to the buffer is not a breach), excluded items never reach the projection, a delayed receipt moves to its new date and the cash is not lost, a receipt delayed past the horizon leaves the window but stays an item, collection haircuts round half-even, supplier timing never precedes the cutoff, FX shocks change foreign balances and flows but not USD, restricted cash is reported but not available |
 | `test_metrics.py` | Precision / recall / F1, decision accuracy, negative controls, WAPE and bias, balance MAPE (including skipping actuals with missing FX) on tiny fixtures with answers worked out by hand |
-| `test_cli.py` | Every read-only command's output; forecast then four-eyes approval (analyst refused, reviewer allowed); illegal transitions refused and history unchanged; account holders denied and audited; clean errors (exit 2) for a missing dataset, a malformed date, an unknown profile and an unknown command |
+| `test_cli.py` | Every read-only command's output; forecast then approval (an analyst is refused because that role may not approve runs; a risk reviewer is allowed); illegal transitions refused and history unchanged; account holders denied and audited; clean errors (exit 2) for a missing dataset, a malformed date, an unknown profile and an unknown command |
 | `test_dashboard_data.py` | The dashboard's figures reconcile with the engine: overview = entity positions, exposure = consolidated total, forecast series = sum of entity positions, **scenario items reproduce the engine's daily flows to the cent in every scenario**, run differences carry reasons, exception traces have rule/decision/history/evidence, the reproducibility check passes for clean runs and fails for the look-ahead run, cache signatures change with the files |
 | `test_dashboard_explorer.py` | The explorer, *Start here* and plain-language layers: for every account opening balance + flows = the stored closing balance, ledger filtering and major units, entity / account master data and lifecycle history, invoice and bill lists agree with their events, customers pay later the riskier they are, dataset scale vs the brief, acceptance criteria read from saved evidence (and "Not recorded" without it), edge cases and actors counted from the data, **every code the engine can produce has a plain explanation**, every run-comparison reason is explained, codes read as words and unknown codes stay visible, chart tooltips and axes carry titles and formats and never column names |
 | `test_dashboard_layout.py` | Opt-in (`CASHPILOT_LAYOUT_TEST=1`; needs Edge or Chrome and `websockets`, about 3 minutes): starts the dashboard, opens every tab at five desktop widths in a real browser and fails if any figure, label or tab name is cut off, the tab bar has to scroll or the page scrolls sideways. Also available as `scripts/check_layout.py` against a running dashboard |
@@ -56,8 +69,8 @@ and Windows, and compares the generated checksums with the committed `data/start
 ## Running
 
 ```bash
-pip install -r requirements-dev.txt && pip install -e .
-pytest                      # about 5 minutes
+pip install -r requirements-dev.txt && pip install -e . --no-deps   # exact pins: the dataset checksums depend on them
+pytest                      # about 5 minutes: 149 passed, 4 skipped; with requirements-dashboard.txt: 172 passed, 1 skipped
 cashpilot all --profile starter --out out/check   # then compare out/check/manifest.json with data/starter/manifest.json
 cashpilot repro-check --profile starter           # two fresh runs, every checksum compared
 ```
