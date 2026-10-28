@@ -37,7 +37,7 @@ python -m venv .venv
 pip install -r requirements-dev.txt     # exact pins: checksums depend on them
 pip install -e . --no-deps
 
-pytest                                   # 171 tests, about 5 minutes (the dashboard tests skip without Streamlit)
+pytest                                   # 172 tests, about 5 minutes (the dashboard tests skip without Streamlit)
 cashpilot all --profile starter --out out/starter
 ```
 
@@ -123,7 +123,7 @@ data/full/     the full-scale dataset: all CSV tables (30 entities, 150 accounts
                ground truth, manifest, validation summary, reports (JSON and SQL regenerate: files over GitHub's 100 MB limit)
 docs/          design, decisions, rules, data dictionary, ERD, scenarios, workflow, variance method,
                testing, limitations, provenance, walkthrough, requirements traceability
-tests/         171 tests               prompts/  prompt history          AI_USAGE.md          scripts/  helpers
+tests/         172 tests               prompts/  prompt history          AI_USAGE.md          scripts/  helpers
 ```
 
 ## Documentation

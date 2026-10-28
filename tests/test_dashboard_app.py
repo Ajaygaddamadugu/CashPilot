@@ -241,3 +241,17 @@ def test_currency_move_can_be_applied_to_one_currency_and_one_account_is_explain
     assert not at.exception, [e.value for e in at.exception]
     text = _text(at)
     assert "What an exchange-rate move would do" in text and "How this balance is valued" in text
+
+
+def test_number_cards_scale_to_their_width_instead_of_cutting_figures_off(app):
+    """Edge showed `40,265,...` in narrow cards. The stylesheet makes the value font follow the card width and removes the ellipsis (the text is unchanged, so nothing is rounded)."""
+    at = app.run()
+    style = next(m.value for m in at.markdown if "stMetricValue" in m.value)
+    compact = style.replace(" ", "")
+    assert "container-type:inline-size" in compact and "13cqw" in compact                                   # the font follows the card's width
+    assert "clamp(1rem,2vw,2.25rem)" in compact                                                              # fallback for a browser without container units
+    assert "text-overflow:clip" in compact and "stMetricLabel" in style                                      # no ellipsis; long labels wrap
+    assert "flex-wrap:wrap" in compact and "tab-highlight" in style                                         # nine tabs wrap onto a second row instead of hiding behind scroll arrows
+    # the figures themselves are shown in full: nothing was shortened or rounded in the value
+    values = [m.value for m in at.metric]
+    assert "40,265,073" in values and "36,033,425" in values and not any("…" in v or v.endswith("M") for v in values)

@@ -37,6 +37,27 @@ PEOPLE_COLUMNS = ("actor_id", "created_by", "assigned_to")
 SHOW = {"users": {}, "entities": {}, "scenarios": {}}
 
 
+# Page styling. The name sits at the top-left of the sidebar above the dataset picker, the page starts near the top, tab names are larger and bold.
+# Number cards: the value shrinks with the card so a figure is never cut off with an ellipsis (what Edge showed at narrower widths); the text
+# itself is unchanged, so nothing is rounded. Long card labels wrap. The tab font shrinks a little with the window (1.1 rem down to 0.9 rem) so one row
+# fits from about 1500 px; tabs wrap onto a second row when the window is narrower than that,
+# instead of hiding names behind scroll arrows (the selected tab is underlined by its own border because the moving highlight would sit wrongly).
+STYLE = """<style>
+[data-testid="stMainBlockContainer"]{padding-top:2.5rem}
+[data-testid="stSidebarHeader"]{height:1.5rem;padding-bottom:0}
+[data-testid="stSidebarUserContent"]{padding-top:0}
+[data-testid="stSidebarUserContent"] h1{font-size:2.1rem;font-weight:800;padding:0 0 .25rem 0}
+[data-testid="stTab"] p{font-size:clamp(.9rem,calc(1.4vw - 6.5px),1.1rem);font-weight:700}
+[role="tablist"]{flex-wrap:wrap;row-gap:.1rem;overflow:visible!important}
+[data-baseweb="tab-highlight"]{display:none!important}
+[role="tab"][aria-selected="true"]{box-shadow:inset 0 -3px 0 currentColor}
+[data-testid="stMetric"]{container-type:inline-size}
+[data-testid="stMetricValue"],[data-testid="stMetricValue"] p{font-size:clamp(1rem,2vw,2.25rem)!important;font-size:clamp(1rem,13cqw,2.25rem)!important;white-space:nowrap!important}
+[data-testid="stMetricValue"] [data-testid="stMarkdownContainer"]{overflow:visible!important;text-overflow:clip!important}
+[data-testid="stMetricLabel"] [data-testid="stMarkdownContainer"],[data-testid="stMetricLabel"] p{overflow:visible!important;text-overflow:clip!important;white-space:normal!important}
+</style>"""
+
+
 # ------------------------------------------------------------------ caching
 
 @st.cache_resource(show_spinner="Loading dataset…")
@@ -750,14 +771,7 @@ def tab_audit(b: D.Bundle, run_id: str) -> None:
 
 def main() -> None:
     st.set_page_config(page_title="CashPilot", layout="wide", menu_items={"About": "CashPilot - multi-entity cash consolidation and 13-week liquidity forecasting on synthetic data. Read-only."})
-    # the name sits at the top-left of the sidebar, above the dataset picker; tab names are larger and bold; the page starts near the top
-    st.markdown("""<style>
-[data-testid="stMainBlockContainer"]{padding-top:2.5rem}
-[data-testid="stSidebarHeader"]{height:1.5rem;padding-bottom:0}
-[data-testid="stSidebarUserContent"]{padding-top:0}
-[data-testid="stSidebarUserContent"] h1{font-size:2.1rem;font-weight:800;padding:0 0 .25rem 0}
-[data-testid="stTab"] p{font-size:1.1rem;font-weight:700}
-</style>""", unsafe_allow_html=True)
+    st.markdown(STYLE, unsafe_allow_html=True)
     st.sidebar.title("CashPilot")
 
     default = os.environ.get("CASHPILOT_DATA", "data/starter")

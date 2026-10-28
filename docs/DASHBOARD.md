@@ -83,6 +83,28 @@ These blocks only *present* engine results ([`insights.py`](../src/cashpilot/das
 
 What changed per tab: *Cash overview* has bordered number cards and a plain liquidity status (it follows one documented rule: below buffer = available cash less than the minimum buffer, and says "cannot be fully assessed" when an FX rate is missing instead of guessing). *Forecast* shades the days below the buffer, shows the 13 weeks as bars against the buffer, and explains each shortfall. *Accounts & currencies* has an exposure chart with values on the bars, an FX move that can target one currency, and a worked example per account. *Cash-flow drivers* has a waterfall and a "choose a bar, see its transactions" selector. *Exceptions* lists severity, problem, company, affected record and status, with IDs, rule codes and decisions in an expandable section. *Actual vs forecast* puts forecast and actual side by side with timing, amount and FX cards. *Audit & exports* keeps hashes, the audit log, item handling, checksums and the regeneration command in explained expandable sections.
 
+## Layout at common desktop widths
+
+Edge showed `40,265,...` in the number cards on a window that is narrower than its 1920-pixel screen suggests (display scaling makes a
+1920-pixel screen about 1536 or 1440 CSS pixels wide, and the sidebar and margins take about 470 of those). The figures were never wrong,
+only cut off by the card. Fixes, all in the page stylesheet (`STYLE` in `app.py`), none in any calculation:
+
+* The value font follows the card's width (a CSS container query), so a figure is always shown in full. The text itself is unchanged: nothing
+  is shortened or rounded, and the underlying numbers are untouched. Long card labels wrap instead of ending in an ellipsis.
+* The tab font shrinks a little with the window (from 1.1 rem down to 0.9 rem), so the nine tabs fit on one row from a window about 1500 px
+  wide. Below that they wrap onto a second row instead of hiding names behind scroll arrows. The selected tab is underlined by its own border.
+
+Checked in a real browser: [`scripts/check_layout.py`](../scripts/check_layout.py) loads every tab at 1280, 1366, 1440, 1536, 1600 and
+1920 px and lists any text cut off by an ellipsis, a tab bar that has to scroll and a page that scrolls sideways. On the previous
+stylesheet it found 80 such items (value and label ellipses at 1280-1536 px on four tabs, and the tab bar below 1600 px); now it finds 0, on
+the starter dataset and, for seven tabs, on the full dataset (whose numbers are larger, such as `746,629,191`). Data tables are drawn on a
+canvas that sizes each column to its content, so their cells cannot be measured this way; they scroll sideways when they are wider than the page.
+
+```bash
+cashpilot dashboard --headless --port 8501        # one terminal
+python scripts/check_layout.py http://localhost:8501 --widths 1280,1366,1440,1536,1920
+```
+
 ## Nothing technical on screen
 
 A second review of the running dashboard (screenshots from the candidate's browser) looked for anything a non-programmer should not see:

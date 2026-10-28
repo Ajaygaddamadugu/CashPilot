@@ -67,6 +67,9 @@ The following issues were identified during implementation or review. The fixes 
 | A chart helper name collided with a real data column | Dashboard test failure | Use distinct internal column names. |
 | Waterfall labels overlapped and the worked FX example was not illustrative | Review of rendered screenshots | Improve label layout and choose a foreign-currency account for the example. |
 | A cleanup command could match its own process | Command behavior during test-server cleanup | Replace it with a narrower process-targeting script. |
+| In Edge the number cards showed `40,265,...` instead of the full figure | The candidate sent a screenshot; the AI measured it in a real browser: the card was narrower than the 2.25 rem number at the window's real width | The value font now follows the card width and labels wrap (CSS only, no number changed); tabs wrap instead of hiding behind arrows; a browser check finds 0 clipped items at six widths, down from 80 |
+| The first version of that browser check reported no clipped numbers at all, although they were clipped | Comparing it with the candidate's screenshot and inspecting the page structure | The clip was on the number's container, not on the text element it looked at; the check now looks at the container |
+| A layout test would not start the dashboard | The test failed with no output | The dashboard's start-up message printed a folder path containing Japanese characters, which fails when output is redirected; the test now uses a relative path (the command itself was left unchanged, and real use in a terminal works) |
 | A commit was pushed while one test was failing (the test's assertion about the page title was wrong), because running the tests and committing were chained in one command | The CI run for that commit was red | The assertion was fixed in the next commit; later commands only commit when the tests pass. |
 | A broad process-stop command risked affecting unrelated Python processes | Permission system blocked the command | Narrow the target so it only addresses the AI's own test process. |
 
@@ -102,7 +105,7 @@ Not claimed here, because the prompt history has no evidence of them: a line-by-
 
 Results when this file was last updated (2026-10-27):
 
-- Full test suite: 171 passed (run by the AI before the last two styling commits; the dashboard tests, 49, were re-run after them and passed).
+- Full test suite: 172 passed and 1 skipped. The skipped test is the opt-in real-browser layout check (`CASHPILOT_LAYOUT_TEST=1`), which was run separately and passed.
 - CI on commit `b2ab659`: success on Ubuntu and Windows.
 - Fresh clone of the public repository: all 34 full-dataset CSV files match their checksums in `data/full/manifest.json`, and the dashboard loads the 30-entity dataset.
 

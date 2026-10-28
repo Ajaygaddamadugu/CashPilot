@@ -80,7 +80,7 @@ flowchart LR
 
 ## How we know it works
 
-* **Tests** - 171 tests, including the four acceptance criteria and hand-calculated FX and forecast fixtures ([TESTING.md](TESTING.md)).
+* **Tests** - 172 tests, including the four acceptance criteria and hand-calculated FX and forecast fixtures ([TESTING.md](TESTING.md)).
 * **Validation** - clean baseline: 0 violations; final dataset: no unexpected violations, every
   anomaly check matches the ground truth exactly ([data/full/validation_summary.md](../data/full/validation_summary.md)).
 * **Evaluation** - detection precision/recall per edge case, forecast and balance accuracy,
