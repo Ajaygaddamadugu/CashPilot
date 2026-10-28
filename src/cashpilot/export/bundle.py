@@ -90,6 +90,19 @@ def dataset_readme(ds: Dataset, cfg: Config, validation_ok: bool | None) -> str:
         "| `reports/` | Evaluation, 13-week liquidity outlook, data profile |",
         "| `manifest.json` | Row counts and SHA-256 checksums of every file |", "",
         f"Validation: **{'PASS' if validation_ok else 'see validation_summary.md'}**.", "",
+    ]
+    if cfg.profile == "full":
+        lines += [
+            "## JSON and SQL are generated on demand", "",
+            "In the repository this profile ships `csv/` only. `json/` and `sql/` are not committed because some of their files "
+            "exceed GitHub's 100 MB file limit (`sql/seed.sql` is about 160 MB). They are recreated byte-for-byte from the "
+            "committed CSV files, and their checksums are in `manifest.json`.", "",
+            "To recreate them, work on a copy of this folder, because the command also rewrites `manifest.json`, "
+            "`validation_summary.*` and two files under `reports/`:", "",
+            "```", "cashpilot export --data <copy of this folder>", "```", "",
+            "This takes a few minutes. `cashpilot all --profile full --out <folder>` builds the whole bundle from scratch instead.", "",
+        ]
+    lines += [
         "## Tables", "", "| Table | Layer | Rows | Description |", "|---|---|---|---|",
     ]
     for name in schema.topological_order():

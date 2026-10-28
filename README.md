@@ -59,6 +59,30 @@ need the optional dashboard packages (Streamlit, Altair) are skipped cleanly. In
 
 Both were measured on Windows with Python 3.13 in fresh virtual environments.
 
+## Recreate the full dataset's JSON and SQL (optional)
+
+The repository holds the full dataset's CSV files only. Its JSON and SQL renderings are not committed because some files
+exceed GitHub's 100 MB file limit (`seed.sql` is about 160 MB); the checksums of every file are in
+[`data/full/manifest.json`](data/full/manifest.json). `cashpilot export` rebuilds them from the committed CSV files in
+about two to three minutes. It writes into the folder it is given and also rewrites that folder's `manifest.json`,
+`validation_summary.*` and two reports, so run it on a copy and leave `data/full` untouched (`out/` is git-ignored):
+
+```powershell
+# Windows PowerShell
+New-Item -ItemType Directory -Force out | Out-Null
+Copy-Item -Recurse data\full out\full
+cashpilot export --data out\full
+```
+
+```bash
+# macOS / Linux
+mkdir -p out && cp -r data/full out/full
+cashpilot export --data out/full
+```
+
+`out/full/json/` and `out/full/sql/` then match the checksums in `data/full/manifest.json`. Building the whole bundle again with
+`cashpilot all --profile full --out out/full` gives the same files.
+
 ## Open the dashboard (optional)
 
 ```bash
